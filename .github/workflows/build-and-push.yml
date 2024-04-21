@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build & Push
 
 on:
   push:
@@ -42,4 +42,4 @@ jobs:
         run: |
           cd ${{ matrix.service }}
           docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
-          docker push alexdragnea/cc-${{ matrix.service }}:latest
+          docker push alexdragnea/disertatie-${{ matrix.service }}:latest
