@@ -1,0 +1,81 @@
+name: Build & Deploy
+
+on:
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ds-cluster-408911
+  GKE_CLUSTER: cc-cluster-autopilot
+  GKE_ZONE: europe-west1
+  SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}
+
+jobs:
+  build_and_push:
+    name: Build & Push to DockerHub
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [iotcoreservice]  
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Build and Push to DockerHub
+        run: |
+          cd ${{ matrix.service }}
+          docker build -t alexdragnea/cc-${{ matrix.service }}:latest .
+          docker push alexdragnea/cc-${{ matrix.service }}:latest
+  
+  deploy-to-gke:
+    needs: build_and_push
+    name: Deploy to GKE
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+      with:
+        service_account_key: ${{ secrets.GK_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+        credentials: ${{ secrets.GK_SA_KEY }}
+
+    - name: Deploy
+      run: |
+        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/DS_TextSummary/main/manifests/service.yaml 
+        sleep 10 
+        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/DS_TextSummary/main/manifests/deployment.yaml 
+        sleep 180 
+        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/DS_TextSummary/main/manifests/hpa.yaml 
+        kubectl get pods
+        sleep 60
+        kubectl get svc
+        kubectl get hpa
