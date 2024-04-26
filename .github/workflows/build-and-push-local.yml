@@ -1,4 +1,4 @@
-name: Build & Push
+name: Build & Push with local profile
 
 on:
   push:
