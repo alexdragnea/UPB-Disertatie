@@ -1,0 +1,18 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: discovery-service
+
+
+eureka:
+  server:
+    peer-node-connect-timeout-ms: 500
+    peer-node-read-timeout-ms: 500
+    peer-node-connection-idle-timeout-seconds: 50
+  client:
+    register-with-eureka: false
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka}

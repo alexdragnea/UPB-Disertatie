@@ -1,0 +1,10 @@
+eureka:
+  server:
+    peer-node-connect-timeout-ms: 500
+    peer-node-read-timeout-ms: 500
+    peer-node-connection-idle-timeout-seconds: 50
+  client:
+    register-with-eureka: false
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
