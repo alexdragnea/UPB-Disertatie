@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ro.upb</groupId>
-    <artifactId>iot-coreservice</artifactId>
+    <artifactId>iot-core-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>iot-coreservice</name>
+    <name>iot-core-service</name>
     <description>IoTCoreService</description>
     <properties>
         <java.version>17</java.version>
@@ -25,10 +25,6 @@
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-streams</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

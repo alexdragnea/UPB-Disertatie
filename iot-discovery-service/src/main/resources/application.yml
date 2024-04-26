@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: discovery-service
+    name: iot-discovery-service
 
 
 eureka:
@@ -15,4 +15,4 @@ eureka:
     register-with-eureka: false
     fetch-registry: true
     service-url:
-      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka}
+      defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}

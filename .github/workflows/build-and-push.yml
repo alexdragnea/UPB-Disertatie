@@ -2,7 +2,7 @@ name: Build & Push
 
 on:
   push:
-    branches: [master]
+    branches: [deploy]
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [iot-coreservice]  
+        service: [iot-core-service, iot-discovery-service]  
 
     steps:
       - name: Checkout Repository
