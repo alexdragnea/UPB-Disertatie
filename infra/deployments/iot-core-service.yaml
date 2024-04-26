@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: iot-core-service
-        image: alexdragnea/disertatie-iot-core-service-local:latest
+        image: alexdragnea/disertatie-iot-core-service:latest
         resources:
           limits:
             memory: 768Mi
@@ -28,13 +28,7 @@ spec:
         - containerPort: 9000
         livenessProbe:
           httpGet:
-            path: /actuator/health/liveness
-            port: 9000
-          initialDelaySeconds: 100
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /actuator/health/readiness
+            path: /actuator/health
             port: 9000
           initialDelaySeconds: 100
           periodSeconds: 5

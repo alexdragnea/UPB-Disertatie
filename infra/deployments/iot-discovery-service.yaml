@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: iot-discovery-service
-        image: alexdragnea/disertatie-iot-discovery-service-local:latest
+        image: alexdragnea/disertatie-iot-discovery-service:latest
         resources:
           limits:
             memory: 768Mi
@@ -28,13 +28,13 @@ spec:
         - containerPort: 8761
         livenessProbe:
           httpGet:
-            path: /actuator/health/liveness
+            path: /actuator/health
             port: 8761
           initialDelaySeconds: 100
           periodSeconds: 5
         readinessProbe:
           httpGet:
-            path: /actuator/health/readiness
+            path: /actuator/health
             port: 8761
           initialDelaySeconds: 100
           periodSeconds: 5
