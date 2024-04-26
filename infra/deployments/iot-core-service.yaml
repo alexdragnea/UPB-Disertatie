@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: iot-coreservice
+  name: iot-core-service
 spec:
-  replicas: 3
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: iot-coreservice
+      app: iot-core-service
   template:
     metadata:
       labels:
-        app: iot-coreservice
+        app: iot-core-service
     spec:
       containers:
-      - name: iot-coreservice
-        image: alexdragnea/disertatie-iot-coreservice:latest
+      - name: iot-core-service
+        image: alexdragnea/disertatie-iot-core-service-local:latest
         resources:
           limits:
             memory: 768Mi

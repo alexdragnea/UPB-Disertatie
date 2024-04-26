@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: hpa-iot-coreservice
+  name: hpa-iot-core-service
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: user-service
+    name: iot-core-service
   minReplicas: 2
   maxReplicas: 3
   targetCPUUtilizationPercentage: 70
