@@ -5,6 +5,9 @@ deployments=(
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
+    "kafka-deployment"
+    "kafka-drop-deployment"
+    "zookeeper-deployment"
 )
 
 # Define hpas
@@ -19,6 +22,9 @@ services=(
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
+    "kafka-service"
+    "kafka-drop-service"
+    "zookeeper-service"
 )
 
 read -p "This will delete the deployments, services, and HPAs. Are you sure? (y/n): " confirmation
