@@ -1,11 +1,16 @@
 server:
-  port: 8002
+  port: 8001
   error:
     include-message: always
 
 spring:
   application:
-    name: iot-core-service
+    name: iot-bridge-service
+  kafka:
+    bootstrap-servers: kafka-service:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 eureka:
   client:
