@@ -4,18 +4,21 @@
 deployments=(
     "iot-discovery-service"
     "iot-core-service"
+    "iot-bridge-service"
 )
 
 # Define hpas
 hpas=(
     "hpa-iot-discovery-service"
     "hpa-iot-core-service"
+    "hpa-iot-bridge-service"
 )
 
 # Define services
 services=(
     "iot-discovery-service"
     "iot-core-service"
+    "iot-bridge-service"
 )
 
 read -p "This will delete the deployments, services, and HPAs. Are you sure? (y/n): " confirmation

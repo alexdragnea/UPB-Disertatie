@@ -1,9 +1,22 @@
 #!/bin/bash
 
+
+# Kafka
+kafka=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/zookeeper.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml"
+)
+
+for kafka in "${kafka[@]}"; do
+    kubectl apply -f "$kafka"
+    sleep 10
+done
+
 # Services
 services=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-core-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-discovery-service-svc.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-bridge-service-svc.yaml"
 )
 
 for service in "${services[@]}"; do
@@ -15,6 +28,7 @@ done
 deployments=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-discovery-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-core-service.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-bridge-service.yaml"
 )
 
 sleep 5
@@ -28,6 +42,7 @@ done
 hpa_files=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
 )
 
 for hpa_file in "${hpa_files[@]}"; do

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: iot-core-service
+  name: iot-bridge-service
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: iot-core-service
+      app: iot-bridge-service
   template:
     metadata:
       labels:
-        app: iot-core-service
+        app: iot-bridge-service
     spec:
       containers:
-      - name: iot-core-service
-        image: alexdragnea/disertatie-iot-core-service:latest
+      - name: iot-bridge-service
+        image: alexdragnea/disertatie-iot-bridge-service:latest
         resources:
           limits:
             memory: 768Mi
@@ -25,10 +25,10 @@ spec:
             cpu: 256m
             memory: 512Mi
         ports:
-        - containerPort: 8002
+        - containerPort: 8001
         livenessProbe:
           httpGet:
             path: /actuator/health
-            port: 8002
+            port: 8001
           initialDelaySeconds: 100
           periodSeconds: 5
