@@ -12,6 +12,6 @@ public class KafkaMessageConsumer {
 
     @KafkaListener(topics = KafkaConstants.IOT_EVENT_TOPIC, groupId = KafkaConstants.IOT_GROUP_ID)
     public void listen(String message) {
-        log.info("Received message: {}, on topic: {}", message, KafkaConstants.IOT_EVENT_TOPIC)
+        log.info("Received message: {}, on topic: {}", message, KafkaConstants.IOT_EVENT_TOPIC);
     }
 }
