@@ -3,18 +3,6 @@ server:
   error:
     include-message: always
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-    endpoint:
-      health:
-        show-details: always
-        probes:
-          enabled: true
-
-
 spring:
   application:
     name: iot-gateway-service
