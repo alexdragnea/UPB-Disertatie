@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: iot-discovery-service
 spec:
+  type: LoadBalancer
   selector:
     app: iot-discovery-service
   ports:

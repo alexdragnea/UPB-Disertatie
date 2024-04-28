@@ -12,7 +12,7 @@ public class TestController {
 
     private final KafkaMessageProducer kafkaMessageProducer;
 
-    @PostMapping
+    @PostMapping("/sendMessage")
     public void sendMessage(@RequestBody String message) {
         kafkaMessageProducer.sendMessage(KafkaConstants.IOT_EVENT_TOPIC, message);
     }
