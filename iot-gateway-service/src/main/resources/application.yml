@@ -19,11 +19,6 @@ spring:
           predicates:
             - Path=/v1/iot-core/**
 
-        - id: iot-discovery-service
-          uri: lb://iot-discovery-service
-          predicates:
-            - Path=/**
-
       discovery:
         locator:
           enabled: true
