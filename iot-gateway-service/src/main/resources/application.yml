@@ -1,0 +1,43 @@
+server:
+  port: 8888
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: iot-gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: iot-bridge-service
+          uri: lb://iot-bridge-service
+          predicates:
+            - Path=/v1/iot-bridge/**
+
+        - id: iot-core-service
+          uri: lb://iot-core-service
+          predicates:
+            - Path=/v1/iot-core/**
+
+        - id: iot-gateway-service
+          uri: lb://iot-gateway-service
+          predicates:
+            - Path=/**
+
+      discovery:
+        locator:
+          enabled: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka}
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+
+logging:
+  level:
+    com.netflix.discovery: DEBUG

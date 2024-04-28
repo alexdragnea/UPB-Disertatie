@@ -5,6 +5,7 @@ deployments=(
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
+    "iot-gateway-service"
     "kafka-deployment"
     "kafka-drop-deployment"
     "zookeeper-deployment"
@@ -15,6 +16,7 @@ hpas=(
     "hpa-iot-discovery-service"
     "hpa-iot-core-service"
     "hpa-iot-bridge-service"
+    "hpa-iot-gateway-service"
 )
 
 # Define services
@@ -22,6 +24,7 @@ services=(
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
+    "iot-gateway-service"
     "kafka-service"
     "kafka-drop-service"
     "zookeeper-service"
