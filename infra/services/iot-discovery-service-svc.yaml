@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: iot-discovery-service
 spec:
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 8761
-    targetPort: 8761
   selector:
     app: iot-discovery-service
+  ports:
+    - protocol: TCP
+      port: 8761
+      targetPort: 8761

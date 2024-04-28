@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: iot-bridge-service
 spec:
-  type: LoadBalancer
   selector:
     app: iot-bridge-service
   ports:
     - protocol: TCP
-      port: 8001
-      targetPort: 8001
+      port: 8002
+      targetPort: 8002
