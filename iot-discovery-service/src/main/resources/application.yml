@@ -12,7 +12,10 @@ eureka:
     peer-node-read-timeout-ms: 500
     peer-node-connection-idle-timeout-seconds: 50
   client:
-    register-with-eureka: false
+    register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
+    registry-fetch-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
