@@ -5,7 +5,7 @@ server:
 
 influxdb:
   url: http://influxdb:8086
-  token: RgPIP4KEfJi6K858FM7wxEuWu8PTJzhW1POB64avar2Z0dj200eVJ64LQ3qOUrqoXp4LYRJBYRfWEOvvHmUGVw==
+  token: ANj7pFfmgh_8Y9ERovZ2BxmB_mFzRlMBKZ8XmLQjrEqp4ptQ2w7SLgPwgHDLBEgbBIGmKRqLoO8ortV4mLcQmQ==
   organization: UPB
   bucket: iot-event-bucket
 
