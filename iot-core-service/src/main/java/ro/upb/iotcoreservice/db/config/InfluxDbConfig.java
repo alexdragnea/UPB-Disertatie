@@ -1,7 +1,5 @@
 package ro.upb.iotcoreservice.db.config;
 
-import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.InfluxDBClientReactiveFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +15,11 @@ public class InfluxDbConfig {
     @Value("${influxdb.token}")
     private String influxDbToken;
 
+    @Value("${influxdb.bucket}")
+    private String influxDbBucket;
+
     @Bean
     public InfluxDBClientReactive influxDBClientReactive() {
-        return InfluxDBClientReactiveFactory.create(influxDbUrl, influxDbToken.toCharArray());
+        return InfluxDBClientReactiveFactory.create(influxDbUrl, influxDbToken.toCharArray(), influxDbBucket);
     }
 }
