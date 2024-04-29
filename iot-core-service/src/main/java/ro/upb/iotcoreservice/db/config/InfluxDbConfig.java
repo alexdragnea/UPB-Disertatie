@@ -18,8 +18,11 @@ public class InfluxDbConfig {
     @Value("${influxdb.bucket}")
     private String influxDbBucket;
 
+    @Value("${influxdb.organization}")
+    private String influxDbOrg;
+
     @Bean
     public InfluxDBClientReactive influxDBClientReactive() {
-        return InfluxDBClientReactiveFactory.create(influxDbUrl, influxDbToken.toCharArray(), influxDbBucket);
+        return InfluxDBClientReactiveFactory.create(influxDbUrl, influxDbToken.toCharArray(), influxDbOrg, influxDbBucket);
     }
 }
