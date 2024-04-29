@@ -26,9 +26,9 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 8001
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8001
-          initialDelaySeconds: 100
-          periodSeconds: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8001
+        #   initialDelaySeconds: 100
+        #   periodSeconds: 5

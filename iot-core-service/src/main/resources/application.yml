@@ -3,6 +3,10 @@ server:
   error:
     include-message: always
 
+influxdb:
+  url: http://influxdb:8086
+  token: RgPIP4KEfJi6K858FM7wxEuWu8PTJzhW1POB64avar2Z0dj200eVJ64LQ3qOUrqoXp4LYRJBYRfWEOvvHmUGVw==
+
 spring:
   application:
     name: iot-core-service
