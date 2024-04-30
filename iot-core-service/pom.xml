@@ -78,7 +78,7 @@
             <url>https://maven.pkg.github.com/alexdragnea/UPB-Disertatie</url>
         </repository>
     </repositories>
-    
+
     <build>
         <plugins>
             <plugin>
