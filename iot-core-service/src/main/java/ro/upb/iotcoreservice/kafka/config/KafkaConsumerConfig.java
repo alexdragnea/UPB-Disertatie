@@ -8,8 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.KafkaUtils;
-import ro.upb.iotcoreservice.kafka.utils.KafkaConstants;
+import ro.upb.common.constant.KafkaConstants;
 
 import java.util.HashMap;
 import java.util.Map;
