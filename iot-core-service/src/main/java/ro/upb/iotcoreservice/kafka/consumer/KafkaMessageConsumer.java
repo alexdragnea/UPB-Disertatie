@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import ro.upb.common.constant.KafkaConstants;
 import ro.upb.iotcoreservice.db.service.InfluxDbService;
-import ro.upb.iotcoreservice.kafka.utils.KafkaConstants;
 
 @Component
 @Slf4j
