@@ -16,6 +16,6 @@ public class SensorEvent {
 
     private int userId;
     private Map<String, String> attributes;
-    private String createdAt = Instant.now().toEpochMilli();
+    private Long createdAt = Instant.now().toEpochMilli();
     private String updatedAt;
 }

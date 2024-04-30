@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 import static ro.upb.common.constant.KafkaConstants.IOT_EVENT_TOPIC;
-import static ro.upb.iotbridgeservice.kafka.utils.KafkaConstants.IOT_EVENT_TOPIC;
 
 @Configuration
 public class KafkaTopic {

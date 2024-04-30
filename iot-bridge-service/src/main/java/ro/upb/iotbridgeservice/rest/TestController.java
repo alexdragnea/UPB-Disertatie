@@ -2,8 +2,8 @@ package ro.upb.iotbridgeservice.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ro.upb.common.constant.KafkaConstants;
 import ro.upb.iotbridgeservice.kafka.producer.KafkaMessageProducer;
-import ro.upb.iotbridgeservice.kafka.utils.KafkaConstants;
 
 @RequestMapping("/v1/iot-bridge")
 @RestController
