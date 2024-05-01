@@ -57,6 +57,14 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
        String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
+        Flowable.fromPublisher(queryApi.query(findAllQuery))
+                .subscribe(fluxRecord -> {
+                    //
+                    // The callback to consume a FluxRecord.
+                    //
+                    System.out.println(fluxRecord.getTime() + ": " + fluxRecord.getValueByKey("_attributes"));
+                    System.out.println(fluxRecord.getMeasurement());
+                });
         return Flux.from(queryApi.query(findAllQuery, IotMeasurement.class))
                 .map(this::mapToIotResponseDto);
     }
