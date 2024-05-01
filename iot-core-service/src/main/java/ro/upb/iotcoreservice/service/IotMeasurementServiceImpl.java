@@ -31,7 +31,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         IotMeasurement iotMeasurement = buildSensorMeasurement(iotRequestDto);
         Flowable<IotMeasurement> measurements = Flowable.just(iotMeasurement);
-        log.info("IoT measurement: {}", measurements);
+        log.info("Persisting IoT measurement: {}.", measurements);
 
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurements(WritePrecision.NS, measurements);
 
@@ -40,7 +40,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         subscriber.dispose();
     }
 
-    public Flux<IotResponseDto> findAllIotMeasurements(int userId) {
+    public Flux<IotResponseDto> findAllByUserId(int userId) {
         String findAllByUserIdQuery = String.format("from(bucket: \"iot-event-bucket\") " +
                 "|> range(start: 0) " +
                 "|> filter(fn: (r) => r._measurement == \"IotEvent\" and r.userId == \"%d\")", userId);
@@ -48,6 +48,15 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
         return Flux.from(iotMeasurementPublisher)
+                .map(this::mapToIotResponseDto);
+    }
+
+    @Override
+    public Flux<IotResponseDto> findAll() {
+       String findAllQuery = "from(bucket: \"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
+
+        QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
+        return Flux.from(queryApi.query(findAllQuery, IotMeasurement.class))
                 .map(this::mapToIotResponseDto);
     }
 
@@ -60,6 +69,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         String createdAtUtc = Instant.ofEpochMilli(measurement.getCreatedAt()).atOffset(ZoneOffset.UTC).format(formatter);
         String updatedAtUtc = Instant.ofEpochMilli(measurement.getUpdatedAt()).atOffset(ZoneOffset.UTC).format(formatter);
 
+        log.info("Converting IotMeasurement: {} to ResponseDto.", measurement);
         return IotResponseDto.builder()
                 .userId(measurement.getUserId())
                 .attributes(measurement.getAttributes())

@@ -7,5 +7,6 @@ import ro.upb.common.dto.IotResponseDto;
 public interface IotMeasurementService {
     void persistIotMeasurement(IotRequestDto iotRequestDto);
 
-    Flux<IotResponseDto> findAllIotMeasurements(int userId);
+    Flux<IotResponseDto> findAllByUserId(int userId);
+    Flux<IotResponseDto> findAll();
 }
