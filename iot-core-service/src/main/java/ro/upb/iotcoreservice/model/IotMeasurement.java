@@ -23,6 +23,9 @@ public class IotMeasurement {
         this.createdAt = createdAt;
     }
 
+    public IotMeasurement() {
+    }
+
     public int getUserId() {
         return userId;
     }
@@ -45,5 +48,14 @@ public class IotMeasurement {
 
     public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public String toString() {
+        return "IotMeasurement{" +
+                "userId=" + userId +
+                ", attributes=" + attributes +
+                ", createdAt=" + createdAt +
+                '}';
     }
 }

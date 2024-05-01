@@ -29,7 +29,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     public void persistIotMeasurement(IotRequestDto iotRequestDto) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        IotMeasurement iotMeasurement = buildSensorMeasurement(iotRequestDto);
+        IotMeasurement iotMeasurement = buildIotMeasurement(iotRequestDto);
         log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", iotRequestDto, iotMeasurement);
         Flowable<IotMeasurement> measurements = Flowable.just(iotMeasurement);
         log.info("Persisting IoT measurement.");
@@ -54,14 +54,14 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     @Override
     public Flux<IotResponseDto> findAll() {
-       String findAllQuery = "from(bucket: \"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
+       String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         return Flux.from(queryApi.query(findAllQuery, IotMeasurement.class))
                 .map(this::mapToIotResponseDto);
     }
 
-    private static IotMeasurement buildSensorMeasurement(IotRequestDto iotRequestDto) {
+    private static IotMeasurement buildIotMeasurement(IotRequestDto iotRequestDto) {
         return new IotMeasurement(iotRequestDto.getUserId(), iotRequestDto.getAttributes(), Instant.now().toEpochMilli());
     }
 
@@ -72,7 +72,6 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         return IotResponseDto.builder()
                 .userId(measurement.getUserId())
                 .attributes(measurement.getAttributes())
-                .createdAt(Instant.ofEpochMilli(measurement.getCreatedAt()).atOffset(ZoneOffset.UTC).format(formatter))
                 .build();
     }
 }
