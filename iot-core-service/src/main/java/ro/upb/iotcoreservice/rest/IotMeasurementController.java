@@ -25,8 +25,8 @@ public class IotMeasurementController {
     }
 
     @GetMapping("/all")
-    public void getAllMeasurements() {
+    public Flux<IotResponseDto> getAllMeasurements() {
         log.info("Getting all IotMeasurements.");
-        iotMeasurementService.findAll();
+        return iotMeasurementService.findAll();
     }
 }

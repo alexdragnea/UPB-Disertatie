@@ -8,5 +8,5 @@ public interface IotMeasurementService {
     void persistIotMeasurement(IotRequestDto iotRequestDto);
 
     Flux<IotResponseDto> findAllByUserId(int userId);
-    void findAll();
+    Flux<IotResponseDto> findAll();
 }

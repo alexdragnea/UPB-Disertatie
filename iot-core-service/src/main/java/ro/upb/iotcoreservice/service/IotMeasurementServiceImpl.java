@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -53,19 +52,12 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public void findAll() {
+    public Flux<IotResponseDto> findAll() {
        String findAllQuery = "from(bucket: \"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
-        Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllQuery, IotMeasurement.class);
-        Flowable.fromPublisher(iotMeasurementPublisher)
-                .subscribe(fluxRecord -> {
-                    //
-                    // The callback to consume a FluxRecord.
-                    //
-                    System.out.println("Found: " + fluxRecord);
-                });
-
+        return Flux.from(queryApi.query(findAllQuery, IotMeasurement.class))
+                .map(this::mapToIotResponseDto);
     }
 
     private static IotMeasurement buildSensorMeasurement(IotRequestDto iotRequestDto) {

@@ -1,1 +1,5 @@
+ro/upb/common/dto/IotResponseDto.class
 ro/upb/common/constant/KafkaConstants.class
+ro/upb/common/dto/IotRequestDto$IotRequestDtoBuilder.class
+ro/upb/common/dto/IotRequestDto.class
+ro/upb/common/dto/IotResponseDto$IotResponseDtoBuilder.class
