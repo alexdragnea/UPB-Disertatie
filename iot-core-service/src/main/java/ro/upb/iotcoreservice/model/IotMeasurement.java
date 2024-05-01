@@ -21,7 +21,7 @@ public class IotMeasurement {
     @Column
     private Long createdAt;
 
-    public IotMeasurement(int userId, Map<String, String> attributes, Long createdAt, Long updatedAt) {
+    public IotMeasurement(int userId, Map<String, String> attributes, Long createdAt) {
         this.userId = userId;
         this.attributes = attributes;
         this.createdAt = createdAt;

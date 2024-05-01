@@ -1,6 +1,6 @@
 package ro.upb.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class IotRequestDto {
 
     private int userId;
     private Map<String, String> attributes;
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long createdAt = Instant.now().toEpochMilli();
 }
