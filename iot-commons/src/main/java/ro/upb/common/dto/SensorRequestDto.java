@@ -1,5 +1,6 @@
-package ro.upb.iotbridgeservice.dto;
+package ro.upb.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,10 +13,12 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorEvent {
+public class SensorRequestDto {
 
     private int userId;
     private Map<String, String> attributes;
+    @JsonIgnore
     private Long createdAt = Instant.now().toEpochMilli();
-    private String updatedAt;
+    @JsonIgnore
+    private Long updatedAt;
 }

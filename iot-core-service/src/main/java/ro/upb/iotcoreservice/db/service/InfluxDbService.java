@@ -9,9 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
-import ro.upb.iotcoreservice.model.Message;
-
-import java.time.Instant;
+import ro.upb.common.dto.SensorRequestDto;
+import ro.upb.iotcoreservice.model.SensorMeasurement;
 
 @RequiredArgsConstructor
 @Service
@@ -20,12 +19,12 @@ public class InfluxDbService {
 
     private final InfluxDBClientReactive influxDBClient;
 
-    public void writeData() {
+    public void persistSensorData(SensorRequestDto sensorRequestDto) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        Message message = Message.builder().value(10d).time(Instant.now()).build();
-        Flowable<Message> measurements = Flowable.just(message);
-        log.info("Measurement: {}", measurements);
+        SensorMeasurement sensorMeasurement = buildSensorMeasurement(sensorRequestDto);
+        Flowable<SensorMeasurement> measurements = Flowable.just(sensorMeasurement);
+        log.info("Sensor measurement: {}", measurements);
 
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurements(WritePrecision.NS, measurements);
 
@@ -33,5 +32,12 @@ public class InfluxDbService {
                 .subscribe(info -> log.info("Successfully written measurement: {}.", measurements));
 
         subscriber.dispose();
+    }
+    private static SensorMeasurement buildSensorMeasurement(SensorRequestDto sensorRequestDto) {
+        return SensorMeasurement.builder()
+                .userId(sensorRequestDto.getUserId())
+                .attributes(sensorRequestDto.getAttributes())
+                .createdAt(sensorRequestDto.getCreatedAt())
+                .build();
     }
 }

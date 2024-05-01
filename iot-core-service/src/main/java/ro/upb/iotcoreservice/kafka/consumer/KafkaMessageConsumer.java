@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import ro.upb.common.constant.KafkaConstants;
+import ro.upb.common.dto.SensorRequestDto;
 import ro.upb.iotcoreservice.db.service.InfluxDbService;
 
 @Component
@@ -14,8 +15,8 @@ public class KafkaMessageConsumer {
     private final InfluxDbService influxDbService;
 
     @KafkaListener(topics = KafkaConstants.IOT_EVENT_TOPIC, groupId = KafkaConstants.IOT_GROUP_ID)
-    public void listen(String message) {
-        log.info("Received message: {}.", message);
-        influxDbService.writeData();
+    public void listen(SensorRequestDto sensorRequestDto) {
+        log.info("Received message: {}.", sensorRequestDto);
+        influxDbService.persistSensorData(sensorRequestDto);
     }
 }
