@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ro.upb.common.constant.KafkaConstants;
-import ro.upb.common.dto.SensorRequestDto;
+import ro.upb.common.dto.IotRequestDto;
 import ro.upb.iotbridgeservice.kafka.producer.KafkaMessageProducer;
 
 @RequestMapping("/v1/iot-bridge")
@@ -17,7 +17,7 @@ public class TestController {
     private final KafkaMessageProducer kafkaMessageProducer;
 
     @PostMapping
-    public void sendMessage(@RequestBody SensorRequestDto sensorRequestDto) {
-        kafkaMessageProducer.sendMessage(KafkaConstants.IOT_EVENT_TOPIC, sensorRequestDto);
+    public void sendMessage(@RequestBody IotRequestDto iotRequestDto) {
+        kafkaMessageProducer.sendMessage(KafkaConstants.IOT_EVENT_TOPIC, iotRequestDto);
     }
 }

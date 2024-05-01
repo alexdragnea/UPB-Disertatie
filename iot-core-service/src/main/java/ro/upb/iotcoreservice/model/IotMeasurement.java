@@ -10,7 +10,7 @@ import java.util.Map;
 @Measurement(name = "Sensor")
 @Data
 @Builder
-public class SensorMeasurement {
+public class IotMeasurement {
 
     @Column
     private int userId;

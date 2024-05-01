@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
-import ro.upb.common.dto.SensorRequestDto;
-import ro.upb.iotcoreservice.model.SensorMeasurement;
+import ro.upb.common.dto.IotRequestDto;
+import ro.upb.iotcoreservice.model.IotMeasurement;
 
 @RequiredArgsConstructor
 @Service
@@ -19,12 +19,12 @@ public class InfluxDbService {
 
     private final InfluxDBClientReactive influxDBClient;
 
-    public void persistSensorData(SensorRequestDto sensorRequestDto) {
+    public void persistIotEvent(IotRequestDto iotRequestDto) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        SensorMeasurement sensorMeasurement = buildSensorMeasurement(sensorRequestDto);
-        Flowable<SensorMeasurement> measurements = Flowable.just(sensorMeasurement);
-        log.info("Sensor measurement: {}", measurements);
+        IotMeasurement iotMeasurement = buildSensorMeasurement(iotRequestDto);
+        Flowable<IotMeasurement> measurements = Flowable.just(iotMeasurement);
+        log.info("IoT measurement: {}", measurements);
 
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurements(WritePrecision.NS, measurements);
 
@@ -33,11 +33,11 @@ public class InfluxDbService {
 
         subscriber.dispose();
     }
-    private static SensorMeasurement buildSensorMeasurement(SensorRequestDto sensorRequestDto) {
-        return SensorMeasurement.builder()
-                .userId(sensorRequestDto.getUserId())
-                .attributes(sensorRequestDto.getAttributes())
-                .createdAt(sensorRequestDto.getCreatedAt())
+    private static IotMeasurement buildSensorMeasurement(IotRequestDto iotRequestDto) {
+        return IotMeasurement.builder()
+                .userId(iotRequestDto.getUserId())
+                .attributes(iotRequestDto.getAttributes())
+                .createdAt(iotRequestDto.getCreatedAt())
                 .build();
     }
 }
