@@ -9,7 +9,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import ro.upb.common.dto.IotRequestDto;
-import ro.upb.common.serializer.IotRequestSerializer;
+import ro.upb.iotbridgeservice.kafka.serializer.IotRequestSerializer;
 
 import java.util.HashMap;
 import java.util.Map;

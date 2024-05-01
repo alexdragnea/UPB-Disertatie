@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.util.Map;
 
-@Measurement(name = "Sensor")
+@Measurement(name = "IotEvent")
 @Data
 @Builder
 public class IotMeasurement {

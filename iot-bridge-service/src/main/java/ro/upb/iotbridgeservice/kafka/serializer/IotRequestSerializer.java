@@ -1,8 +1,8 @@
-package ro.upb.common.serializer;
+package ro.upb.iotbridgeservice.kafka.serializer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ro.upb.common.dto.IotRequestDto;
 
 import java.io.IOException;

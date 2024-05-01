@@ -9,8 +9,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import ro.upb.common.constant.KafkaConstants;
-import ro.upb.common.dserializer.IotRequestDeserializer;
 import ro.upb.common.dto.IotRequestDto;
+import ro.upb.iotcoreservice.kafka.dserializer.IotRequestDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
