@@ -2,14 +2,10 @@ package ro.upb.iotcoreservice.model;
 
 import com.influxdb.annotations.Column;
 import com.influxdb.annotations.Measurement;
-import lombok.Builder;
-import lombok.Data;
 
 import java.util.Map;
 
 @Measurement(name = "IotEvent")
-@Data
-@Builder
 public class IotMeasurement {
 
     @Column
@@ -27,5 +23,27 @@ public class IotMeasurement {
         this.createdAt = createdAt;
     }
 
-    public IotMeasurement() {}
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
 }

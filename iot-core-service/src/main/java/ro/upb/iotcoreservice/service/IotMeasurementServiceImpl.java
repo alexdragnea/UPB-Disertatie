@@ -30,8 +30,9 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
         IotMeasurement iotMeasurement = buildSensorMeasurement(iotRequestDto);
+        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", iotRequestDto, iotMeasurement);
         Flowable<IotMeasurement> measurements = Flowable.just(iotMeasurement);
-        log.info("Persisting IoT measurement: {}.", measurements);
+        log.info("Persisting IoT measurement.");
 
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurements(WritePrecision.NS, measurements);
 
@@ -61,7 +62,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     private static IotMeasurement buildSensorMeasurement(IotRequestDto iotRequestDto) {
-        return IotMeasurement.builder().userId(iotRequestDto.getUserId()).attributes(iotRequestDto.getAttributes()).createdAt(iotRequestDto.getCreatedAt()).build();
+        return new IotMeasurement(iotRequestDto.getUserId(), iotRequestDto.getAttributes(), iotRequestDto.getCreatedAt());
     }
 
     private IotResponseDto mapToIotResponseDto(IotMeasurement measurement) {
