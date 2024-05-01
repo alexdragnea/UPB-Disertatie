@@ -23,4 +23,10 @@ public class IotMeasurementController {
         log.info("Getting all IotMeasurements for userId: {}.", userId);
         return iotMeasurementService.findAllByUserId(userId);
     }
+
+    @GetMapping("/all")
+    public Flux<IotResponseDto> getAllMeasurements() {
+        log.info("Getting all IotMeasurements.");
+        return iotMeasurementService.findAll();
+    }
 }

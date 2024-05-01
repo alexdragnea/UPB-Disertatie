@@ -43,7 +43,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     public Flux<IotResponseDto> findAllByUserId(int userId) {
         String findAllByUserIdQuery = String.format("from(bucket: \"iot-event-bucket\") " +
                 "|> range(start: 0) " +
-                "|> filter(fn: (r) => r._measurement == \"IotEvent\" and r.userId == \"%d\")", userId);
+                "|> filter(fn: (r) => r._measurement == \"IotEvent\" and r._field == \"userId\" and r._value == %d)", userId);
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
