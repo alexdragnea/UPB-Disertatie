@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class IotRequestDto implements Serializable {
+public class IotRequestDto {
 
     private int userId;
     private Map<String, String> attributes;
