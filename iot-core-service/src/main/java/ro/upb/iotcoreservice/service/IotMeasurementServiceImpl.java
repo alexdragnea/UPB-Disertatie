@@ -62,7 +62,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     private static IotMeasurement buildSensorMeasurement(IotRequestDto iotRequestDto) {
-        return new IotMeasurement(iotRequestDto.getUserId(), iotRequestDto.getAttributes(), iotRequestDto.getCreatedAt());
+        return new IotMeasurement(iotRequestDto.getUserId(), iotRequestDto.getAttributes(), Instant.now().toEpochMilli());
     }
 
     private IotResponseDto mapToIotResponseDto(IotMeasurement measurement) {
