@@ -16,5 +16,4 @@ public class IotResponseDto {
     private int userId;
     private Map<String, String> attributes;
     private String createdAt;
-    private String updatedAt;
 }

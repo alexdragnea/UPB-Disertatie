@@ -66,15 +66,12 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     private IotResponseDto mapToIotResponseDto(IotMeasurement measurement) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
-        String createdAtUtc = Instant.ofEpochMilli(measurement.getCreatedAt()).atOffset(ZoneOffset.UTC).format(formatter);
-        String updatedAtUtc = Instant.ofEpochMilli(measurement.getUpdatedAt()).atOffset(ZoneOffset.UTC).format(formatter);
 
         log.info("Converting IotMeasurement: {} to ResponseDto.", measurement);
         return IotResponseDto.builder()
                 .userId(measurement.getUserId())
                 .attributes(measurement.getAttributes())
-                .createdAt(createdAtUtc)
-                .updatedAt(updatedAtUtc)
+                .createdAt(Instant.ofEpochMilli(measurement.getCreatedAt()).atOffset(ZoneOffset.UTC).format(formatter))
                 .build();
     }
 }

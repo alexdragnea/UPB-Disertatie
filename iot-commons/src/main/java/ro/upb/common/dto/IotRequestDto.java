@@ -19,6 +19,4 @@ public class IotRequestDto {
     private Map<String, String> attributes;
     @JsonIgnore
     private Long createdAt = Instant.now().toEpochMilli();
-    @JsonIgnore
-    private Long updatedAt;
 }
