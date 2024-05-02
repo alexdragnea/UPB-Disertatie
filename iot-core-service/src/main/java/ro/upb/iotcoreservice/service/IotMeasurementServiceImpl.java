@@ -4,6 +4,7 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
+import com.influxdb.client.write.Point;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
@@ -11,13 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import ro.upb.common.dto.IotRequestDto;
-import ro.upb.common.dto.IotResponseDto;
+import ro.upb.common.dto.MeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -26,57 +24,45 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     private final InfluxDBClientReactive influxDBClient;
 
     @Override
-    public void persistIotMeasurement(IotRequestDto iotRequestDto) {
+    public void persistIotMeasurement(MeasurementDto measurementDto) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        IotMeasurement iotMeasurement = buildIotMeasurement(iotRequestDto);
-        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", iotRequestDto, iotMeasurement);
-        Flowable<IotMeasurement> measurements = Flowable.just(iotMeasurement);
-        log.info("Persisting IoT measurement.");
+        Point iotMeasurementPoint = buildIotMeasurementPoint(measurementDto);
+        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementDto, iotMeasurementPoint);
 
-        Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurements(WritePrecision.NS, measurements);
+        log.info("Persisting IoTMeasurementPoint.");
+        Publisher<WriteReactiveApi.Success> publisher = writeApi.writePoint(WritePrecision.NS, iotMeasurementPoint);
 
-        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully written measurement: {}.", measurements));
+        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully written measurement: {}.", iotMeasurementPoint));
 
         subscriber.dispose();
     }
 
-    public Flux<IotResponseDto> findAllByUserId(int userId) {
+    public Flux<IotMeasurement> findAllByUserIdAndMeasurement(int userId, String measurement) {
         String findAllByUserIdQuery = String.format("from(bucket: \"iot-event-bucket\") " +
                 "|> range(start: 0) " +
                 "|> filter(fn: (r) => r._measurement == \"IotEvent\" and r._field == \"userId\" and r._value == %d)", userId);
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
-        return Flux.from(iotMeasurementPublisher)
-                .map(this::mapToIotResponseDto);
+        return Flux.from(iotMeasurementPublisher);
     }
 
     @Override
-    public Flux<IotResponseDto> findAll() {
-       String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"IotEvent\")";
+    public Flux<IotMeasurement> findAll() {
+        String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0)";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> query = queryApi.query(findAllQuery, IotMeasurement.class);
 
-        Flowable.fromPublisher(query)
-                .subscribe(System.out::println);
-
-        return Flux.from(queryApi.query(findAllQuery, IotMeasurement.class))
-                .map(this::mapToIotResponseDto);
+        return Flux.from(query);
     }
 
-    private static IotMeasurement buildIotMeasurement(IotRequestDto iotRequestDto) {
-        return new IotMeasurement(iotRequestDto.getUserId(), iotRequestDto.getAttributes(), Instant.now().toEpochMilli());
-    }
+    private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
 
-    private IotResponseDto mapToIotResponseDto(IotMeasurement measurement) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
-
-        log.info("Converting IotMeasurement: {} to ResponseDto.", measurement);
-        return IotResponseDto.builder()
-                .userId(measurement.getUserId())
-                .attributes(measurement.getAttributes())
-                .build();
+        return Point.measurement(measurementDto.getMeasurement())
+                .addField("userId", measurementDto.getUserId())
+                .addField("value", measurementDto.getValue())
+                .time(Instant.now().toEpochMilli(), WritePrecision.NS);
     }
 }

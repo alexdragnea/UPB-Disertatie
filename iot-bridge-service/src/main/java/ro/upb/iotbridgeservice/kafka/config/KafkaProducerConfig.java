@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import ro.upb.common.dto.IotRequestDto;
+import ro.upb.common.dto.MeasurementDto;
 import ro.upb.iotbridgeservice.kafka.serializer.IotRequestSerializer;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, IotRequestDto> producerFactory() {
+    public ProducerFactory<String, MeasurementDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -30,7 +30,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, IotRequestDto> kafkaTemplate() {
+    public KafkaTemplate<String, MeasurementDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

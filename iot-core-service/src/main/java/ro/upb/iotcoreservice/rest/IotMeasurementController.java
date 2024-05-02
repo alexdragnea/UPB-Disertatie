@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
-import ro.upb.common.dto.IotResponseDto;
+import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
 @RequestMapping("/v1/iot-core")
@@ -18,14 +18,14 @@ public class IotMeasurementController {
 
     private final IotMeasurementService iotMeasurementService;
 
-    @GetMapping("/{userId}")
-    public Flux<IotResponseDto> getMeasurementsByUserId(@PathVariable int userId) {
+    @GetMapping("/{userId}/{measurement}")
+    public Flux<IotMeasurement> getMeasurementsByUserId(@PathVariable int userId, @PathVariable String measurement) {
         log.info("Getting all IotMeasurements for userId: {}.", userId);
-        return iotMeasurementService.findAllByUserId(userId);
+        return iotMeasurementService.findAllByUserIdAndMeasurement(userId, measurement);
     }
 
     @GetMapping("/all")
-    public Flux<IotResponseDto> getAllMeasurements() {
+    public Flux<IotMeasurement> getAllMeasurements() {
         log.info("Getting all IotMeasurements.");
         return iotMeasurementService.findAll();
     }
