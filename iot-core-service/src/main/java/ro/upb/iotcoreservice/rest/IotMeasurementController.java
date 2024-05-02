@@ -20,7 +20,7 @@ public class IotMeasurementController {
 
     @GetMapping("/{userId}/{measurement}")
     public Flux<IotMeasurement> getMeasurementsByUserId(@PathVariable int userId, @PathVariable String measurement) {
-        log.info("Getting all IotMeasurements for userId: {}.", userId);
+        log.info("Getting all IotMeasurements for userId: {} and measurement: {}.", userId , measurement);
         return iotMeasurementService.findAllByUserIdAndMeasurement(userId, measurement);
     }
 

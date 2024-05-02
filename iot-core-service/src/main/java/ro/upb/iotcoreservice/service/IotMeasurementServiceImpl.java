@@ -55,7 +55,10 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> query = queryApi.query(findAllQuery, IotMeasurement.class);
 
-        return Flux.from(query);
+        Flux<IotMeasurement> measurementsFlux = Flux.from(queryApi.query(findAllQuery, IotMeasurement.class));
+
+        // Log each IotMeasurement
+        return measurementsFlux.doOnNext(measurement -> log.info("IotMeasurement: {}", measurement));
     }
 
     private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
