@@ -1,5 +1,6 @@
 package ro.upb.iotcoreservice.rest;
 
+import com.influxdb.query.FluxRecord;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class IotMeasurementController {
     }
 
     @GetMapping("/all")
-    public Flux<IotMeasurement> getAllMeasurements() {
+    public Flux<FluxRecord> getAllMeasurements() {
         log.info("Getting all IotMeasurements.");
         return iotMeasurementService.findAll();
     }

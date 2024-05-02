@@ -5,6 +5,7 @@ import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
 import com.influxdb.client.write.Point;
+import com.influxdb.query.FluxRecord;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
@@ -49,16 +50,17 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public Flux<IotMeasurement> findAll() {
+    public Flux<FluxRecord> findAll() {
         String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0)";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
-        Publisher<IotMeasurement> query = queryApi.query(findAllQuery, IotMeasurement.class);
+        Publisher<FluxRecord> query = queryApi.query(findAllQuery);
 
-        Flux<IotMeasurement> measurementsFlux = Flux.from(queryApi.query(findAllQuery, IotMeasurement.class));
+        // Fetch the measurements and return FluxRecord objects
+        Flux<FluxRecord> measurementsFlux = Flux.from(query);
 
-        // Log each IotMeasurement
-        return measurementsFlux.doOnNext(measurement -> log.info("IotMeasurement: {}", measurement));
+        // Log each FluxRecord
+        return measurementsFlux.doOnNext(record -> log.info("FluxRecord: {}", record));
     }
 
     private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
