@@ -1,6 +1,5 @@
 package ro.upb.iotcoreservice.rest;
 
-import com.influxdb.query.FluxRecord;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +20,12 @@ public class IotMeasurementController {
 
     @GetMapping("/{userId}/{measurement}")
     public Flux<IotMeasurement> getMeasurementsByUserId(@PathVariable int userId, @PathVariable String measurement) {
-        log.info("Getting all IotMeasurements for userId: {} and measurement: {}.", userId , measurement);
+        log.info("Getting all IotMeasurements for userId: {} and measurement: {}.", userId, measurement);
         return iotMeasurementService.findAllByUserIdAndMeasurement(userId, measurement);
     }
 
     @GetMapping("/all")
-    public Flux<FluxRecord> getAllMeasurements() {
+    public Flux<IotMeasurement> getAllMeasurements() {
         log.info("Getting all IotMeasurements.");
         return iotMeasurementService.findAll();
     }

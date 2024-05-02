@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class IotMeasurement {
 
-    @Column(measurement = true)
+    @Column
     private String measurement;
 
     @Column

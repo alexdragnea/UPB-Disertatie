@@ -5,7 +5,6 @@ import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
 import com.influxdb.client.write.Point;
-import com.influxdb.query.FluxRecord;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,14 @@ import java.time.Instant;
 @Slf4j
 public class IotMeasurementServiceImpl implements IotMeasurementService {
     private final InfluxDBClientReactive influxDBClient;
+
+    private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
+
+        return Point.measurement(measurementDto.getMeasurement())
+                .addField("userId", measurementDto.getUserId())
+                .addField("value", measurementDto.getValue())
+                .time(Instant.now().toEpochMilli(), WritePrecision.NS);
+    }
 
     @Override
     public void persistIotMeasurement(MeasurementDto measurementDto) {
@@ -50,24 +57,13 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public Flux<FluxRecord> findAll() {
-        String findAllQuery = "from(bucket:\"iot-event-bucket\") |> range(start: 0)";
+    public Flux<IotMeasurement> findAll() {
+        String flux = "from(bucket:\"iot-event-bucket\") |> range(start: 0)";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
-        Publisher<FluxRecord> query = queryApi.query(findAllQuery);
 
-        // Fetch the measurements and return FluxRecord objects
-        Flux<FluxRecord> measurementsFlux = Flux.from(query);
+        Publisher<IotMeasurement> query = queryApi.query(flux, IotMeasurement.class);
 
-        // Log each FluxRecord
-        return measurementsFlux.doOnNext(record -> log.info("FluxRecord: {}", record));
-    }
-
-    private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
-
-        return Point.measurement(measurementDto.getMeasurement())
-                .addField("userId", measurementDto.getUserId())
-                .addField("value", measurementDto.getValue())
-                .time(Instant.now().toEpochMilli(), WritePrecision.NS);
+        return Flux.from(query);
     }
 }
