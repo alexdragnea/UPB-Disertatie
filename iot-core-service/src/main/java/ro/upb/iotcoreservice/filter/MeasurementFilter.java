@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +17,6 @@ public class MeasurementFilter {
     private String userId;
     @NotNull
     private String measurement;
-    private Instant startTime;
-    private Instant endTime;
+    private String startTime;
+    private String endTime;
 }

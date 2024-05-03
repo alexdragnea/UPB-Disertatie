@@ -17,7 +17,6 @@ import ro.upb.iotcoreservice.dto.UserMeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
-import java.time.Instant;
 import java.util.Objects;
 
 @Service
@@ -65,8 +64,8 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(String measurement, String userId, Instant startTime, Instant endTime) {
-        String queryByTimestamp = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: %d, stop: %d) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\" and r._time >= %d and r._time <= %d)", startTime.toEpochMilli(), endTime.toEpochMilli(), measurement, userId, startTime.toEpochMilli(), endTime.toEpochMilli());
+    public Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(String measurement, String userId, String startTime, String endTime) {
+        String queryByTimestamp = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: %s, stop: %s) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\" and r._time >= %s and r._time <= %s)", startTime, endTime, measurement, userId, startTime, endTime);
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 

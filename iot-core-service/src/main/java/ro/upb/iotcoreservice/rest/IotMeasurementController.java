@@ -21,7 +21,7 @@ public class IotMeasurementController {
     private final MeasurementFilterService measurementFilterService;
 
     @GetMapping
-    public Flux<IotMeasurement> getMeasurements(@RequestBody MeasurementFilter filter) {
+    public Flux<IotMeasurement> getMeasurementsByFilter(@RequestBody MeasurementFilter filter) {
         return measurementFilterService.filterMeasurements(filter);
     }
 
