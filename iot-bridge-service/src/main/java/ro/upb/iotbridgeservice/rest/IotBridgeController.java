@@ -12,12 +12,12 @@ import ro.upb.iotbridgeservice.kafka.producer.KafkaMessageProducer;
 @RequestMapping("/v1/iot-bridge")
 @RestController
 @RequiredArgsConstructor
-public class TestController {
+public class IotBridgeController {
 
     private final KafkaMessageProducer kafkaMessageProducer;
 
     @PostMapping
-    public void sendMessage(@RequestBody MeasurementRequestDto measurementRequestDto) {
+    public void sendIotMeasurement(@RequestBody MeasurementRequestDto measurementRequestDto) {
         kafkaMessageProducer.sendIotMeasurement(KafkaConstants.IOT_EVENT_TOPIC, measurementRequestDto);
     }
 }
