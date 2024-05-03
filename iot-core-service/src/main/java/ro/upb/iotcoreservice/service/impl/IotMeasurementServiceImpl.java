@@ -12,11 +12,14 @@ import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ro.upb.common.constant.ExMessageConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.dto.UserMeasurementDto;
+import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -28,6 +31,13 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     private static IotMeasurement buildIotMeasurement(MeasurementRequestDto measurementRequestDto) {
 
         return IotMeasurement.builder().measurement(measurementRequestDto.getMeasurement()).userId(measurementRequestDto.getUserId()).value(measurementRequestDto.getValue()).build();
+    }
+
+    private static UserMeasurementDto buildUserMeasurementDto(String userId, List<String> measurements) {
+        return UserMeasurementDto.builder()
+                .userId(userId)
+                .measurements(measurements)
+                .build();
     }
 
     @Override
@@ -49,8 +59,9 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")", measurement, userId); // Use %s for String argument
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
-        Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
-        return Flux.from(iotMeasurementPublisher);
+        Publisher<IotMeasurement> measurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
+
+        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX)));
     }
 
     @Override
@@ -59,8 +70,17 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
-        return Flux.from(queryApi.query(findUserMeasurementsQuery)).map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString()) // Convert to String
-                .collectList().map(measurements -> UserMeasurementDto.builder().userId(userId).measurements(measurements).build());
+
+        return Flux.from(queryApi.query(findUserMeasurementsQuery))
+                .map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString())
+                .collectList()
+                .handle((measurements, sink) -> {
+                    if (measurements.isEmpty()) {
+                        sink.error(new MeasurementNotFoundEx("No measurements found for the provided userId"));
+                        return;
+                    }
+                    sink.next(buildUserMeasurementDto(userId, measurements));
+                });
     }
 
     @Override
@@ -69,8 +89,8 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
-        Publisher<IotMeasurement> query = queryApi.query(queryByTimestamp, IotMeasurement.class);
+        Publisher<IotMeasurement> measurementPublisher = queryApi.query(queryByTimestamp, IotMeasurement.class);
 
-        return Flux.from(query);
+        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX)));
     }
 }
