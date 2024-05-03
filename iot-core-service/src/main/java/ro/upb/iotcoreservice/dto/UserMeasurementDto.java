@@ -14,5 +14,5 @@ import java.util.List;
 public class UserMeasurementDto {
 
     private String userId;
-    List<String> measurements;
+    private List<String> measurements;
 }
