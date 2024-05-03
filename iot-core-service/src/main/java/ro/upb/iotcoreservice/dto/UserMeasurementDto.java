@@ -1,16 +1,18 @@
-package ro.upb.common.dto;
+package ro.upb.iotcoreservice.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MeasurementDto {
+@Builder
+public class UserMeasurementDto {
 
-    private String measurement;
     private String userId;
-    private Double value;
-
+    List<String> measurements;
 }

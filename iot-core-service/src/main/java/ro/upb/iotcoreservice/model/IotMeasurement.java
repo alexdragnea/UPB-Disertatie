@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -20,5 +22,8 @@ public class IotMeasurement {
 
     @Column
     private Double value;
+
+    @Column(timestamp = true)
+    private Instant time;
 
 }

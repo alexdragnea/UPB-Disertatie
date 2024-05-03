@@ -2,11 +2,10 @@ package ro.upb.iotcoreservice.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import ro.upb.iotcoreservice.dto.UserMeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
@@ -18,15 +17,21 @@ public class IotMeasurementController {
 
     private final IotMeasurementService iotMeasurementService;
 
-    @GetMapping("/{userId}/{measurement}")
-    public Flux<IotMeasurement> getMeasurementsByUserId(@PathVariable int userId, @PathVariable String measurement) {
-        log.info("Getting all IotMeasurements for userId: {} and measurement: {}.", userId, measurement);
-        return iotMeasurementService.findAllByUserIdAndMeasurement(userId, measurement);
+    @GetMapping
+    public Flux<IotMeasurement> getMeasurements(@RequestParam(required = false) String userId, @RequestParam(required = false) String measurement) {
+        if (userId != null && measurement != null) {
+            log.info("Getting all IotMeasurements for userId: {} and measurement: {}.", userId, measurement);
+            return iotMeasurementService.findAllByUserIdAndMeasurement(userId, measurement);
+        } else {
+            log.info("Getting all IotMeasurements.");
+            return iotMeasurementService.findAll();
+        }
     }
 
-    @GetMapping("/all")
-    public Flux<IotMeasurement> getAllMeasurements() {
+    @GetMapping("/measurements")
+    public Mono<UserMeasurementDto> getUserMeasurements(@RequestParam String userId){
         log.info("Getting all IotMeasurements.");
-        return iotMeasurementService.findAll();
+        return iotMeasurementService.findUserMeasurements(userId);
+
     }
 }

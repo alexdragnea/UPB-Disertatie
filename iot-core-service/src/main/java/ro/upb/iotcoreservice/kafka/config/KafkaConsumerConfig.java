@@ -9,7 +9,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import ro.upb.common.constant.KafkaConstants;
-import ro.upb.common.dto.MeasurementDto;
+import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.kafka.dserializer.IotRequestDeserializer;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, MeasurementDto> consumerFactory() {
+    public ConsumerFactory<String, MeasurementRequestDto> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.IOT_GROUP_ID);
@@ -32,8 +32,8 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MeasurementDto> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, MeasurementDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, MeasurementRequestDto> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, MeasurementRequestDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
