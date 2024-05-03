@@ -4,7 +4,6 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
-import com.influxdb.client.write.Point;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
@@ -15,41 +14,34 @@ import reactor.core.publisher.Flux;
 import ro.upb.common.dto.MeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
-import java.time.Instant;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class IotMeasurementServiceImpl implements IotMeasurementService {
     private final InfluxDBClientReactive influxDBClient;
 
-    private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
+    private static IotMeasurement buildIotMeasurement(MeasurementDto measurementDto) {
 
-        return Point.measurement(measurementDto.getMeasurement())
-                .addTag("userId", measurementDto.getUserId())
-                .addField("value", measurementDto.getValue())
-                .time(Instant.now().toEpochMilli(), WritePrecision.NS);
+        return IotMeasurement.builder().measurement(measurementDto.getMeasurement()).userId(measurementDto.getUserId()).value(measurementDto.getValue()).build();
     }
 
     @Override
     public void persistIotMeasurement(MeasurementDto measurementDto) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        Point iotMeasurementPoint = buildIotMeasurementPoint(measurementDto);
-        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementDto, iotMeasurementPoint);
+        IotMeasurement iotMeasurement = buildIotMeasurement(measurementDto);
+        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementDto, iotMeasurement);
 
         log.info("Persisting IoTMeasurementPoint.");
-        Publisher<WriteReactiveApi.Success> publisher = writeApi.writePoint(WritePrecision.NS, iotMeasurementPoint);
+        Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);
 
-        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully written measurement: {}.", iotMeasurementPoint));
+        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully written measurement: {}.", iotMeasurement));
 
         subscriber.dispose();
     }
 
     public Flux<IotMeasurement> findAllByUserIdAndMeasurement(int userId, String measurement) {
-        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " +
-                "|> range(start: 0) " +
-                "|> filter(fn: (r) => r._measurement == \"%s\" and r._field == \"userId\" and r._value == \"%d\")", measurement, userId);
+        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r._field == \"userId\" and r._value == \"%d\")", measurement, userId);
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> iotMeasurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
