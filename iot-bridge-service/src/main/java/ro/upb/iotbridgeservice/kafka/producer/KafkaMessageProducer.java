@@ -13,8 +13,8 @@ public class KafkaMessageProducer {
 
     private final KafkaTemplate<String, MeasurementDto> kafkaTemplate;
 
-    public void sendMessage(String topic, MeasurementDto sensor) {
-        log.info("Sending message: {}, to topic: {}", sensor, topic);
+    public void sendIotMeasurement(String topic, MeasurementDto sensor) {
+        log.info("Sending IotMeasurement: {}, to topic: {}.", sensor, topic);
         kafkaTemplate.send(topic, sensor);
     }
 }

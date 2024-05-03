@@ -30,6 +30,5 @@ public class IotRequestSerializer implements Serializer<MeasurementDto> {
 
     @Override
     public void close() {
-        // No resources to close
     }
 }

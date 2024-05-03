@@ -18,6 +18,6 @@ public class TestController {
 
     @PostMapping
     public void sendMessage(@RequestBody MeasurementDto measurementDto) {
-        kafkaMessageProducer.sendMessage(KafkaConstants.IOT_EVENT_TOPIC, measurementDto);
+        kafkaMessageProducer.sendIotMeasurement(KafkaConstants.IOT_EVENT_TOPIC, measurementDto);
     }
 }

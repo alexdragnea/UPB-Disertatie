@@ -8,6 +8,8 @@ import ro.upb.common.constant.KafkaConstants;
 import ro.upb.common.dto.MeasurementDto;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
+import java.time.Instant;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class KafkaMessageConsumer {
 
     @KafkaListener(topics = KafkaConstants.IOT_EVENT_TOPIC, groupId = KafkaConstants.IOT_GROUP_ID)
     public void listen(MeasurementDto measurementDto) {
-        log.info("Received message: {}.", measurementDto);
+        log.info("Received IotMeasurement {} at {}.", measurementDto, Instant.now());
         iotMeasurementService.persistIotMeasurement(measurementDto);
     }
 }

@@ -13,10 +13,10 @@ public class IotMeasurement {
     @Column
     private String measurement;
 
-    @Column
-    private int userId;
+    @Column(tag = true)
+    private String userId;
 
     @Column
-    private Double value;
+    private String value;
 
 }

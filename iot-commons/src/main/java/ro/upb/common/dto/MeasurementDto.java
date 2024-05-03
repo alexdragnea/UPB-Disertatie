@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class MeasurementDto {
 
     private String measurement;
-    private int userId;
+    private String userId;
     private Double value;
 
 }

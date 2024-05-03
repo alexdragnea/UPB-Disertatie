@@ -26,7 +26,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     private static Point buildIotMeasurementPoint(MeasurementDto measurementDto) {
 
         return Point.measurement(measurementDto.getMeasurement())
-                .addField("userId", measurementDto.getUserId())
+                .addTag("userId", measurementDto.getUserId())
                 .addField("value", measurementDto.getValue())
                 .time(Instant.now().toEpochMilli(), WritePrecision.NS);
     }
@@ -47,7 +47,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     public Flux<IotMeasurement> findAllByUserIdAndMeasurement(int userId, String measurement) {
-        String findAllByUserIdQuery = String.format("from(bucket: \"iot-event-bucket\") " +
+        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " +
                 "|> range(start: 0) " +
                 "|> filter(fn: (r) => r._measurement == \"%s\" and r._field == \"userId\" and r._value == \"%d\")", measurement, userId);
 
@@ -58,7 +58,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     @Override
     public Flux<IotMeasurement> findAll() {
-        String flux = "from(bucket:\"iot-event-bucket\") |> range(start: 0)";
+        String flux = "from(bucket:\"iot-measurement-bucket\") |> range(start: 0)";
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
