@@ -34,10 +34,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     private static UserMeasurementDto buildUserMeasurementDto(String userId, List<String> measurements) {
-        return UserMeasurementDto.builder()
-                .userId(userId)
-                .measurements(measurements)
-                .build();
+        return UserMeasurementDto.builder().userId(userId).measurements(measurements).build();
     }
 
     @Override
@@ -61,7 +58,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
 
-        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX)));
+        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId))));
     }
 
     @Override
@@ -71,16 +68,13 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
 
-        return Flux.from(queryApi.query(findUserMeasurementsQuery))
-                .map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString())
-                .collectList()
-                .handle((measurements, sink) -> {
-                    if (measurements.isEmpty()) {
-                        sink.error(new MeasurementNotFoundEx("No measurements found for the provided userId"));
-                        return;
-                    }
-                    sink.next(buildUserMeasurementDto(userId, measurements));
-                });
+        return Flux.from(queryApi.query(findUserMeasurementsQuery)).map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString()).collectList().handle((measurements, sink) -> {
+            if (measurements.isEmpty()) {
+                sink.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId)));
+                return;
+            }
+            sink.next(buildUserMeasurementDto(userId, measurements));
+        });
     }
 
     @Override
@@ -91,6 +85,6 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(queryByTimestamp, IotMeasurement.class);
 
-        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX)));
+        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId))));
     }
 }
