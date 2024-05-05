@@ -16,6 +16,7 @@ import ro.upb.common.constant.ExMessageConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.dto.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
+import ro.upb.iotcoreservice.filter.MeasurementFilter;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
@@ -52,13 +53,17 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         subscriber.dispose();
     }
 
-    public Flux<IotMeasurement> findAllByUserIdAndMeasurement(String userId, String measurement) {
-        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")", measurement, userId); // Use %s for String argument
+    @Override
+    public Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurement) {
+        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")", measurement.getMeasurement(), measurement.getUserId());
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
 
-        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId))));
+        String errorMessage = String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, measurement);
+
+        return Flux.from(measurementPublisher)
+                .switchIfEmpty(Mono.error(new MeasurementNotFoundEx(errorMessage)));
     }
 
     @Override
@@ -70,7 +75,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         return Flux.from(queryApi.query(findUserMeasurementsQuery)).map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString()).collectList().handle((measurements, sink) -> {
             if (measurements.isEmpty()) {
-                sink.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId)));
+                sink.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX_FOR_USERID, userId)));
                 return;
             }
             sink.next(buildUserMeasurementDto(userId, measurements));
@@ -78,13 +83,18 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(String measurement, String userId, String startTime, String endTime) {
-        String queryByTimestamp = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: %s, stop: %s) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\" and r._time >= %s and r._time <= %s)", startTime, endTime, measurement, userId, startTime, endTime);
+    public Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(MeasurementFilter measurementFilter) {
+        String queryByTimestamp = String.format("from(bucket: \"iot-measurement-bucket\") " +
+                        "|> range(start: %s, stop: %s) " +
+                        "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")",
+                measurementFilter.getStartTime(), measurementFilter.getEndTime(),
+                measurementFilter.getMeasurement(), measurementFilter.getUserId());
+
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(queryByTimestamp, IotMeasurement.class);
 
-        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, userId))));
+        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, measurementFilter))));
     }
 }

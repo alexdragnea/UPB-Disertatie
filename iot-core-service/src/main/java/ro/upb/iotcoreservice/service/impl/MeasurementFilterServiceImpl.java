@@ -20,9 +20,9 @@ public class MeasurementFilterServiceImpl implements MeasurementFilterService {
     public Flux<IotMeasurement> filterMeasurements(MeasurementFilter measurementFilter) {
         log.info("Filtering data according to filter: {}.", measurementFilter);
         if (measurementFilter.getStartTime() != null && measurementFilter.getEndTime() != null) {
-            return iotMeasurementService.findMeasurementsByTimestampAndUserId(measurementFilter.getMeasurement(), measurementFilter.getUserId(), measurementFilter.getStartTime(), measurementFilter.getEndTime());
+            return iotMeasurementService.findMeasurementsByTimestampAndUserId(measurementFilter);
         } else {
-            return iotMeasurementService.findAllByUserIdAndMeasurement(measurementFilter.getUserId(), measurementFilter.getMeasurement());
+            return iotMeasurementService.findAllByUserIdAndMeasurement(measurementFilter);
         }
     }
 }
