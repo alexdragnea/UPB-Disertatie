@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service]  
+        service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]  
 
     steps:
       - name: Checkout Repository
