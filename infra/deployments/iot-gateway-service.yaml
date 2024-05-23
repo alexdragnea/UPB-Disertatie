@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iot-gateway-service
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
@@ -22,13 +22,13 @@ spec:
             memory: 768Mi
             cpu: 512m
           requests:
-            cpu: 256m
-            memory: 512Mi
+            cpu: 512m
+            memory: 768Mi
         ports:
         - containerPort: 8888
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8888
-          initialDelaySeconds: 100
-          periodSeconds: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8888
+        #   initialDelaySeconds: 100
+        #   periodSeconds: 5
