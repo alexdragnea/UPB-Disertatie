@@ -32,3 +32,9 @@ spec:
             port: 8002
           initialDelaySeconds: 100
           periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8002
+          initialDelaySeconds: 100
+          periodSeconds: 5

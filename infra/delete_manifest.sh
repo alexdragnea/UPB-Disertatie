@@ -9,6 +9,7 @@ deployments=(
     "kafka-deployment"
     "kafka-drop-deployment"
     "zookeeper-deployment"
+    "influxdb"
 )
 
 # Define hpas
@@ -28,6 +29,7 @@ services=(
     "kafka-service"
     "kafka-drop-service"
     "zookeeper-service"
+    "influxdb"
 )
 
 read -p "This will delete the deployments, services, and HPAs. Are you sure? (y/n): " confirmation

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iot-core-service
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -32,3 +32,11 @@ spec:
             port: 8002
           initialDelaySeconds: 100
           periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8002
+          initialDelaySeconds: 100
+          periodSeconds: 5
+        
+        
