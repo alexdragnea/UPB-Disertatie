@@ -6,8 +6,16 @@ server:
 spring:
   application:
     name: iot-gateway-service
+  main:
+    web-application-type: reactive
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 20000
+        pool:
+          max-connections: 1500
+          type: FIXED
+          metrics: true
       routes:
         - id: iot-bridge-service
           uri: lb://iot-bridge-service
@@ -39,7 +47,49 @@ eureka:
   instance:
     prefer-ip-address: true
 
-logging:
-  level:
-    com.netflix.discovery: DEBUG
-    root: DEBUG
+management:
+  health:
+    circuit-breakers:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+resilience4j:
+  circuit-breaker:
+    instances:
+      iot-bridge-service:
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        eventConsumerBufferSize: 10
+        registerHealthIndicator: true
+      iot-core-service:
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        eventConsumerBufferSize: 10
+        registerHealthIndicator: true
+  retry:
+    instances:
+      iot-bridge-service:
+        maxAttempts: 3
+        waitDuration: 1s
+      iot-core-service:
+        maxAttempts: 3
+        waitDuration: 1s
+  time-limiter:
+    instances:
+      iot-bridge-service:
+        timeoutDuration: 5s
+        cancelRunningFuture: true

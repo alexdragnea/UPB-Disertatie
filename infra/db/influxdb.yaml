@@ -1,70 +1,78 @@
+# StorageClass
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+provisioner: k8s.io/minikube-hostpath
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+
+---
+# PersistentVolumeClaim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pvc
+  labels:
+    app: influxdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard  # This references the new StorageClass
+
+---
+# Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations: {}
-  creationTimestamp: null
-  generation: 1
+  name: influxdb
   labels:
     app: influxdb
-  name: influxdb
 spec:
-  progressDeadlineSeconds: 600
   replicas: 1
-  revisionHistoryLimit: 10
   selector:
     matchLabels:
       app: influxdb
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: influxdb
     spec:
       containers:
-      - env:
-           - name: INFLUXDB_ADMIN_USER
-             value: admin
-           - name: INFLUXDB_ADMIN_USER_PASSWORD    
-             value: admin
-           - name: INFLUXDB_ADMIN_USER_TOKEN
-             value: token 
-        image: influxdb:2.7-alpine
-        imagePullPolicy: Always
-        name: influxdb
-        resources: {}
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-        volumeMounts:
-        - mountPath: /var/lib/influxdb
-          name: var-lib-influxdb
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
+        - name: influxdb
+          image: docker.io/influxdb:2.0.6
+          ports:
+            - containerPort: 8086
+              name: server
+              protocol: TCP
+          env:
+            - name: DOCKER_INFLUXDB_INIT_MODE
+              value: "setup"
+            - name: DOCKER_INFLUXDB_INIT_USERNAME
+              value: "admin"
+            - name: DOCKER_INFLUXDB_INIT_PASSWORD
+              value: "adminupb"
+            - name: DOCKER_INFLUXDB_INIT_ORG
+              value: "upb"
+            - name: DOCKER_INFLUXDB_INIT_BUCKET
+              value: "iot-measurement-bucket"
+            - name: DOCKER_INFLUXDB_INIT_RETENTION
+              value: "50w"
+            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+              value: "tDdAyUYuIau7IFtxvLQ23gIoprJ5x1-xhJ7iN0Na8Sq_29rCDPiG-lEnTcDw9-CQ4M3IFyTSXhuC0Thf5pUy4g=="
+          volumeMounts:
+            - mountPath: /var/lib/influxdb2/engine/data
+              name: var-lib-influxdb  # Corrected volume name
       volumes:
-      - name: var-lib-influxdb
-        persistentVolumeClaim:
-          claimName: influxdb-pvc
+        - name: var-lib-influxdb
+          persistentVolumeClaim:
+            claimName: influxdb-pvc
+
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  labels:
-    app: influxdb
-  name: influxdb-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Gi
----
+# Service
 apiVersion: v1
 kind: Service
 metadata:
