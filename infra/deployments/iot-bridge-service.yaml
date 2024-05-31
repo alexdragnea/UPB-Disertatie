@@ -38,17 +38,3 @@ spec:
             port: 8001
           initialDelaySeconds: 100
           periodSeconds: 5
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: iot-bridge-service-monitor
-  labels:
-    release: prometheus-operator
-spec:
-  selector:
-    matchLabels:
-      app: iot-bridge-service
-  endpoints:
-    - port: http-traffic
-      path: "/actuator/prometheus"

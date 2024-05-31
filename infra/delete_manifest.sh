@@ -6,6 +6,7 @@ deployments=(
     "iot-core-service"
     "iot-bridge-service"
     "iot-gateway-service"
+    "iot-user-service"
     "kafka-deployment"
     "kafka-drop-deployment"
     "zookeeper-deployment"
@@ -18,6 +19,7 @@ hpas=(
     "hpa-iot-core-service"
     "hpa-iot-bridge-service"
     "hpa-iot-gateway-service"
+    "hpa-iot-user-service"
 )
 
 # Define services
@@ -26,6 +28,7 @@ services=(
     "iot-core-service"
     "iot-bridge-service"
     "iot-gateway-service"
+    "iot-user-service"
     "kafka-service"
     "kafka-drop-service"
     "zookeeper-service"
@@ -67,3 +70,7 @@ for hpa in "${hpas[@]}"; do
         echo "Error deleting HPA '$hpa'."
     fi
 done
+
+kubectl delete servicemonitors service-monitor
+helm uninstall grafana
+helm uninstall prometheus

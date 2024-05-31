@@ -3,11 +3,11 @@
 
 # helm repo add bitnami https://charts.bitnami.com/bitnami
 # helm repo update
-# helm install prometheus bitnami/kube-prometheus
+# helm install prometheus bitnami/kube-prometheus --namespace observability
 
 # sleep 30
 
-# helm install grafana bitnami/grafana
+# helm install grafana bitnami/grafana --namespace observability
 
 # Kafka
 kafka=(
@@ -53,18 +53,18 @@ for deployment in "${deployments[@]}"; do
     sleep 30
 done
 
-# # Horizontal Pod Autoscaler (HPA)
-# hpa_files=(
-#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
-#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
-#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
-#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
-# )
+# Horizontal Pod Autoscaler (HPA)
+hpa_files=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
+)
 
-# for hpa_file in "${hpa_files[@]}"; do
-#     kubectl apply -f "$hpa_file"
-#     sleep 1
-# done
+for hpa_file in "${hpa_files[@]}"; do
+    kubectl apply -f "$hpa_file"
+    sleep 1
+done
 
 # kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090:9090
 # kubectl port-forward --namespace default svc/grafana 8080:3000
