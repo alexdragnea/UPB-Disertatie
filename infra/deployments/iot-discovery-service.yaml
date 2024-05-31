@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: iot-discovery-service
+        team: iot-discovery-service
     spec:
       containers:
       - name: iot-discovery-service

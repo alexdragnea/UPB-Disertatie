@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: iot-core-service
+  labels:
+    micrometer-prometheus-discovery: 'true'
 spec:
   selector:
     app: iot-core-service
@@ -9,3 +11,5 @@ spec:
     - protocol: TCP
       port: 8002
       targetPort: 8002
+      name: metrics
+        

@@ -26,9 +26,29 @@ spec:
             memory: 768Mi
         ports:
         - containerPort: 8001
-        # livenessProbe:
-        #   httpGet:
-        #     path: /actuator/health
-        #     port: 8001
-        #   initialDelaySeconds: 100
-        #   periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8001
+          initialDelaySeconds: 100
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8001
+          initialDelaySeconds: 100
+          periodSeconds: 5
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: iot-bridge-service-monitor
+  labels:
+    release: prometheus-operator
+spec:
+  selector:
+    matchLabels:
+      app: iot-bridge-service
+  endpoints:
+    - port: http-traffic
+      path: "/actuator/prometheus"

@@ -1,6 +1,14 @@
 #!/bin/bash
 
 
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm repo update
+# helm install prometheus bitnami/kube-prometheus
+
+# sleep 30
+
+# helm install grafana bitnami/grafana
+
 # Kafka
 kafka=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/zookeeper.yaml"
@@ -15,10 +23,11 @@ done
 # Services
 services=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-core-service-svc.yaml"
-    # "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-user-service-svc.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-user-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-discovery-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-bridge-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-gateway-service-svc.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/service-monitor.yaml"
 )
 
 for service in "${services[@]}"; do
@@ -29,7 +38,7 @@ done
 # Deployments
 deployments=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-discovery-service.yaml"
-    # "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-user-service.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-user-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-gateway-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-core-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-bridge-service.yaml"
@@ -44,27 +53,18 @@ for deployment in "${deployments[@]}"; do
     sleep 30
 done
 
-# Horizontal Pod Autoscaler (HPA)
-hpa_files=(
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
-)
+# # Horizontal Pod Autoscaler (HPA)
+# hpa_files=(
+#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
+#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
+#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
+#     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
+# )
 
-for hpa_file in "${hpa_files[@]}"; do
-    kubectl apply -f "$hpa_file"
-    sleep 1
-done
+# for hpa_file in "${hpa_files[@]}"; do
+#     kubectl apply -f "$hpa_file"
+#     sleep 1
+# done
 
-kubectl create namespace observability
-
-# Add Helm repository and install Prometheus in the observability namespace
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install prometheus prometheus-community/kube-prometheus-stack --namespace=observability --create-namespace --wait
-
-sleep 30
-
-kubectl port-forward service/prometheus-operated 9090 --namespace=observability &
-kubectl port-forward deployment/prometheus-grafana 3000 --namespace=observability &
+# kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090:9090
+# kubectl port-forward --namespace default svc/grafana 8080:3000

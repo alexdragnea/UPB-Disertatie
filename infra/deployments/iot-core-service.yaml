@@ -38,5 +38,3 @@ spec:
             port: 8002
           initialDelaySeconds: 100
           periodSeconds: 5
-        
-        
