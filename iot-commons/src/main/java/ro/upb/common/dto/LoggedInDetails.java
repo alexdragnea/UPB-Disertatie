@@ -1,4 +1,4 @@
-package ro.upb.iotuserservice.dto;
+package ro.upb.common.dto;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @Builder
-public class MeDto {
+public class LoggedInDetails {
     private String userId;
     private List<String> roles;
     private String email;

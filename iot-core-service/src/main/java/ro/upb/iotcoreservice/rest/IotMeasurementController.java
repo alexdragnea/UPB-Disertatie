@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ro.upb.iotcoreservice.auth.AuthService;
 import ro.upb.iotcoreservice.dto.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.filter.MeasurementFilter;
@@ -22,13 +23,21 @@ public class IotMeasurementController {
 
     private final IotMeasurementService iotMeasurementService;
     private final MeasurementFilterService measurementFilterService;
+    private final AuthService authService;
 
-    @GetMapping
-    public Flux<IotMeasurement> getMeasurementsByFilter(@RequestBody MeasurementFilter filter) {
-        return measurementFilterService.filterMeasurements(filter)
-                .onErrorResume(MeasurementNotFoundEx.class, ex -> {
-                    log.warn("Exception occurred: {}.", ex.getMessage());
-                    return Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex));
+    @GetMapping("/measurements")
+    public Mono<Flux<IotMeasurement>> getMeasurementsByFilter(@RequestBody MeasurementFilter filter) {
+        return authService.isAuthorized(filter.getUserId())
+                .flatMap(isAuthorized -> {
+                    if (Boolean.TRUE.equals(isAuthorized)) {
+                        return Mono.just(measurementFilterService.filterMeasurements(filter)
+                                .onErrorResume(MeasurementNotFoundEx.class, ex -> {
+                                    log.warn("Exception occurred: {}.", ex.getMessage());
+                                    return Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex));
+                                }));
+                    } else {
+                        return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
+                    }
                 });
     }
 

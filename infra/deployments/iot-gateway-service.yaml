@@ -13,15 +13,14 @@ spec:
     metadata:
       labels:
         app: iot-gateway-service
-        team: iot-gateway-service
     spec:
       containers:
       - name: iot-gateway-service
         image: alexdragnea/disertatie-iot-gateway-service:latest
         resources:
           limits:
-            memory: 768Mi
-            cpu: 512m
+            memory: 1024Mi
+            cpu: 768m
           requests:
             cpu: 512m
             memory: 768Mi

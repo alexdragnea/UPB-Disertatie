@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ro.upb.iotuserservice.dto.MeDto;
+import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.RegisterUserRequest;
 import ro.upb.iotuserservice.dto.UserCredential;
 import ro.upb.iotuserservice.dto.UserDto;
@@ -93,12 +93,12 @@ public class UserService implements UserDetailsService {
     }
 
     public UserCredential getUserCredentialsById(UUID id) {
-        User user = userRepository.getById(id);
+        User user = userRepository.getReferenceById(id);
         return new UserCredential(
                 user.getId(), user.getFirstName(), user.getLastName(), user.getEmail());
     }
 
-    public MeDto getMe(String token) {
+    public LoggedInDetails getLoggedInDetails(String token) {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
 
         List<String> roles = decodedJWT.getClaim(AUTHORITIES).asList(String.class);
@@ -107,7 +107,7 @@ public class UserService implements UserDetailsService {
         String lastName = decodedJWT.getClaim("lastName").asString();
         String email = decodedJWT.getClaim("email").asString();
 
-        return MeDto.builder()
+        return LoggedInDetails.builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)

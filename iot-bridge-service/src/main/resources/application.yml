@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: iot-bridge-service
+  main:
+    web-application-type: reactive
   kafka:
     bootstrap-servers: kafka-service:9092
     producer:

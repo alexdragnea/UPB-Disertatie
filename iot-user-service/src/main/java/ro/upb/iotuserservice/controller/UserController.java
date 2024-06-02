@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.*;
 import ro.upb.iotuserservice.model.User;
 import ro.upb.iotuserservice.model.UserPrincipal;
@@ -58,8 +59,8 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserCredential> getUserById(
             @RequestHeader(AUTHORIZATION) String authorizationHeader, @PathVariable UUID userId) {
-        MeDto meDto = userService.getMe(authorizationHeader.substring(TOKEN_PREFIX.length()));
-        if (!UtilityClass.IsAdmin(meDto.getRoles())) {
+        LoggedInDetails loggedInDetails = userService.getLoggedInDetails(authorizationHeader.substring(TOKEN_PREFIX.length()));
+        if (!UtilityClass.IsAdmin(loggedInDetails.getRoles())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(userService.getUserCredentialsById(userId));
@@ -68,8 +69,8 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(
             @RequestHeader(AUTHORIZATION) String authorizationHeader, @PathVariable UUID userId) {
-        MeDto meDto = userService.getMe(authorizationHeader.substring(TOKEN_PREFIX.length()));
-        if (!UtilityClass.IsAdmin(meDto.getRoles())) {
+        LoggedInDetails loggedInDetails = userService.getLoggedInDetails(authorizationHeader.substring(TOKEN_PREFIX.length()));
+        if (!UtilityClass.IsAdmin(loggedInDetails.getRoles())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -77,9 +78,9 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<MeDto> getMe(@RequestHeader(AUTHORIZATION) String authorizationHeader) {
+    @GetMapping
+    public ResponseEntity<LoggedInDetails> getLoggedInDetails(@RequestHeader(AUTHORIZATION) String authorizationHeader) {
         String token = authorizationHeader.substring(TOKEN_PREFIX.length());
-        return ResponseEntity.ok(userService.getMe(token));
+        return ResponseEntity.ok(userService.getLoggedInDetails(token));
     }
 }

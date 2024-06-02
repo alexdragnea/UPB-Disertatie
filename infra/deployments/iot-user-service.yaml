@@ -19,11 +19,11 @@ spec:
         image: alexdragnea/disertatie-iot-user-service:latest
         resources:
           limits:
-            memory: 768Mi
-            cpu: 512m
+            memory: 1024Mi
+            cpu: 768m
           requests:
-            cpu: 256m
-            memory: 512Mi
+            cpu: 512m
+            memory: 768Mi
         ports:
         - containerPort: 8002
         livenessProbe:

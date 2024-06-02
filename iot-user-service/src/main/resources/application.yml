@@ -4,6 +4,10 @@ server:
     include-message: always
 
 spring:
+  application:
+    name: iot-gateway-service
+  main:
+    web-application-type: reactive
   datasource:
     url: jdbc:postgresql://postgres:5432/iot
     username: postgres
@@ -12,7 +16,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.PostgresSQLDialect
     hibernate:
       ddl-auto: create
 

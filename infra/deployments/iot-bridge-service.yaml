@@ -19,8 +19,8 @@ spec:
         image: alexdragnea/disertatie-iot-bridge-service:latest
         resources:
           limits:
-            memory: 768Mi
-            cpu: 512m
+            memory: 1024Mi
+            cpu: 768m
           requests:
             cpu: 512m
             memory: 768Mi
