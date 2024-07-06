@@ -7,7 +7,7 @@ spring:
   application:
     name: iot-user-service
   datasource:
-    url: jdbc:postgresql://postgres:5432/iot
+    url: jdbc:postgresql://postgresql:5432/iot
     username: postgres
     password: postgres
   jpa:
