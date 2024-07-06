@@ -6,8 +6,6 @@ server:
 spring:
   application:
     name: iot-gateway-service
-  main:
-    web-application-type: reactive
   datasource:
     url: jdbc:postgresql://postgres:5432/iot
     username: postgres
