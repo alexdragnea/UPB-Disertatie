@@ -43,6 +43,7 @@ deployments=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-core-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-bridge-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pg.yaml"
 )
 
 

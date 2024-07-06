@@ -4,6 +4,7 @@ spring:
     username: postgres
     password: postgres
 
+
 eureka:
   client:
     register-with-eureka: true
