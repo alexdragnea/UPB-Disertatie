@@ -27,10 +27,11 @@ spec:
         volumeMounts:
         - name: postgresql-data
           mountPath: /var/lib/postgresql/data
-  volumes:
-  - name: postgresql-data
-    persistentVolumeClaim:
-      claimName: postgresql-data-pvc
+      volumes:                        # volumes should be defined within spec.template.spec
+      - name: postgresql-data
+        persistentVolumeClaim:
+          claimName: postgresql-data-pvc
+
 
 ---
 apiVersion: v1

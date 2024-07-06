@@ -25,7 +25,7 @@ public class IotMeasurementController {
     private final MeasurementFilterService measurementFilterService;
     private final AuthService authService;
 
-    @GetMapping("/measurements")
+    @GetMapping("/measurements-by-filter")
     public Mono<Flux<IotMeasurement>> getMeasurementsByFilter(@RequestBody MeasurementFilter filter) {
         return authService.isAuthorized(filter.getUserId())
                 .flatMap(isAuthorized -> {
