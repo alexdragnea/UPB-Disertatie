@@ -1,10 +1,9 @@
-package ro.upb.iotcoreservice.auth;
+package ro.upb.iotcoreservice.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotcoreservice.client.UserServiceClient;
 
 @Service

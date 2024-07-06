@@ -14,9 +14,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ro.upb.common.constant.ExMessageConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
-import ro.upb.iotcoreservice.dto.UserMeasurementDto;
+import ro.upb.iotcoreservice.aop.CustomCacheable;
+import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
-import ro.upb.iotcoreservice.filter.MeasurementFilter;
+import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
@@ -54,6 +55,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
+    @CustomCacheable(cacheName = "findAllByUserIdAndMeasurementCache")
     public Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurement) {
         String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")", measurement.getMeasurement(), measurement.getUserId());
 
@@ -67,6 +69,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
+    @CustomCacheable(cacheName = "findUserMeasurementsCache")
     public Mono<UserMeasurementDto> findUserMeasurements(String userId) {
         String findUserMeasurementsQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r.userId == \"%s\") " + "|> distinct(column: \"_measurement\") " + "|> keep(columns: [\"_measurement\"])", userId);
 
@@ -83,6 +86,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
+    @CustomCacheable(cacheName = "findMeasurementsByTimestampAndUserIdCache")
     public Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(MeasurementFilter measurementFilter) {
         String queryByTimestamp = String.format("from(bucket: \"iot-measurement-bucket\") " +
                         "|> range(start: %s, stop: %s) " +

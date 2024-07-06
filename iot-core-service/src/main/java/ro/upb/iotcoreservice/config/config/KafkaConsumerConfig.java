@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.kafka.config;
+package ro.upb.iotcoreservice.config.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;

@@ -30,6 +30,15 @@ eureka:
   instance:
     prefer-ip-address: true
 
+cache:
+  caffeine:
+    initialCapacity: 100
+    maximumSize: 500
+    expireAfterWriteMinutes: 10
+    weakKeys: true
+    recordStats: true
+
+
 management:
   endpoint:
     health:

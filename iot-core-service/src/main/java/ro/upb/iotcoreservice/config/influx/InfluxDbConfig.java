@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.db.influx;
+package ro.upb.iotcoreservice.config.influx;
 
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.InfluxDBClientReactiveFactory;

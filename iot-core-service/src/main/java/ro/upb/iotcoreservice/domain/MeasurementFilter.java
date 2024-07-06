@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.filter;
+package ro.upb.iotcoreservice.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
