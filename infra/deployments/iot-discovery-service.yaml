@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iot-discovery-service
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
@@ -20,11 +20,11 @@ spec:
         image: alexdragnea/disertatie-iot-discovery-service:latest
         resources:
           limits:
-            memory: 1024Mi
+            memory: 768Mi
             cpu: 768m
           requests:
             cpu: 512m
-            memory: 768Mi
+            memory: 512Mi
         ports:
         - containerPort: 8761
         livenessProbe:
