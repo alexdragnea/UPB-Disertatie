@@ -10,11 +10,12 @@ spring:
     url: jdbc:postgresql://postgres:5432/iot
     username: postgres
     password: postgres
-
   jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL82Dialect
     hibernate:
-      ddl-auto: create
-
+      ddl-auto: update
 
 jwt:
   secret: "[ a-zA-Z0-9._ ]^+$Guidelines89797987forAlphabeticalArraNumeralsandOtherSymbo$"
