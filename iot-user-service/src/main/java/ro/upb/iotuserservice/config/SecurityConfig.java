@@ -61,7 +61,7 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(builder.pattern(HttpMethod.POST, "v1/iot-user/validateToken"))
                                         .permitAll()
-                                        .requestMatchers(builder.pattern(HttpMethod.GET, "v1/iot-user/me"))
+                                        .requestMatchers(builder.pattern(HttpMethod.GET, "v1/iot-user/logged"))
                                         .permitAll()
                                         .requestMatchers(builder.pattern(HttpMethod.PUT, "v1/iot-user/updatePassword"))
                                         .permitAll()
