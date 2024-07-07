@@ -13,9 +13,10 @@ public class UserServiceClient {
     private final WebClient.Builder webClientBuilder;
 
     public Mono<LoggedInDetails> getUser(){
-        return webClientBuilder.build()
+        return webClientBuilder.baseUrl("http://iot-user-service")
+                .build()
                 .get()
-                .uri("http://iot-user-service/v1/iot-user/logged")
+                .uri("/v1/iot-user/logged")
                 .retrieve()
                 .bodyToMono(LoggedInDetails.class);
     }
