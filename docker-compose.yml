@@ -1,0 +1,195 @@
+version: "3.8"
+services:
+  influxdb:
+    image: docker.io/influxdb:2.0.6
+    container_name: influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminupb
+      - DOCKER_INFLUXDB_INIT_ORG=upb
+      - DOCKER_INFLUXDB_INIT_BUCKET=iot-measurement-bucket
+      - DOCKER_INFLUXDB_INIT_RETENTION=50w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=tDdAyUYuIau7IFtxvLQ23gIoprJ5x1-xhJ7iN0Na8Sq_29rCDPiG-lEnTcDw9-CQ4M3IFyTSXhuC0Thf5pUy4g==
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2/engine/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - iot-network
+
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    environment:
+      - POSTGRES_DB=iot
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - iot-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: ["CMD", "echo", "ruok", "|", "nc", "localhost", "2181", "|", "grep", "imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - iot-network
+
+  kafka-service:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: kafka-service
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-service:9092,PLAINTEXT_INTERNAL://kafka-service:29092
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    networks:
+      - iot-network
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    environment:
+      - KAFKA_BROKERCONNECT=kafka-service:9092
+    ports:
+      - "9000:9000"
+    depends_on:
+      - kafka-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    networks:
+      - iot-network
+
+  iot-discovery-service:
+    image: alexdragnea/disertatie-iot-discovery-service:latest
+    container_name: iot-discovery-service
+    depends_on:
+      - influxdb
+      - postgresql
+      - kafka-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 100s
+    networks:
+      - iot-network
+
+  iot-bridge-service:
+    image: alexdragnea/disertatie-iot-bridge-service:latest
+    container_name: iot-bridge-service
+    depends_on:
+      - kafka-service
+      - iot-discovery-service
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 100s
+    networks:
+      - iot-network
+
+  iot-core-service:
+    image: alexdragnea/disertatie-iot-core-service:latest
+    container_name: iot-core-service
+    depends_on:
+      - kafka-service
+      - influxdb
+      - iot-discovery-service
+    ports:
+      - "8002:8002"
+    environment:
+      - spring.kafka.bootstrap-servers=kafka-service:9092
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 100s
+    networks:
+      - iot-network
+
+  iot-gateway-service:
+    image: alexdragnea/disertatie-iot-gateway-service:latest
+    container_name: iot-gateway-service
+    depends_on:
+      - iot-discovery-service
+    ports:
+      - "8888:8888"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 100s
+    networks:
+      - iot-network
+
+  iot-user-service:
+    image: alexdragnea/disertatie-iot-user-service:latest
+    container_name: iot-user-service
+    depends_on:
+      - postgresql
+      - iot-discovery-service
+    ports:
+      - "8003:8003"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 100s
+    networks:
+      - iot-network
+
+volumes:
+  influxdb-data:
+  postgresql-data:
+
+networks:
+  iot-network:
+    driver: bridge

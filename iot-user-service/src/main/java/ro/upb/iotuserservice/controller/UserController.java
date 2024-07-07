@@ -78,7 +78,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping
+    @GetMapping("/logged")
     public ResponseEntity<LoggedInDetails> getLoggedInDetails(@RequestHeader(AUTHORIZATION) String authorizationHeader) {
         String token = authorizationHeader.substring(TOKEN_PREFIX.length());
         return ResponseEntity.ok(userService.getLoggedInDetails(token));
