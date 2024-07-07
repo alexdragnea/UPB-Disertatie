@@ -27,7 +27,7 @@ services=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-discovery-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-bridge-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-gateway-service-svc.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/service-monitor.yaml"
+    # "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/service-monitor.yaml"
 )
 
 for service in "${services[@]}"; do
