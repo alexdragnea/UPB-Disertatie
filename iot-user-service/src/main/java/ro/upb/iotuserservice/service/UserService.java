@@ -4,10 +4,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.RegisterUserRequest;
 import ro.upb.iotuserservice.dto.UserCredential;
@@ -20,16 +21,13 @@ import ro.upb.iotuserservice.repository.UserRepository;
 import ro.upb.iotuserservice.util.JWTTokenProvider;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 import static ro.upb.iotuserservice.constants.SecurityConstant.AUTHORITIES;
 import static ro.upb.iotuserservice.enums.Role.ROLE_USER;
 
-
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService implements ReactiveUserDetailsService {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -37,68 +35,53 @@ public class UserService implements UserDetailsService {
     private final JWTTokenProvider jwtTokenProvider;
 
     @Override
-    public UserDetails loadUserByUsername(String email) {
-        User user = findUserByEmail(email);
-        validateLoginAttempt(user);
-        userRepository.save(user);
-        return new UserPrincipal(user);
+    public Mono<UserDetails> findByUsername(String email) {
+        return userRepository.findUserByEmail(email)
+                .doOnNext(this::validateLoginAttempt)
+                .map(user -> (UserDetails) new UserPrincipal(user))
+                .switchIfEmpty(Mono.error(new EmailNotFoundException("No user found for email: " + email)));
     }
 
-    public void register(RegisterUserRequest request) {
-        validateEmail(request.getEmail());
-        User newUser = new User();
-        newUser.setFirstName(request.getFirstName());
-        newUser.setLastName(request.getLastName());
-        newUser.setEmail(request.getEmail());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setRole(ROLE_USER.name());
-        newUser.setAuthorities(ROLE_USER.getAuthorities());
-        userRepository.save(newUser);
-
+    public Mono<Void> register(RegisterUserRequest request) {
+        return validateEmail(request.getEmail())
+                .then(Mono.just(new User()))
+                .doOnNext(newUser -> {
+                    newUser.setFirstName(request.getFirstName());
+                    newUser.setLastName(request.getLastName());
+                    newUser.setEmail(request.getEmail());
+                    newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+                    newUser.setRole(ROLE_USER.name());
+                    newUser.setAuthorities(ROLE_USER.getAuthorities());
+                })
+                .flatMap(userRepository::save)
+                .then();
     }
 
-    public UserDto validateToken(String token) {
+    public Mono<UserDto> validateToken(String token) {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
         String userId = decodedJWT.getClaim("userId").asString();
-        String username =
-                decodedJWT.getClaim("firstName").asString()
-                        + " "
-                        + decodedJWT.getClaim("lastName").asString();
+        String username = decodedJWT.getClaim("firstName").asString() + " " + decodedJWT.getClaim("lastName").asString();
         List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(decodedJWT);
-        return new UserDto(userId, authorities, username);
+        return Mono.just(new UserDto(userId, authorities, username));
     }
 
-    public User getUserById(UUID id) {
-        return userRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("User could not found by id " + id));
+    public Mono<User> getUserById(String id) {
+        return userRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("User could not be found by id " + id)));
     }
 
-    public User findUserByEmail(String email) {
+    public Mono<User> findUserByEmail(String email) {
         return userRepository
                 .findUserByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException("No user found for email: " + email));
+                .switchIfEmpty(Mono.error(new EmailNotFoundException("No user found for email: " + email)));
     }
 
-    private void validateLoginAttempt(User user) {
-
-        loginAttemptService.evictUserFromLoginAttemptCache(user.getEmail());
+    public Mono<UserCredential> getUserCredentialsById(String id) {
+        return userRepository.findById(id)
+                .map(user -> new UserCredential(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail()));
     }
 
-    private void validateEmail(String email) {
-        Optional<User> userByNewEmail = userRepository.findUserByEmail(email);
-        if (userByNewEmail.isPresent()) {
-            throw new EmailExistException("Email already exists.");
-        }
-    }
-
-    public UserCredential getUserCredentialsById(UUID id) {
-        User user = userRepository.getReferenceById(id);
-        return new UserCredential(
-                user.getId(), user.getFirstName(), user.getLastName(), user.getEmail());
-    }
-
-    public LoggedInDetails getLoggedInDetails(String token) {
+    public Mono<LoggedInDetails> getLoggedInDetails(String token) {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
 
         List<String> roles = decodedJWT.getClaim(AUTHORITIES).asList(String.class);
@@ -107,17 +90,27 @@ public class UserService implements UserDetailsService {
         String lastName = decodedJWT.getClaim("lastName").asString();
         String email = decodedJWT.getClaim("email").asString();
 
-        return LoggedInDetails.builder()
+        return Mono.just(LoggedInDetails.builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
                 .userId(userId)
                 .roles(roles)
-                .build();
+                .build());
     }
 
     @Transactional
-    public void deleteUserById(UUID id) {
-        userRepository.deleteById(id);
+    public Mono<Void> deleteUserById(String id) {
+        return userRepository.deleteById(id);
+    }
+
+    private Mono<Void> validateEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .flatMap(existingUser -> Mono.error(new EmailExistException("Email already exists.")))
+                .then();
+    }
+
+    private void validateLoginAttempt(User user) {
+        loginAttemptService.evictUserFromLoginAttemptCache(user.getEmail());
     }
 }

@@ -6,16 +6,13 @@ server:
 spring:
   application:
     name: iot-user-service
-  datasource:
-    url: jdbc:postgresql://postgresql:5432/iot
-    username: postgres
-    password: postgres
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate:
-      ddl-auto: update
+  main:
+    web-application-type: reactive
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://localhost:27017
+      database: iot
 
 jwt:
   secret: "[ a-zA-Z0-9._ ]^+$Guidelines89797987forAlphabeticalArraNumeralsandOtherSymbo$"
@@ -38,3 +35,19 @@ management:
     web:
       exposure:
         include: "*"
+
+logging:
+  level:
+    io:
+      reflectoring: DEBUG
+    org:
+      springframework:
+        web: DEBUG
+        data:
+          mongodb:
+            core:
+              ReactiveMongoTemplate: DEBUG
+    reactor:
+      netty:
+        http:
+          client: DEBUG

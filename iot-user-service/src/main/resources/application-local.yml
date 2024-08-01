@@ -1,8 +1,9 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/iot
-    username: postgres
-    password: postgres
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://localhost:27017
+      database: iot
 
 
 eureka:

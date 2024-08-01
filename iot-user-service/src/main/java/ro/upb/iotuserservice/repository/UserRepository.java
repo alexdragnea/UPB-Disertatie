@@ -1,15 +1,13 @@
 package ro.upb.iotuserservice.repository;
 
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 import ro.upb.iotuserservice.model.User;
 
-import java.util.Optional;
-import java.util.UUID;
-
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends ReactiveMongoRepository<User, String> {
 
-    Optional<User> findUserByEmail(String email);
+    Mono<User> findUserByEmail(String email);
 }

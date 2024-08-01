@@ -1,3 +1,5 @@
-/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/dto/IotRequestDto.java
-/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/dto/IotResponseDto.java
+/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/constant/ExMessageConstants.java
+/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/dto/MeasurementRequestDto.java
 /Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/constant/KafkaConstants.java
+/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/dto/LoggedInDetails.java
+/Users/alexdg/Desktop/UPB/Disertatie/UPB-Disertatie/iot-commons/src/main/java/ro/upb/common/dto/ErrorResponse.java

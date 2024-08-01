@@ -1,5 +1,7 @@
-ro/upb/common/dto/IotResponseDto.class
+ro/upb/common/constant/ExMessageConstants.class
+ro/upb/common/dto/LoggedInDetails.class
 ro/upb/common/constant/KafkaConstants.class
-ro/upb/common/dto/IotRequestDto$IotRequestDtoBuilder.class
-ro/upb/common/dto/IotRequestDto.class
-ro/upb/common/dto/IotResponseDto$IotResponseDtoBuilder.class
+ro/upb/common/dto/LoggedInDetails$LoggedInDetailsBuilder.class
+ro/upb/common/dto/ErrorResponse$ErrorResponseBuilder.class
+ro/upb/common/dto/MeasurementRequestDto.class
+ro/upb/common/dto/ErrorResponse.class

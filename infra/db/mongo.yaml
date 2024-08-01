@@ -1,43 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgresql
+  name: mongodb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgresql
+      app: mongodb
   template:
     metadata:
       labels:
-        app: postgresql
+        app: mongodb
     spec:
       containers:
-      - name: postgresql
-        image: postgres:latest
+      - name: mongodb
+        image: mongo:latest
         ports:
-        - containerPort: 5432
+        - containerPort: 27017
         env:
-        - name: POSTGRES_DB
+        - name: MONGO_INITDB_DATABASE
           value: iot
-        - name: POSTGRES_USER
-          value: postgres
-        - name: POSTGRES_PASSWORD
-          value: postgres
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: mongo
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: mongo
         volumeMounts:
-        - name: postgresql-data
-          mountPath: /var/lib/postgresql/data
+        - name: mongodb-data
+          mountPath: /data/db
       volumes:
-      - name: postgresql-data
+      - name: mongodb-data
         persistentVolumeClaim:
-          claimName: postgresql-data-pvc
+          claimName: mongodb-data-pvc
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgresql-data-pvc
+  name: mongodb-data-pvc
   labels:
-    app: postgresql
+    app: mongodb
 spec:
   accessModes:
     - ReadWriteOnce
@@ -49,11 +49,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgresql
+  name: mongodb
 spec:
   selector:
-    app: postgresql
+    app: mongodb
   ports:
     - protocol: TCP
-      port: 5432
-      targetPort: 5432
+      port: 27017
+      targetPort: 27017

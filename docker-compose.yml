@@ -99,7 +99,9 @@ services:
       - iot-network
 
   iot-discovery-service:
-    image: alexdragnea/disertatie-iot-discovery-service:latest
+    build:
+      context: ./iot-discovery-service
+      dockerfile: Dockerfile
     container_name: iot-discovery-service
     depends_on:
       - influxdb
@@ -117,7 +119,9 @@ services:
       - iot-network
 
   iot-bridge-service:
-    image: alexdragnea/disertatie-iot-bridge-service:latest
+    build:
+      context: ./iot-bridge-service
+      dockerfile: Dockerfile
     container_name: iot-bridge-service
     depends_on:
       - kafka-service
@@ -134,7 +138,9 @@ services:
       - iot-network
 
   iot-core-service:
-    image: alexdragnea/disertatie-iot-core-service:latest
+    build:
+      context: ./iot-core-service
+      dockerfile: Dockerfile
     container_name: iot-core-service
     depends_on:
       - kafka-service
@@ -154,7 +160,9 @@ services:
       - iot-network
 
   iot-gateway-service:
-    image: alexdragnea/disertatie-iot-gateway-service:latest
+    build:
+      context: ./iot-gateway-service
+      dockerfile: Dockerfile
     container_name: iot-gateway-service
     depends_on:
       - iot-discovery-service
@@ -170,7 +178,9 @@ services:
       - iot-network
 
   iot-user-service:
-    image: alexdragnea/disertatie-iot-user-service:latest
+    build:
+      context: ./iot-user-service
+      dockerfile: Dockerfile
     container_name: iot-user-service
     depends_on:
       - postgresql
