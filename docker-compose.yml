@@ -24,25 +24,16 @@ services:
     networks:
       - iot-network
 
-  postgresql:
-    image: postgres:latest
-    container_name: postgresql
+  mongodb_container:
+    image: mongo:latest
     environment:
-      - POSTGRES_DB=iot
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongopw
     ports:
-      - "5432:5432"
-    volumes:
-      - postgresql-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      - 27017:27017
     networks:
       - iot-network
+
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
@@ -105,7 +96,7 @@ services:
     container_name: iot-discovery-service
     depends_on:
       - influxdb
-      - postgresql
+      - mongodb_container
       - kafka-service
     ports:
       - "8761:8761"
@@ -183,10 +174,12 @@ services:
       dockerfile: Dockerfile
     container_name: iot-user-service
     depends_on:
-      - postgresql
+      - mongodb_container
       - iot-discovery-service
     ports:
       - "8003:8003"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://root:mongopw@mongodb_container:27017
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8003/actuator/health"]
       interval: 5s
@@ -198,7 +191,7 @@ services:
 
 volumes:
   influxdb-data:
-  postgresql-data:
+  mongodb-data:
 
 networks:
   iot-network:
