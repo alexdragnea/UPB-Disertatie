@@ -3,6 +3,7 @@ package ro.upb.iotuserservice.service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ import static ro.upb.iotuserservice.enums.Role.ROLE_USER;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService implements ReactiveUserDetailsService {
 
     private final BCryptPasswordEncoder passwordEncoder;
@@ -90,13 +92,16 @@ public class UserService implements ReactiveUserDetailsService {
         String lastName = decodedJWT.getClaim("lastName").asString();
         String email = decodedJWT.getClaim("email").asString();
 
-        return Mono.just(LoggedInDetails.builder()
+        LoggedInDetails loggedInDetails = LoggedInDetails.builder()
                 .firstName(firstName)
                 .lastName(lastName)
                 .email(email)
                 .userId(userId)
                 .roles(roles)
-                .build());
+                .build();
+
+        log.info("LoggedInDetails: {}", loggedInDetails);
+        return Mono.just(loggedInDetails);
     }
 
     @Transactional

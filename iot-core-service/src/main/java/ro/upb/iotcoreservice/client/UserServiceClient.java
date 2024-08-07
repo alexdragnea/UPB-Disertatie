@@ -1,5 +1,6 @@
 package ro.upb.iotcoreservice.client;
 
+import com.google.common.net.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,12 +13,14 @@ public class UserServiceClient {
 
     private final WebClient.Builder webClientBuilder;
 
-        public Mono<LoggedInDetails> getUser(){
+    public Mono<LoggedInDetails> getUser(String authorizationHeader) {
         return webClientBuilder.build()
                 .get()
-                .uri("http://localhost:8003/v1/iot-user/logged")
+                .uri("http://iot-user-service:8003/v1/iot-user/logged")
+                .header(HttpHeaders.AUTHORIZATION, authorizationHeader)
                 .retrieve()
-                .bodyToMono(LoggedInDetails.class);
+                .bodyToMono(LoggedInDetails.class)
+                .onErrorResume(e -> Mono.error(new RuntimeException("Failed to fetch user details", e)));
     }
 
 }

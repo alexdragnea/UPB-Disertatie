@@ -178,6 +178,7 @@ services:
       - iot-discovery-service
     ports:
       - "8003:8003"
+      - "5005:5005"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://root:mongopw@mongodb_container:27017
     healthcheck:
@@ -186,6 +187,29 @@ services:
       timeout: 2s
       retries: 10
       start_period: 100s
+    networks:
+      - iot-network
+  
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - iot-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
     networks:
       - iot-network
 

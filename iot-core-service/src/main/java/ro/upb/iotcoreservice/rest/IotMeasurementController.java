@@ -15,6 +15,8 @@ import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 import ro.upb.iotcoreservice.service.MeasurementFilterService;
 
+import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
+
 @RequestMapping("/v1/iot-core")
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +28,8 @@ public class IotMeasurementController {
     private final AuthService authService;
 
     @GetMapping("/measurements-by-filter")
-    public Mono<Flux<IotMeasurement>> getMeasurementsByFilter(@RequestBody MeasurementFilter filter) {
-        return authService.isAuthorized(filter.getUserId())
+    public Mono<Flux<IotMeasurement>> getMeasurementsByFilter(@RequestBody MeasurementFilter filter, @RequestHeader(AUTHORIZATION) String authorizationHeader) {
+        return authService.isAuthorized(filter.getUserId(), authorizationHeader)
                 .flatMap(isAuthorized -> {
                     if (Boolean.TRUE.equals(isAuthorized)) {
                         return Mono.just(measurementFilterService.filterMeasurements(filter)
