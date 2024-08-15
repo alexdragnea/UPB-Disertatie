@@ -10,7 +10,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
-import ro.upb.iotcoreservice.kafka.dserializer.IotRequestDeserializer;
+import ro.upb.iotcoreservice.kafka.deserializer.IotRequestDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;

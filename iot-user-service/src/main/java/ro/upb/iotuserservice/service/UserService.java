@@ -62,7 +62,7 @@ public class UserService implements ReactiveUserDetailsService {
     public Mono<UserDto> validateToken(String token) {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
         String userId = decodedJWT.getClaim("userId").asString();
-        String username = decodedJWT.getClaim("firstName").asString() + " " + decodedJWT.getClaim("lastName").asString();
+        String username = decodedJWT.getClaim("username").asString();
         List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(decodedJWT);
         return Mono.just(new UserDto(userId, authorities, username));
     }

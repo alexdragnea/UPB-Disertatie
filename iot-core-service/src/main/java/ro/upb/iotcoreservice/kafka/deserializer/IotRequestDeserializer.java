@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.kafka.dserializer;
+package ro.upb.iotcoreservice.kafka.deserializer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.errors.SerializationException;
