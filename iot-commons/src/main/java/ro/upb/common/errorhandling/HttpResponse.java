@@ -1,4 +1,4 @@
-package ro.upb.iotuserservice.exception;
+package ro.upb.common.errorhandling;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

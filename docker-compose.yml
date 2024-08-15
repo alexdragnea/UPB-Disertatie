@@ -36,7 +36,7 @@ services:
 
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.1
+    image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
@@ -53,7 +53,7 @@ services:
       - iot-network
 
   kafka-service:
-    image: confluentinc/cp-kafka:7.0.1
+    image: confluentinc/cp-kafka:latest
     container_name: kafka-service
     environment:
       - KAFKA_BROKER_ID=1
@@ -139,6 +139,7 @@ services:
       - iot-discovery-service
     ports:
       - "8002:8002"
+      - "5005:5005"
     environment:
       - spring.kafka.bootstrap-servers=kafka-service:9092
     healthcheck:
@@ -178,7 +179,6 @@ services:
       - iot-discovery-service
     ports:
       - "8003:8003"
-      - "5005:5005"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://root:mongopw@mongodb_container:27017
     healthcheck:

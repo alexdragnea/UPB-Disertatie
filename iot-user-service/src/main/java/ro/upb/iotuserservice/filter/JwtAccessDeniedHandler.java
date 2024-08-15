@@ -7,7 +7,7 @@ import org.springframework.security.web.server.authorization.ServerAccessDeniedH
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import ro.upb.iotuserservice.exception.HttpResponse;
+import ro.upb.common.errorhandling.HttpResponse;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 

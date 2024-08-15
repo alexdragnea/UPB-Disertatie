@@ -22,7 +22,7 @@ public class AuthService {
                     if (loggedInUser != null) {
                         log.info("User details retrieved: {}", loggedInUser);
                         if (loggedInUser.getRoles() != null) {
-                            boolean isAuthorized = loggedInUser.getUserId().equals(userId) && loggedInUser.getRoles().contains("USER");
+                            boolean isAuthorized = loggedInUser.getUserId().equals(userId) && loggedInUser.getRoles().contains("ROLE_USER");
                             log.info("Authorization check result: {}", isAuthorized);
                             return isAuthorized;
                         } else {
