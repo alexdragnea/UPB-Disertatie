@@ -119,6 +119,7 @@ services:
       - iot-discovery-service
     ports:
       - "8001:8001"
+      - "5005:5005"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8001/actuator/health"]
       interval: 5s
@@ -139,7 +140,7 @@ services:
       - iot-discovery-service
     ports:
       - "8002:8002"
-      - "5005:5005"
+      - "5006:5006"
     environment:
       - spring.kafka.bootstrap-servers=kafka-service:9092
     healthcheck:
