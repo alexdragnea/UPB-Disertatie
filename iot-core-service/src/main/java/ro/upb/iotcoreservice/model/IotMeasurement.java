@@ -26,4 +26,6 @@ public class IotMeasurement {
     @Column(timestamp = true)
     private Instant time;
 
+    private String unit;
+
 }

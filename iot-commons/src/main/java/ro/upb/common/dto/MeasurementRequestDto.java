@@ -12,5 +12,6 @@ public class MeasurementRequestDto {
     private String measurement;
     private String userId;
     private Double value;
+    private String unit;
 
 }

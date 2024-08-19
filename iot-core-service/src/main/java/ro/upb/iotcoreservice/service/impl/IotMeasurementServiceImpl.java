@@ -32,7 +32,10 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     private static IotMeasurement buildIotMeasurement(MeasurementRequestDto measurementRequestDto) {
 
-        return IotMeasurement.builder().measurement(measurementRequestDto.getMeasurement()).userId(measurementRequestDto.getUserId()).value(measurementRequestDto.getValue()).build();
+        return IotMeasurement.builder().measurement(measurementRequestDto.getMeasurement())
+                .userId(measurementRequestDto.getUserId())
+                .value(measurementRequestDto.getValue())
+                .unit(measurementRequestDto.getUnit()).build();
     }
 
     private static UserMeasurementDto buildUserMeasurementDto(String userId, List<String> measurements) {
