@@ -36,7 +36,7 @@ services:
 
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:7.3.0
     container_name: zookeeper
     environment:
       - ZOOKEEPER_CLIENT_PORT=2181
@@ -53,7 +53,7 @@ services:
       - iot-network
 
   kafka-service:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:7.3.0
     container_name: kafka-service
     environment:
       - KAFKA_BROKER_ID=1

@@ -17,7 +17,6 @@ public class MeasurementFilterServiceImpl implements MeasurementFilterService {
     private final IotMeasurementService iotMeasurementService;
 
     @Override
-//    @CustomCacheable(cacheName = "filterMeasurementsCache")
     public Flux<IotMeasurement> filterMeasurements(MeasurementFilter measurementFilter) {
         log.info("Filtering data according to filter: {}.", measurementFilter);
         if (measurementFilter.getStartTime() != null && measurementFilter.getEndTime() != null) {

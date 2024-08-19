@@ -28,17 +28,17 @@ public class IotMeasurementController {
     private final AuthService authService;
 
     @GetMapping("/measurements-by-filter")
-    public Mono<Flux<IotMeasurement>> getMeasurementsByFilter(@RequestBody MeasurementFilter filter, @RequestHeader(AUTHORIZATION) String authorizationHeader) {
+    public Flux<IotMeasurement> getMeasurementsByFilter(@RequestBody MeasurementFilter filter, @RequestHeader(AUTHORIZATION) String authorizationHeader) {
         return authService.isAuthorized(filter.getUserId(), authorizationHeader)
-                .flatMap(isAuthorized -> {
+                .flatMapMany(isAuthorized -> {
                     if (Boolean.TRUE.equals(isAuthorized)) {
-                        return Mono.just(measurementFilterService.filterMeasurements(filter)
+                        return measurementFilterService.filterMeasurements(filter)
                                 .onErrorResume(MeasurementNotFoundEx.class, ex -> {
                                     log.warn("Exception occurred: {}.", ex.getMessage());
-                                    return Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex));
-                                }));
+                                    return Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
+                                });
                     } else {
-                        return Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
+                        return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
                     }
                 });
     }
