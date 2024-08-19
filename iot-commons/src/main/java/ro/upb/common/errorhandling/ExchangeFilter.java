@@ -16,7 +16,7 @@ public class ExchangeFilter {
             }
             if (status.is5xxServerError()) {
                 return response.bodyToMono(String.class)
-                        .flatMap(body -> Mono.error(new RuntimeException("Server error: " + status + ", Body: " + body)));
+                        .flatMap(body -> Mono.error(new RuntimeException("Server error")));
             }
             return Mono.just(response);
         });
