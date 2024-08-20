@@ -28,6 +28,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class IotMeasurementServiceImpl implements IotMeasurementService {
+
     private final InfluxDBClientReactive influxDBClient;
 
     private static IotMeasurement buildIotMeasurement(MeasurementRequestDto measurementRequestDto) {
