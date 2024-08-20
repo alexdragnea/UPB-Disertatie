@@ -16,6 +16,7 @@ import ro.upb.iotuserservice.dto.UserCredential;
 import ro.upb.iotuserservice.dto.UserDto;
 import ro.upb.iotuserservice.exception.EmailExistException;
 import ro.upb.iotuserservice.exception.EmailNotFoundException;
+import ro.upb.iotuserservice.exception.UserNotFoundException;
 import ro.upb.iotuserservice.model.User;
 import ro.upb.iotuserservice.model.UserPrincipal;
 import ro.upb.iotuserservice.repository.UserRepository;
@@ -44,6 +45,7 @@ public class UserService implements ReactiveUserDetailsService {
                 .switchIfEmpty(Mono.error(new EmailNotFoundException("No user found for email: " + email)));
     }
 
+    @Transactional
     public Mono<Void> register(RegisterUserRequest request) {
         return validateEmail(request.getEmail())
                 .then(Mono.just(new User()))
@@ -69,7 +71,7 @@ public class UserService implements ReactiveUserDetailsService {
 
     public Mono<User> getUserById(String id) {
         return userRepository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("User could not be found by id " + id)));
+                .switchIfEmpty(Mono.error(new UserNotFoundException("User could not be found by id " + id)));
     }
 
     public Mono<User> findUserByEmail(String email) {

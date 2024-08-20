@@ -17,7 +17,6 @@ public class AuthService {
         return userServiceClient.getUser(authorizationHeader)
                 .doOnSubscribe(subscription -> log.debug("Subscription started to fetch user details"))
                 .doOnSuccess(loggedInUser -> log.debug("Fetched user details: {}", loggedInUser))
-                .doOnError(error -> log.error("Error fetching user details: {}", error.getMessage()))
                 .map(loggedInUser -> {
                     if (loggedInUser != null) {
                         log.info("User details retrieved: {}", loggedInUser);

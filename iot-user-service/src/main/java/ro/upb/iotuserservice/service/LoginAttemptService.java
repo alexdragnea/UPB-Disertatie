@@ -18,7 +18,7 @@ public class LoginAttemptService {
                         .expireAfterWrite(15, TimeUnit.MINUTES)
                         .maximumSize(100)
                         .build(
-                                new CacheLoader<String, Integer>() {
+                                new CacheLoader<>() {
                                     public Integer load(String key) {
                                         return 0;
                                     }

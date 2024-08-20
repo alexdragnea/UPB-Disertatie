@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ro.upb.common.errorhandling.HttpResponse;
+import ro.upb.iotuserservice.model.User;
 
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RestControllerAdvice
 public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
@@ -75,6 +77,11 @@ public class GeneralExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TokenNotValidException.class)
     public ResponseEntity<HttpResponse> tokenNotValidException(TokenNotValidException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<HttpResponse> tokenNotValidException(UserNotFoundException exception) {
+        return createHttpResponse(NOT_FOUND, exception.getMessage());
     }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {

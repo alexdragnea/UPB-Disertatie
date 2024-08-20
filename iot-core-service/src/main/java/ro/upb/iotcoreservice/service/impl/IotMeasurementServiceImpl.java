@@ -60,7 +60,12 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     @Override
     @CustomCacheable(cacheName = "findAllByUserIdAndMeasurementCache")
     public Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurement) {
-        String findAllByUserIdQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")", measurement.getMeasurement(), measurement.getUserId());
+        String findAllByUserIdQuery = String.format(
+                "from(bucket: \"iot-measurement-bucket\") " +
+                        "|> range(start: 0) " +
+                        "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")",
+                measurement.getMeasurement(),
+                measurement.getUserId());
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(findAllByUserIdQuery, IotMeasurement.class);
@@ -74,18 +79,25 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     @Override
     @CustomCacheable(cacheName = "findUserMeasurementsCache")
     public Mono<UserMeasurementDto> findUserMeasurements(String userId) {
-        String findUserMeasurementsQuery = String.format("from(bucket: \"iot-measurement-bucket\") " + "|> range(start: 0) " + "|> filter(fn: (r) => r.userId == \"%s\") " + "|> distinct(column: \"_measurement\") " + "|> keep(columns: [\"_measurement\"])", userId);
+        String findUserMeasurementsQuery = String.format("from(bucket: \"iot-measurement-bucket\") " +
+                "|> range(start: 0) " +
+                "|> filter(fn: (r) => r.userId == \"%s\") " +
+                "|> distinct(column: \"_measurement\") " +
+                "|> keep(columns: [\"_measurement\"])", userId);
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
-
-        return Flux.from(queryApi.query(findUserMeasurementsQuery)).map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString()).collectList().handle((measurements, sink) -> {
-            if (measurements.isEmpty()) {
-                sink.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX_FOR_USERID, userId)));
-                return;
-            }
-            sink.next(buildUserMeasurementDto(userId, measurements));
-        });
+        return Flux.from(queryApi.query(findUserMeasurementsQuery))
+                .map(result -> Objects.requireNonNull(result.getValueByKey("_measurement")).toString())
+                .collectList()
+                .flatMap(measurements -> {
+                    if (measurements.isEmpty()) {
+                        return Mono.error(new MeasurementNotFoundEx(
+                                String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX_FOR_USERID, userId)));
+                    } else {
+                        return Mono.just(buildUserMeasurementDto(userId, measurements));
+                    }
+                });
     }
 
     @Override

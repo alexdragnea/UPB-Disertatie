@@ -2,11 +2,11 @@ package ro.upb.iotcoreservice.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ro.upb.common.constant.ExMessageConstants;
+import ro.upb.common.errorhandling.UnauthorizedException;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
@@ -35,12 +35,13 @@ public class IotMeasurementController {
                         return measurementFilterService.filterMeasurements(filter)
                                 .onErrorResume(MeasurementNotFoundEx.class, ex -> {
                                     log.warn("Exception occurred: {}.", ex.getMessage());
-                                    return Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
+                                    return Flux.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, filter)));
                                 });
                     } else {
-                        return Flux.error(new ResponseStatusException(HttpStatus.FORBIDDEN));
+                        return Flux.error(new UnauthorizedException("User is not authorized."));
                     }
                 });
+
     }
 
     @GetMapping("/measurements")
@@ -49,7 +50,7 @@ public class IotMeasurementController {
         return iotMeasurementService.findUserMeasurements(userId)
                 .onErrorResume(MeasurementNotFoundEx.class, ex -> {
                     log.warn("Exception occurred: {}.", ex.getMessage());
-                    return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex));
+                    return Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX_FOR_USERID, userId)));
                 });
     }
 
