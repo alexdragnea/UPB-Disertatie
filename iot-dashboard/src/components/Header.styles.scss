@@ -1,0 +1,13 @@
+.header {
+    padding: 0 20px; // Adjust the padding to control the space on the sides
+    background-color: #007bff; // Bootstrap's primary blue color
+    height: 50px; // Increase the height of the header
+    .navbar-brand {
+        font-size: 1.5rem; // Increase font size for the brand
+    }
+    .navbar-nav {
+        .nav-link {
+            font-size: 1.2rem; // Increase font size for the nav links
+        }
+    }
+}
