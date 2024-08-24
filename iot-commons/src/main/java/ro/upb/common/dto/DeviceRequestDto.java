@@ -7,12 +7,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class MeasurementRequestDto {
+public class DeviceRequestDto {
 
-    private String measurement;
     private String sensorName;
-    private String userId;
-    private Double value;
-    private String unit;
 
+    private String userId;
+
+    private String description;
+
+    private String location;
+
+    private String rangeValue;
 }

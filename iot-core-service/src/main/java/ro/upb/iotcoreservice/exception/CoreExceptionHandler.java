@@ -23,6 +23,16 @@ public class CoreExceptionHandler extends ResponseEntityExceptionHandler {
         return createHttpResponse(NOT_FOUND, e.getMessage());
     }
 
+    @ExceptionHandler(DeviceNotFoundEx.class)
+    public ResponseEntity<HttpResponse> deviceNotFoundEx(DeviceNotFoundEx e) {
+        return createHttpResponse(NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DeviceAlreadyExistsEx.class)
+    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceAlreadyExistsEx e) {
+        return createHttpResponse(CONFLICT, e.getMessage());
+    }
+
     @ExceptionHandler(KafkaValidationEx.class)
     public ResponseEntity<HttpResponse> kafkaValidationEx(KafkaValidationEx e) {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
