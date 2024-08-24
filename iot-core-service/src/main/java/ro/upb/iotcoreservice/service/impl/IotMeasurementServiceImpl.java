@@ -4,8 +4,6 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -17,7 +15,9 @@ import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
+import ro.upb.iotcoreservice.exception.DeviceNotFound;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
+import ro.upb.iotcoreservice.model.IotDevice;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.IotMeasurementService;
 
@@ -35,6 +35,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         return IotMeasurement.builder().measurement(measurementRequestDto.getMeasurement())
                 .userId(measurementRequestDto.getUserId())
+                .sensorName(measurementRequestDto.getSensorName())
                 .value(measurementRequestDto.getValue())
                 .unit(measurementRequestDto.getUnit()).build();
     }
@@ -44,18 +45,33 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public void persistIotMeasurement(MeasurementRequestDto measurementRequestDto) {
+    public void persistIotMeasurement(MeasurementRequestDto measurementRequestDto) throws DeviceNotFound {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        IotMeasurement iotMeasurement = buildIotMeasurement(measurementRequestDto);
-        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementRequestDto, iotMeasurement);
+        String findDeviceByUserIdAndSensorName = String.format(
+                "from(bucket: \"devices-bucket\") " +
+                        "|> range(start: 0) " +
+                        "|> filter(fn: (r) => r._sensorName == \"%s\" and r.userId == \"%s\")",
+                measurementRequestDto.getSensorName(),
+                measurementRequestDto.getUserId());
+        log.info("Checking if device exists for userId: {} and sensorName: {}.", measurementRequestDto.getUserId(), measurementRequestDto.getSensorName());
 
-        log.info("Persisting IoTMeasurementPoint.");
-        Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);
+        QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
+        Publisher<IotDevice> devicePublisher = queryApi.query(findDeviceByUserIdAndSensorName, IotDevice.class);
 
-        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully persisted measurement: {}.", iotMeasurement));
+        Flux.from(devicePublisher)
+                .switchIfEmpty(Mono.error(new DeviceNotFound("Device not found for userId: " + measurementRequestDto.getUserId() + " and sensorName: " + measurementRequestDto.getSensorName() +   " please register the device first")))
+                .flatMap(device -> {
+                    IotMeasurement iotMeasurement = buildIotMeasurement(measurementRequestDto);
+                    log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementRequestDto, iotMeasurement);
 
-        subscriber.dispose();
+                    log.info("Persisting IotMeasurement.");
+                    Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);
+
+                    return Mono.from(publisher)
+                            .doOnSuccess(info -> log.info("Successfully persisted measurement: {}.", iotMeasurement));
+                })
+                .subscribe();
     }
 
     @Override

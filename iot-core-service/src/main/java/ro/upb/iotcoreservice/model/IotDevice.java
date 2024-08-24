@@ -14,7 +14,7 @@ import java.time.Instant;
 @Builder
 public class IotDevice {
 
-    @Column(tag = true)
+    @Column(measurement = true)
     private String sensorName;
 
     @Column(tag = true)

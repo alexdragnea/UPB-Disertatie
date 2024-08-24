@@ -8,7 +8,7 @@ import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
 public interface IotMeasurementService {
-    void persistIotMeasurement(MeasurementRequestDto measurementRequestDto);
+    void persistIotMeasurement(MeasurementRequestDto measurementRequestDto) thorws DeviceNotFoundException;
 
     Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurementFilter);
 

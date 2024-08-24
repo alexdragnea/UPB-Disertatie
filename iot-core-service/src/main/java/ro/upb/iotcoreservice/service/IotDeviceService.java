@@ -1,7 +1,7 @@
 package ro.upb.iotcoreservice.service;
 
-public class IotDeviceService {
-    void registerDevice() {
+import ro.upb.common.dto.DeviceRequestDto;
 
-    }
+public interface IotDeviceService {
+    void registerDevice(DeviceRequestDto deviceRequestDto);
 }
