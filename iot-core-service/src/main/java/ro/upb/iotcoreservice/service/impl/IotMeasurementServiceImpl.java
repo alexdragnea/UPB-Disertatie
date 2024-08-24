@@ -15,7 +15,7 @@ import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
-import ro.upb.iotcoreservice.exception.DeviceNotFound;
+import ro.upb.iotcoreservice.exception.DeviceNotFoundEx;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotDevice;
 import ro.upb.iotcoreservice.model.IotMeasurement;
@@ -45,7 +45,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public void persistIotMeasurement(MeasurementRequestDto measurementRequestDto) throws DeviceNotFound {
+    public void persistIotMeasurement(MeasurementRequestDto measurementRequestDto) throws DeviceNotFoundEx {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
         String findDeviceByUserIdAndSensorName = String.format(
@@ -60,7 +60,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         Publisher<IotDevice> devicePublisher = queryApi.query(findDeviceByUserIdAndSensorName, IotDevice.class);
 
         Flux.from(devicePublisher)
-                .switchIfEmpty(Mono.error(new DeviceNotFound("Device not found for userId: " + measurementRequestDto.getUserId() + " and sensorName: " + measurementRequestDto.getSensorName() +   " please register the device first")))
+                .switchIfEmpty(Mono.error(new DeviceNotFoundEx("Device not found for userId: " + measurementRequestDto.getUserId() + " and sensorName: " + measurementRequestDto.getSensorName() +   " please register the device first")))
                 .flatMap(device -> {
                     IotMeasurement iotMeasurement = buildIotMeasurement(measurementRequestDto);
                     log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementRequestDto, iotMeasurement);

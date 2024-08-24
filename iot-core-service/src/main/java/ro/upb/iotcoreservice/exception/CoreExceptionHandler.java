@@ -23,13 +23,13 @@ public class CoreExceptionHandler extends ResponseEntityExceptionHandler {
         return createHttpResponse(NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler(DeviceNotFound.class)
-    public ResponseEntity<HttpResponse> deviceNotFoundEx(DeviceNotFound e) {
+    @ExceptionHandler(DeviceNotFoundEx.class)
+    public ResponseEntity<HttpResponse> deviceNotFoundEx(DeviceNotFoundEx e) {
         return createHttpResponse(NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler(DeviceAlreadyExists.class)
-    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceNotFound e) {
+    @ExceptionHandler(DeviceAlreadyExistsEx.class)
+    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceNotFoundEx e) {
         return createHttpResponse(CONFLICT, e.getMessage());
     }
 

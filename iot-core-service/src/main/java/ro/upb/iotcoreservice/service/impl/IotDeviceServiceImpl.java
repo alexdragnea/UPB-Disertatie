@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ro.upb.common.dto.DeviceRequestDto;
-import ro.upb.iotcoreservice.exception.DeviceAlreadyExists;
+import ro.upb.iotcoreservice.exception.DeviceAlreadyExistsEx;
 import ro.upb.iotcoreservice.model.IotDevice;
 import ro.upb.iotcoreservice.service.IotDeviceService;
 
@@ -46,7 +46,7 @@ public class IotDeviceServiceImpl implements IotDeviceService {
                 .collectList()
                 .flatMap(devices -> {
                     if (!devices.isEmpty()) {
-                        return Mono.error(new DeviceAlreadyExists("Device already exists for userId: " + deviceRequestDto.getUserId() + " and sensorName: " + deviceRequestDto.getSensorName()));
+                        return Mono.error(new DeviceAlreadyExistsEx("Device already exists for userId: " + deviceRequestDto.getUserId() + " and sensorName: " + deviceRequestDto.getSensorName()));
                     } else {
                         IotDevice iotDevice = buildIotDevice(deviceRequestDto);
                         log.info("Converting IotDeviceRequest: {} to IotDevice entity: {}.", deviceRequestDto, iotDevice);
