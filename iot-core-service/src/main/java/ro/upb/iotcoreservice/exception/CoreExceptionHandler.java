@@ -29,7 +29,7 @@ public class CoreExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(DeviceAlreadyExistsEx.class)
-    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceNotFoundEx e) {
+    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceAlreadyExistsEx e) {
         return createHttpResponse(CONFLICT, e.getMessage());
     }
 

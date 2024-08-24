@@ -20,12 +20,26 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${spring.kafka.producer.delivery-timeout-ms:120000}")
+    private int deliveryTimeoutMs;
+
+    @Value("${spring.kafka.producer.request-timeout-ms:30000}")
+    private int requestTimeoutMs;
+
+    @Value("${spring.kafka.producer.linger-ms:10}")
+    private int lingerMs;
+
     @Bean
     public ProducerFactory<String, MeasurementRequestDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IotRequestSerializer.class);
+        // Timeout configurations
+        configProps.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, deliveryTimeoutMs); // Delivery timeout
+        configProps.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);   // Request timeout
+        configProps.put(ProducerConfig.LINGER_MS_CONFIG, lingerMs);                   // Linger timeout
+
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 

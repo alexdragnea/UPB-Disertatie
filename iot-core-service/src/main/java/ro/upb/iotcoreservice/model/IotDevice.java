@@ -1,34 +1,27 @@
 package ro.upb.iotcoreservice.model;
 
-import com.influxdb.annotations.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
+@Document
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Builder
+@Data
 public class IotDevice {
 
-    @Column(measurement = true)
+    @Id
+    private String id;
     private String sensorName;
-
-    @Column(tag = true)
     private String userId;
-
-    @Column(tag = true)
     private String description;
-
-    @Column(tag = true)
     private String location;
-
-    @Column(tag = true)
     private String rangeValue;
-
-    @Column(timestamp = true)
-    private Instant lastChecked;
+    private Instant addedAt;
 }

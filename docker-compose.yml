@@ -138,11 +138,13 @@ services:
       - kafka-service
       - influxdb
       - iot-discovery-service
+      - mongodb_container
     ports:
       - "8002:8002"
       - "5006:5006"
     environment:
       - spring.kafka.bootstrap-servers=kafka-service:9092
+      - SPRING_DATA_MONGODB_URI=mongodb://root:mongopw@mongodb_container:27017
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/actuator/health"]
       interval: 5s

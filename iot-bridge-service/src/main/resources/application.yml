@@ -13,6 +13,9 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      delivery-timeout-ms: 120000
+      request-timeout-ms: 30000
+      linger-ms: 10
 
 eureka:
   client:
