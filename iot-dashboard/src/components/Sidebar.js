@@ -1,13 +1,23 @@
-// src/components/Sidebar.js
-import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import React, { useState } from 'react';
+import {
+    Drawer, List, ListItem, ListItemIcon, ListItemText, Collapse, Button
+} from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import DevicesIcon from '@mui/icons-material/Devices';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Link } from 'react-router-dom'; // For routing links
 
-const drawerWidth = 240; // Adjust as needed
+const drawerWidth = 240;
 
-export default function Sidebar() {
+export default function Sidebar({ devices = [] }) { // Default to empty array
+    const [openDevices, setOpenDevices] = useState(true); // Expanded by default
+
+    const toggleDevices = () => {
+        setOpenDevices(!openDevices); // Toggle expand/collapse
+    };
+
     return (
         <Drawer
             variant="permanent"
@@ -17,25 +27,49 @@ export default function Sidebar() {
                 '& .MuiDrawer-paper': {
                     width: drawerWidth,
                     boxSizing: 'border-box',
-                    top: '64px', // Adjust top position for spacing from the top
-                    height: 'calc(100vh - 64px)', // Adjust height to ensure it fits the screen
-                    borderRight: '1px solid #ddd', // Light border for separation
+                    top: '64px',
+                    height: 'calc(100vh - 64px)',
+                    borderRight: '1px solid #ddd',
                 },
             }}
         >
             <List>
-                <ListItem button component="a" href="/admin/dashboard">
+                {/* Dashboard Link */}
+                <ListItem button component={Link} to="/admin/dashboard">
                     <ListItemIcon><DashboardIcon /></ListItemIcon>
                     <ListItemText primary="Dashboard" />
                 </ListItem>
-                <ListItem button component="a" href="/admin/devices">
+
+                {/* Devices Section */}
+                <ListItem button onClick={toggleDevices}>
                     <ListItemIcon><DevicesIcon /></ListItemIcon>
                     <ListItemText primary="Devices" />
+                    {openDevices ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
-                <ListItem button component="a" href="/admin/add-device">
+                
+                {/* Collapsible List of Devices */}
+                <Collapse in={openDevices} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        {devices.map((device) => (
+                            <ListItem
+                                key={device.id}
+                                button
+                                component={Link}
+                                to={`/admin/devices/${device.id}`}
+                                sx={{ pl: 4 }} // Indentation for nested items
+                            >
+                                <ListItemText primary={device.name} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Collapse>
+
+                {/* Add Device Link */}
+                <ListItem button component={Link} to="/admin/add-device">
                     <ListItemIcon><AddBoxIcon /></ListItemIcon>
                     <ListItemText primary="Add Device" />
                 </ListItem>
+
             </List>
         </Drawer>
     );

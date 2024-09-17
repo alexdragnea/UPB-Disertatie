@@ -1,9 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { Navbar, Nav } from 'react-bootstrap';
-import { FaUserCircle } from 'react-icons/fa'; // Importing user icon from react-icons
+import { FaUserCircle } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Header.styles.scss'; // Optional, for custom styles
 
 function Header() {
     return (
@@ -11,9 +10,9 @@ function Header() {
             <Navbar.Brand as={Link} to="/admin/dashboard">Dashboard</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="ms-auto"> {/* Aligns the Nav items to the right */}
-                    <Nav.Link as={Link} to="/admin/profile">
-                        <FaUserCircle className="me-2" /> {/* User icon */}
+                <Nav className="ms-auto">
+                    <Nav.Link as={NavLink} to="/admin/profile">
+                        <FaUserCircle className="me-2" />
                         Profile
                     </Nav.Link>
                 </Nav>

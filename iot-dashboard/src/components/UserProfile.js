@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -14,6 +14,35 @@ import {
 } from "reactstrap";
 
 function UserProfile() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+
+    // Reset error and success messages
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("New password and confirm password do not match.");
+      return;
+    }
+
+    // Add real password change logic here (e.g., API request)
+    if (currentPassword === "correctOldPassword") { // Example check for old password
+      setPasswordSuccess("Password changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } else {
+      setPasswordError("Current password is incorrect.");
+    }
+  };
+
   return (
     <>
       <div className="content">
@@ -147,38 +176,56 @@ function UserProfile() {
               </CardFooter>
             </Card>
           </Col>
+
+          {/* Password Change Section */}
           <Col md="4">
-            <Card className="card-user">
+            <Card>
+              <CardHeader>
+                <h5 className="title">Change Password</h5>
+              </CardHeader>
               <CardBody>
-                <CardText />
-                <div className="author text-center">
-                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                    <img
-                      alt="..."
-                      className="avatar img-circle img-fluid"
-                      src={require('../assets/img/emilyz.jpg').default}
+                <Form onSubmit={handlePasswordSubmit}>
+                  <FormGroup>
+                    <label>Current Password</label>
+                    <Input
+                      placeholder="Current Password"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
                     />
-                    <h5 className="title">Mike Andrew</h5>
-                  </a>
-                  <p className="description">CEO/Co-Founder</p>
-                </div>
-                <div className="card-description mt-3 text-center">
-                  Do not be scared of the truth because we need to restart the human foundation in truth. And I love you like Kanye loves Kanye. I love Rick Owens’ bed design but the back is...
-                </div>
+                  </FormGroup>
+                  <FormGroup>
+                    <label>New Password</label>
+                    <Input
+                      placeholder="New Password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Confirm New Password</label>
+                    <Input
+                      placeholder="Confirm New Password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </FormGroup>
+                  {passwordError && (
+                    <p style={{ color: "red" }}>{passwordError}</p>
+                  )}
+                  {passwordSuccess && (
+                    <p style={{ color: "green" }}>{passwordSuccess}</p>
+                  )}
+                  <Button className="btn-fill" color="primary" type="submit">
+                    Save Password
+                  </Button>
+                </Form>
               </CardBody>
-              <CardFooter className="text-center">
-                <div className="button-container">
-                  <Button className="btn-icon btn-round" color="facebook">
-                    <i className="fab fa-facebook" />
-                  </Button>
-                  <Button className="btn-icon btn-round" color="twitter">
-                    <i className="fab fa-twitter" />
-                  </Button>
-                  <Button className="btn-icon btn-round" color="google">
-                    <i className="fab fa-google-plus" />
-                  </Button>
-                </div>
-              </CardFooter>
             </Card>
           </Col>
         </Row>

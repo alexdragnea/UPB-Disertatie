@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.exception.KafkaProcessingEx;
-import ro.upb.iotcoreservice.service.IotMeasurementService;
+import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 
 import java.time.Instant;
 

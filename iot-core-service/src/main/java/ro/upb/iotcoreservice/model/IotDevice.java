@@ -22,6 +22,7 @@ public class IotDevice {
     private String userId;
     private String description;
     private String location;
-    private String rangeValue;
-    private Instant addedAt;
+    private String unit;
+    private Instant addedAt = Instant.now();
+    private Instant updatedAt;
 }

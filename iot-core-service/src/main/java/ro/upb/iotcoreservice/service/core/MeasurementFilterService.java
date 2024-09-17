@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.service;
+package ro.upb.iotcoreservice.service.core;
 
 import reactor.core.publisher.Flux;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;

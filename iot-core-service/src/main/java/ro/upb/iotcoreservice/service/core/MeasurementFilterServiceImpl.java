@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.service.impl;
+package ro.upb.iotcoreservice.service.core;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.model.IotMeasurement;
-import ro.upb.iotcoreservice.service.IotMeasurementService;
-import ro.upb.iotcoreservice.service.MeasurementFilterService;
 
 @Service
 @RequiredArgsConstructor

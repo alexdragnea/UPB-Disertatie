@@ -11,9 +11,9 @@ import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
-import ro.upb.iotcoreservice.service.IotMeasurementService;
-import ro.upb.iotcoreservice.service.MeasurementFilterService;
 import ro.upb.iotcoreservice.service.auth.AuthService;
+import ro.upb.iotcoreservice.service.core.IotMeasurementService;
+import ro.upb.iotcoreservice.service.core.MeasurementFilterService;
 
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static ro.upb.common.constant.ExMessageConstants.USER_NOT_AUTHORIZED;

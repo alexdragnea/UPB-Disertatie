@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.service.impl;
+package ro.upb.iotcoreservice.service.device;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +9,8 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.model.IotMeasurement;
-import ro.upb.iotcoreservice.service.IotMeasurementService;
+import ro.upb.iotcoreservice.service.core.IotMeasurementService;
+import ro.upb.iotcoreservice.service.core.MeasurementFilterServiceImpl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;

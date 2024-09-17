@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.service.impl;
+package ro.upb.iotcoreservice.service.core;
 
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
@@ -19,7 +19,6 @@ import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
-import ro.upb.iotcoreservice.service.IotMeasurementService;
 
 import java.util.List;
 import java.util.Objects;
