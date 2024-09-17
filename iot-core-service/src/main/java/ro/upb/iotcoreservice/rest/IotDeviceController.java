@@ -25,8 +25,8 @@ public class IotDeviceController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<IotDevice>> updateDevice(@PathVariable String id, @RequestBody IotDevice device) {
-        return iotDeviceService.updateDevice(id, device).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
+    public Mono<ResponseEntity<IotDevice>> updateDevice(@PathVariable String id, @RequestBody DeviceRequestDto deviceRequestDto) {
+        return iotDeviceService.updateDevice(id, deviceRequestDto).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
 //    @DeleteMapping("/{id}")
