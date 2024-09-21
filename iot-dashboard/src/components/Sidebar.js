@@ -1,76 +1,64 @@
-import React, { useState } from 'react';
-import {
-    Drawer, List, ListItem, ListItemIcon, ListItemText, Collapse, Button
-} from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import DevicesIcon from '@mui/icons-material/Devices';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import { Link } from 'react-router-dom'; // For routing links
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import DevicesIcon from "@mui/icons-material/Devices";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import ApiIcon from "@mui/icons-material/Api";
+import FetchSensors from "./FetchSensors";
 
-const drawerWidth = 240;
+const Sidebar = () => {
+  const [open, setOpen] = useState(true);
+  const [sensors, setSensors] = useState([]);
 
-export default function Sidebar({ devices = [] }) { // Default to empty array
-    const [openDevices, setOpenDevices] = useState(true); // Expanded by default
+  const toggleSidebar = () => {
+    setOpen(!open);
+  };
 
-    const toggleDevices = () => {
-        setOpenDevices(!openDevices); // Toggle expand/collapse
-    };
+  return (
+    <div className="flex">
+      <div
+        className={`${
+          open ? "w-40" : "w-16" // Further adjusted width
+        } bg-gray-800 h-screen p-4 pt-2 relative duration-300 shadow-md fixed top-0 left-0`}
+      >
+        <ul className="pt-2">
+          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+            <DashboardIcon />
+            <Link to="/" className={`${!open && "hidden"} ml-4`}>Dashboard</Link> {/* Increased left margin */}
+          </li>
+          <FetchSensors setSensors={setSensors} />
+          {sensors.length > 0 ? (
+            <li className="flex flex-col">
+              <div className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+                <DevicesIcon />
+                <span className={`${!open && "hidden"} ml-4`}>Sensors</span> {/* Increased left margin */}
+              </div>
+              <ul className={`ml-4 ${!open ? "hidden" : ""}`}>
+                {sensors.map((sensor, index) => (
+                  <li key={index} className="text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+                    <Link to={`/devices/${sensor}`}>{sensor}</Link>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ) : (
+            <li className="text-gray-300 p-2 text-lg">No Sensors Available</li>
+          )}
+          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+            <AddBoxIcon />
+            <Link to="/add-device" className={`${!open && "hidden"} ml-4`}>Add Device</Link> {/* Increased left margin */}
+          </li>
+          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+            <ApiIcon />
+            <Link to="/api-usage" className={`${!open && "hidden"} ml-4`}>API Usage</Link> {/* Increased left margin */}
+          </li>
+        </ul>
+      </div>
+      <div className={`flex-1 ml-${open ? '40' : '16'} p-4`} style={{ marginTop: '60px' }}>
+        {/* Main content goes here */}
+      </div>
+    </div>
+  );
+};
 
-    return (
-        <Drawer
-            variant="permanent"
-            sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                '& .MuiDrawer-paper': {
-                    width: drawerWidth,
-                    boxSizing: 'border-box',
-                    top: '64px',
-                    height: 'calc(100vh - 64px)',
-                    borderRight: '1px solid #ddd',
-                },
-            }}
-        >
-            <List>
-                {/* Dashboard Link */}
-                <ListItem button component={Link} to="/admin/dashboard">
-                    <ListItemIcon><DashboardIcon /></ListItemIcon>
-                    <ListItemText primary="Dashboard" />
-                </ListItem>
-
-                {/* Devices Section */}
-                <ListItem button onClick={toggleDevices}>
-                    <ListItemIcon><DevicesIcon /></ListItemIcon>
-                    <ListItemText primary="Devices" />
-                    {openDevices ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                
-                {/* Collapsible List of Devices */}
-                <Collapse in={openDevices} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        {devices.map((device) => (
-                            <ListItem
-                                key={device.id}
-                                button
-                                component={Link}
-                                to={`/admin/devices/${device.id}`}
-                                sx={{ pl: 4 }} // Indentation for nested items
-                            >
-                                <ListItemText primary={device.name} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </Collapse>
-
-                {/* Add Device Link */}
-                <ListItem button component={Link} to="/admin/add-device">
-                    <ListItemIcon><AddBoxIcon /></ListItemIcon>
-                    <ListItemText primary="Add Device" />
-                </ListItem>
-
-            </List>
-        </Drawer>
-    );
-}
+export default Sidebar;

@@ -1,24 +1,79 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
-import { Navbar, Nav } from 'react-bootstrap';
-import { FaUserCircle } from 'react-icons/fa';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Button, Typography, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import '../assets/css/Header.styles.css';
 
-function Header() {
+const Header = ({ onLogout, isAuthenticated }) => {
+    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+
+    const handleProfileClick = () => {
+        navigate('/profile');
+    };
+
+    const handleTitleClick = () => {
+        navigate('/');
+    };
+
+    const handleLogoutClick = () => {
+        setOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpen(false);
+    };
+
+    const handleConfirmLogout = () => {
+        onLogout();
+        handleCloseDialog();
+    };
+
     return (
-        <Navbar bg="primary" variant="dark" expand="lg" fixed="top" className="header">
-            <Navbar.Brand as={Link} to="/admin/dashboard">Dashboard</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="ms-auto">
-                    <Nav.Link as={NavLink} to="/admin/profile">
-                        <FaUserCircle className="me-2" />
-                        Profile
-                    </Nav.Link>
-                </Nav>
-            </Navbar.Collapse>
-        </Navbar>
+        <AppBar position="static" className="header">
+            <Toolbar className="toolbar">
+                <Typography 
+                    variant="h6" 
+                    className="title" 
+                    onClick={handleTitleClick}
+                >
+                    IoT Dashboard
+                </Typography>
+                {isAuthenticated && (
+                    <div className="nav-buttons">
+                        <Button 
+                            color="inherit" 
+                            onClick={handleProfileClick} 
+                            className="nav-link"
+                            startIcon={<AccountCircleIcon />}
+                        >
+                            Profile
+                        </Button>
+                        <Button 
+                            color="inherit" 
+                            onClick={handleLogoutClick} 
+                            className="nav-link"
+                            startIcon={<ExitToAppIcon />}
+                        >
+                            Logout
+                        </Button>
+                    </div>
+                )}
+            </Toolbar>
+
+            <Dialog open={open} onClose={handleCloseDialog}>
+                <DialogTitle>Confirm Logout</DialogTitle>
+                <DialogContent>
+                    Are you sure you want to log out?
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">Cancel</Button>
+                    <Button onClick={handleConfirmLogout} color="primary">Logout</Button>
+                </DialogActions>
+            </Dialog>
+        </AppBar>
     );
-}
+};
 
 export default Header;

@@ -1,0 +1,39 @@
+.header {
+    padding: 0 20px; /* Adjust padding */
+    background-color: #007bff; /* Background color */
+    height: 60px; /* Header height */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+}
+
+.toolbar {
+    display: flex; /* Flex display for the toolbar */
+    justify-content: space-between; /* Space between title and buttons */
+    align-items: center; /* Center items vertically */
+    width: 100%; /* Full width */
+}
+
+.title {
+    color: #ffffff; /* Title color */
+    cursor: pointer; /* Pointer cursor for title */
+}
+
+.nav-buttons {
+    display: flex; /* Flex layout for buttons */
+    align-items: center; /* Center items vertically */
+    margin-left: auto; /* Push buttons to the right */
+}
+
+.nav-link {
+    font-size: 1rem; /* Font size for buttons */
+    color: #ffffff; /* Text color for links */
+    margin-left: 20px; /* Increased spacing between buttons */
+}
+
+.nav-link:hover {
+    color: #e0e0e0; /* Hover effect color */
+}
+
+/* Add some space to the right of the buttons */
+.nav-buttons .nav-link:last-child {
+    margin-right: -40px; /* Move Logout to the right */
+}

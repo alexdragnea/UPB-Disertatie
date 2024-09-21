@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Paper } from '@mui/material';
 
-export default function DeviceDetails({ devices }) {
+export default function SensorDetails({ devices }) {
     const { id } = useParams();
     const device = devices.find(d => d.id === id);
 
