@@ -7,12 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import ro.upb.iotuserservice.filter.JwtAccessDeniedHandler;
-
-import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -25,9 +20,11 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .cors(ServerHttpSecurity.CorsSpec::disable) // Use CORS config here
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/v1/iot-user/api-key").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/v1/iot-user/refresh-api-key").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/login").permitAll()
                         .pathMatchers(HttpMethod.GET, "/v1/iot-user/token/refresh").permitAll()
