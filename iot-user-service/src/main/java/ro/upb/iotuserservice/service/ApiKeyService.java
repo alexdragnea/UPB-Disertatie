@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-import ro.upb.iotuserservice.dto.ApiKeyResponse;
+import ro.upb.common.dto.ApiKeyResponse;
 import ro.upb.iotuserservice.model.ApiKey;
 import ro.upb.iotuserservice.repository.ApiKeyRepository;
 import ro.upb.iotuserservice.util.ApiKeyGenerator;

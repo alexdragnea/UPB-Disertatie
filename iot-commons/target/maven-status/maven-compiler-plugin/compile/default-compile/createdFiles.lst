@@ -1,7 +1,10 @@
+ro/upb/common/dto/DeviceRequestDto.class
 ro/upb/common/constant/ExMessageConstants.class
+ro/upb/common/dto/ApiKeyResponse.class
+ro/upb/common/errorhandling/HttpResponse.class
 ro/upb/common/dto/LoggedInDetails.class
+ro/upb/common/errorhandling/UnauthorizedException.class
 ro/upb/common/constant/KafkaConstants.class
-ro/upb/common/dto/LoggedInDetails$LoggedInDetailsBuilder.class
-ro/upb/common/dto/ErrorResponse$ErrorResponseBuilder.class
+ro/upb/common/constant/WebConstants.class
 ro/upb/common/dto/MeasurementRequestDto.class
 ro/upb/common/dto/ErrorResponse.class

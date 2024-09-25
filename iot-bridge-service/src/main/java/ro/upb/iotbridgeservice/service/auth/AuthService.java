@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import ro.upb.iotbridgeservice.client.ApiKeyServiceClient;
 import ro.upb.iotbridgeservice.client.UserServiceClient;
 
 @Service
@@ -12,6 +13,7 @@ import ro.upb.iotbridgeservice.client.UserServiceClient;
 public class AuthService {
 
     private final UserServiceClient userServiceClient;
+    private final ApiKeyServiceClient apiKeyServiceClient;
 
     public Mono<Boolean> isAuthorized(String userId, String authorizationHeader) {
         return userServiceClient.getUser(authorizationHeader)
@@ -34,5 +36,18 @@ public class AuthService {
                         return false;
                     }
                 });
+    }
+
+    public Mono<Boolean> isAuthorizedWithApiKey(String userId, String apiKey) {
+        return apiKeyServiceClient.getApiKey(apiKey, userId)
+                .doOnSubscribe(subscription -> log.debug("Subscription started to validate API key"))
+                .doOnSuccess(apiKeyResponse -> log.debug("Validated API key: {}", apiKeyResponse))
+                .doOnError(error -> log.error("Error validating API key: {}", error.getMessage()))
+                .map(apiKeyResponse -> {
+                    boolean isAuthorized = apiKeyResponse.getUserId().equals(userId);
+                    log.info("API key authorization check result: {}", isAuthorized);
+                    return isAuthorized;
+                })
+                .switchIfEmpty(Mono.just(false));
     }
 }

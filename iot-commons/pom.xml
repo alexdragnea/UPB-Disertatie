@@ -76,4 +76,26 @@
         </profile>
     </profiles>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.0</version> <!-- Use latest stable version -->
+                <configuration>
+                    <tagNameFormat>@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <scm>
+        <connection>scm:git:https://github.com/alexdragnea/UPB-Disertatie.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:alexdragnea/UPB-Disertatie.git</developerConnection>
+        <url>https://github.com/alexdragnea/UPB-Disertatie</url>
+        <tag>HEAD</tag>
+    </scm>
+
+
+
 </project>
