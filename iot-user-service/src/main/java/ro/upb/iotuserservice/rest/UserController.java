@@ -2,7 +2,6 @@ package ro.upb.iotuserservice.rest;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -11,7 +10,6 @@ import ro.upb.iotuserservice.dto.*;
 import ro.upb.iotuserservice.model.UserPrincipal;
 import ro.upb.iotuserservice.service.UserService;
 import ro.upb.iotuserservice.util.AuthenticationHelper;
-import ro.upb.iotuserservice.util.UtilityClass;
 
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static ro.upb.iotuserservice.constants.SecurityConstant.TOKEN_PREFIX;
@@ -64,42 +62,12 @@ public class UserController {
                 .doOnError(e -> log.error("Token validation failed. Error: {}", e.getMessage()));
     }
 
-    @GetMapping("/{userId}")
-    public Mono<ResponseEntity<UserCredential>> getUserById(
-            @RequestHeader(AUTHORIZATION) String authorizationHeader, @PathVariable String userId) {
-        log.info("Fetching user details for userId: {}", userId);
-        return userService.getLoggedInDetails(authorizationHeader.substring(TOKEN_PREFIX.length()))
-                .flatMap(loggedInDetails -> {
-                    if (!UtilityClass.IsAdmin(loggedInDetails.getRoles())) {
-                        log.warn("Unauthorized access attempt for userId: {} by non-admin", userId);
-                        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
-                    }
-                    return userService.getUserCredentialsById(userId)
-                            .map(ResponseEntity::ok);
-                });
-    }
-
-    @DeleteMapping("/{userId}")
-    public Mono<ResponseEntity<Void>> deleteUser(
-            @RequestHeader(AUTHORIZATION) String authorizationHeader, @PathVariable String userId) {
-        log.info("Delete user attempt for userId: {}", userId);
-        return userService.getLoggedInDetails(authorizationHeader.substring(TOKEN_PREFIX.length()))
-                .flatMap(loggedInDetails -> {
-                    if (!UtilityClass.IsAdmin(loggedInDetails.getRoles())) {
-                        log.warn("Unauthorized delete attempt for userId: {} by non-admin", userId);
-                        return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
-                    }
-                    return userService.deleteUserById(userId)
-                            .doOnSuccess(unused -> log.info("User deleted successfully: {}", userId))
-                            .then(Mono.just(ResponseEntity.status(HttpStatus.OK).build()));
-                });
-    }
-
     @GetMapping("/logged")
-    public Mono<ResponseEntity<LoggedInDetails>> getLoggedInDetails(@RequestHeader(value = AUTHORIZATION, required = true) String authorizationHeader) {
+    public Mono<ResponseEntity<LoggedInDetails>> getLoggedInDetails(@RequestHeader(value = AUTHORIZATION) String authorizationHeader) {
         String token = authorizationHeader.substring(TOKEN_PREFIX.length());
         log.info("Fetching logged in details for token: {}", token);
         return userService.getLoggedInDetails(token)
-                .map(ResponseEntity::ok);
+                .map(ResponseEntity::ok)
+                .doOnError(e -> log.info("Error fetching logged in detail. Error: {}", e.getMessage()));
     }
 }

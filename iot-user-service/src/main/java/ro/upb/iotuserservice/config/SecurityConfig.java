@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/v1/iot-user/validate-api-key").permitAll()
                         .pathMatchers(HttpMethod.GET, "/v1/iot-user/api-key").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/v1/iot-user/refresh-api-key").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/login").permitAll()
                         .pathMatchers(HttpMethod.GET, "/v1/iot-user/token/refresh").permitAll()

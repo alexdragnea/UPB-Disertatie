@@ -18,43 +18,43 @@ const Sidebar = () => {
     <div className="flex">
       <div
         className={`${
-          open ? "w-40" : "w-16" // Further adjusted width
-        } bg-gray-800 h-screen p-4 pt-2 relative duration-300 shadow-md fixed top-0 left-0`}
+          open ? "w-28" : "w-16" // Smaller width for open state
+        } bg-gray-800 h-screen p-2 pt-2 relative duration-300 shadow-md fixed top-0 left-0`}
       >
         <ul className="pt-2">
-          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
-            <DashboardIcon />
-            <Link to="/" className={`${!open && "hidden"} ml-4`}>Dashboard</Link> {/* Increased left margin */}
+          <li className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
+            <DashboardIcon fontSize="small" /> {/* Smaller icon */}
+            <Link to="/" className={`${!open && "hidden"} ml-2 text-sm`}>Dashboard</Link> {/* Smaller text */}
           </li>
           <FetchSensors setSensors={setSensors} />
           {sensors.length > 0 ? (
             <li className="flex flex-col">
-              <div className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
-                <DevicesIcon />
-                <span className={`${!open && "hidden"} ml-4`}>Sensors</span> {/* Increased left margin */}
+              <div className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
+                <DevicesIcon fontSize="small" />
+                <span className={`${!open && "hidden"} ml-2 text-sm`}>Sensors</span>
               </div>
-              <ul className={`ml-4 ${!open ? "hidden" : ""}`}>
+              <ul className={`ml-2 ${!open ? "hidden" : ""}`}>
                 {sensors.map((sensor, index) => (
-                  <li key={index} className="text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
+                  <li key={index} className="text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
                     <Link to={`/devices/${sensor}`}>{sensor}</Link>
                   </li>
                 ))}
               </ul>
             </li>
           ) : (
-            <li className="text-gray-300 p-2 text-lg">No Sensors Available</li>
+            <li className="text-gray-300 p-1 text-sm">No Sensors Available</li>
           )}
-          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
-            <AddBoxIcon />
-            <Link to="/add-device" className={`${!open && "hidden"} ml-4`}>Add Device</Link> {/* Increased left margin */}
+          <li className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
+            <AddBoxIcon fontSize="small" />
+            <Link to="/add-device" className={`${!open && "hidden"} ml-2 text-sm`}>Add Device</Link>
           </li>
-          <li className="flex items-center text-gray-300 cursor-pointer p-2 hover:bg-gray-700 text-lg">
-            <ApiIcon />
-            <Link to="/api-usage" className={`${!open && "hidden"} ml-4`}>API Usage</Link> {/* Increased left margin */}
+          <li className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
+            <ApiIcon fontSize="small" />
+            <Link to="/api-usage" className={`${!open && "hidden"} ml-2 text-sm`}>API Usage</Link>
           </li>
         </ul>
       </div>
-      <div className={`flex-1 ml-${open ? '40' : '16'} p-4`} style={{ marginTop: '60px' }}>
+      <div className={`flex-1 ml-${open ? '28' : '16'} p-4`} style={{ marginTop: '60px' }}>
         {/* Main content goes here */}
       </div>
     </div>

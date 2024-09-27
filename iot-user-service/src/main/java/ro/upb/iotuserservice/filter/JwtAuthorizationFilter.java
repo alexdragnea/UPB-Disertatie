@@ -34,7 +34,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         logHeaders(httpServletRequest);
         String userId = httpServletRequest.getHeader("userId");
-        List<Map<String, String>> authorities = new ArrayList<>();
         String authoritiesStr = httpServletRequest.getHeader("authorities");
         Set<SimpleGrantedAuthority> simpleGrantedAuthorities = new HashSet<>();
         if (validString(authoritiesStr)) {

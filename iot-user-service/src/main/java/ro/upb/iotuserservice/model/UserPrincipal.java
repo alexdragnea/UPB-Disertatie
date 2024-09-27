@@ -38,9 +38,6 @@ public class UserPrincipal implements UserDetails {
         return user.getId();
     }
 
-    public String getRole() {
-        return user.getRole();
-    }
 
     public String getFirstName() {
         return user.getFirstName();

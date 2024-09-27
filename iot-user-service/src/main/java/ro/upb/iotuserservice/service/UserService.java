@@ -3,16 +3,13 @@ package ro.upb.iotuserservice.service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.RegisterUserRequest;
-import ro.upb.iotuserservice.dto.UserCredential;
 import ro.upb.iotuserservice.dto.UserDto;
 import ro.upb.iotuserservice.exception.EmailExistException;
 import ro.upb.iotuserservice.exception.EmailNotFoundException;
@@ -54,7 +51,6 @@ public class UserService implements ReactiveUserDetailsService {
                     newUser.setLastName(request.getLastName());
                     newUser.setEmail(request.getEmail());
                     newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-                    newUser.setRole("ROLE_USER");
                     newUser.setAuthorities(new String[]{"ROLE_USER"});
                     return userRepository.save(newUser)
                             .flatMap(user ->
@@ -74,8 +70,7 @@ public class UserService implements ReactiveUserDetailsService {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
         String userId = decodedJWT.getClaim("userId").asString();
         String username = decodedJWT.getClaim("username").asString();
-        List<GrantedAuthority> authorities = jwtTokenProvider.getAuthorities(decodedJWT);
-        return Mono.just(new UserDto(userId, authorities, username));
+        return Mono.just(new UserDto(userId, username));
     }
 
     public Mono<User> getUserById(String id) {
@@ -87,11 +82,6 @@ public class UserService implements ReactiveUserDetailsService {
         return userRepository
                 .findUserByEmail(email)
                 .switchIfEmpty(Mono.error(new EmailNotFoundException("No user found for email: " + email)));
-    }
-
-    public Mono<UserCredential> getUserCredentialsById(String id) {
-        return userRepository.findById(id)
-                .map(user -> new UserCredential(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail()));
     }
 
     public Mono<LoggedInDetails> getLoggedInDetails(String token) {
@@ -114,12 +104,6 @@ public class UserService implements ReactiveUserDetailsService {
         log.info("LoggedInDetails: {}", loggedInDetails);
         return Mono.just(loggedInDetails);
     }
-
-    @Transactional
-    public Mono<Void> deleteUserById(String id) {
-        return userRepository.deleteById(id);
-    }
-
     private Mono<Void> validateEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .flatMap(existingUser -> Mono.error(new EmailExistException("Email already exists.")))

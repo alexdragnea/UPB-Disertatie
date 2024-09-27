@@ -9,6 +9,9 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ro.upb.common.errorhandling.HttpResponse;
+import ro.upb.iotuserservice.exception.ApiKeyUnauthorizedException;
+
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,6 +23,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<HttpResponse> handleMissingRequestHeaders(MissingRequestHeaderException ex) {
         return createHttpResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ApiKeyUnauthorizedException.class)
+    public ResponseEntity<HttpResponse> handleApiKeyUnauthorized(ApiKeyUnauthorizedException e) {
+        return createHttpResponse(UNAUTHORIZED, e.getMessage());
     }
 
     @ExceptionHandler(MissingPathVariableException.class)

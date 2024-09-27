@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { TextField, Button, Paper, Grid, Snackbar, Alert } from '@mui/material';
+import { TextField, Button, Paper, Grid, Snackbar, Alert, CircularProgress } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../AuthContext'; // Adjust the import based on your structure
 
-const API_URL = 'http://localhost:8888/v1/iot-user';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8888/v1/iot-user';
 
 export default function LoginPage() {
     const { login } = useContext(AuthContext); // Get login function from context
@@ -11,10 +11,13 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false); // Loader state
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true); // Start loading
+
         try {
             const response = await fetch(`${API_URL}/login`, {
                 method: 'POST',
@@ -33,10 +36,17 @@ export default function LoginPage() {
                 navigate('/'); // Redirect to home page
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Login failed.');
+                // Handle specific error messages
+                if (response.status === 401) {
+                    setError('Invalid email or password.');
+                } else {
+                    setError(errorData.message || 'Login failed.');
+                }
             }
         } catch (error) {
             setError('An unexpected error occurred.');
+        } finally {
+            setLoading(false); // Stop loading
         }
     };
 
@@ -74,8 +84,9 @@ export default function LoginPage() {
                             variant="contained"
                             color="primary"
                             style={{ marginTop: 20 }}
+                            disabled={loading} // Disable button during loading
                         >
-                            Login
+                            {loading ? <CircularProgress size={24} /> : 'Login'}
                         </Button>
                         <Button
                             component={Link}

@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ro.upb.iotbridgeservice.client.ApiKeyServiceClient;
-import ro.upb.iotbridgeservice.client.UserServiceClient;
 
 @Service
 @RequiredArgsConstructor
@@ -15,8 +14,8 @@ public class AuthService {
     private final ApiKeyServiceClient apiKeyServiceClient;
     public Mono<Boolean> isAuthorizedWithApiKey(String userId, String apiKey) {
         return apiKeyServiceClient.getApiKey(apiKey, userId)
-                .doOnSubscribe(subscription -> log.debug("Subscription started to validate API key"))
-                .doOnSuccess(apiKeyResponse -> log.debug("Validated API key: {}", apiKeyResponse))
+                .doOnSubscribe(subscription -> log.info("Subscription started to validate API key"))
+                .doOnSuccess(apiKeyResponse -> log.info("Validated API key: {}", apiKeyResponse))
                 .doOnError(error -> log.error("Error validating API key: {}", error.getMessage()))
                 .map(apiKeyResponse -> {
                     boolean isAuthorized = apiKeyResponse.getUserId().equals(userId);

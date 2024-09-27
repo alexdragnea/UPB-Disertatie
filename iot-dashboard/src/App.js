@@ -2,7 +2,7 @@ import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import { AuthProvider, AuthContext } from './AuthContext'; 
+import { AuthProvider, AuthContext } from './AuthContext'; // Import AuthContext here
 import PrivateRoute from './PrivateRoute'; // Adjust the path if necessary
 import SensorList from './components/SensorList';
 import SensorDetails from './components/SensorDetails';
@@ -26,7 +26,7 @@ function App() {
 }
 
 const AppWithAuth = () => {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated } = useContext(AuthContext); // Accessing AuthContext here
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
