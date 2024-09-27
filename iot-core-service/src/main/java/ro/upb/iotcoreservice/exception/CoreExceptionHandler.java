@@ -14,13 +14,22 @@ import static org.springframework.http.HttpStatus.*;
 public class CoreExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> generalExceptionHandler(Exception exception) {
-        return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<HttpResponse> generalExceptionHandler(Exception exception) {
+        return createHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
     }
-
     @ExceptionHandler(MeasurementNotFoundEx.class)
     public ResponseEntity<HttpResponse> measurementNotFoundEx(MeasurementNotFoundEx e) {
         return createHttpResponse(NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DeviceNotFoundEx.class)
+    public ResponseEntity<HttpResponse> deviceNotFoundEx(DeviceNotFoundEx e) {
+        return createHttpResponse(NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(DeviceAlreadyExistsEx.class)
+    public ResponseEntity<HttpResponse> deviceAlreadyExists(DeviceAlreadyExistsEx e) {
+        return createHttpResponse(CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(KafkaValidationEx.class)

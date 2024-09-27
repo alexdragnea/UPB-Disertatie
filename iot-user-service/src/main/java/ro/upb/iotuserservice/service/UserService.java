@@ -1,7 +1,6 @@
 package ro.upb.iotuserservice.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +8,7 @@ import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.RegisterUserRequest;
@@ -25,7 +25,6 @@ import ro.upb.iotuserservice.util.JWTTokenProvider;
 import java.util.List;
 
 import static ro.upb.iotuserservice.constants.SecurityConstant.AUTHORITIES;
-import static ro.upb.iotuserservice.enums.Role.ROLE_USER;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +35,7 @@ public class UserService implements ReactiveUserDetailsService {
     private final UserRepository userRepository;
     private final LoginAttemptService loginAttemptService;
     private final JWTTokenProvider jwtTokenProvider;
+    private final ApiKeyService apiKeyService;
 
     @Override
     public Mono<UserDetails> findByUsername(String email) {
@@ -45,21 +45,30 @@ public class UserService implements ReactiveUserDetailsService {
                 .switchIfEmpty(Mono.error(new EmailNotFoundException("No user found for email: " + email)));
     }
 
-    @Transactional
+    // Todo: Enable Reactive Transactional
     public Mono<Void> register(RegisterUserRequest request) {
         return validateEmail(request.getEmail())
-                .then(Mono.just(new User()))
-                .doOnNext(newUser -> {
+                .then(Mono.defer(() -> {
+                    User newUser = new User();
                     newUser.setFirstName(request.getFirstName());
                     newUser.setLastName(request.getLastName());
                     newUser.setEmail(request.getEmail());
                     newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-                    newUser.setRole(ROLE_USER.name());
-                    newUser.setAuthorities(ROLE_USER.getAuthorities());
-                })
-                .flatMap(userRepository::save)
-                .then();
+                    newUser.setRole("ROLE_USER");
+                    newUser.setAuthorities(new String[]{"ROLE_USER"});
+                    return userRepository.save(newUser)
+                            .flatMap(user ->
+                                    apiKeyService.generateApiKey(user.getId())
+                                            .then()
+                                            .onErrorResume(e -> {
+                                                log.error("Failed to generate API key for user: {}", user.getId(), e);
+                                                return userRepository.delete(user).then();
+                                            })
+                            )
+                            .then();
+                }));
     }
+
 
     public Mono<UserDto> validateToken(String token) {
         DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);

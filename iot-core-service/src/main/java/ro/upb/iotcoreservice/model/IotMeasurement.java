@@ -20,6 +20,9 @@ public class IotMeasurement {
     @Column(tag = true)
     private String userId;
 
+    @Column(tag = true)
+    private String sensorName;
+
     @Column
     private Double value;
 

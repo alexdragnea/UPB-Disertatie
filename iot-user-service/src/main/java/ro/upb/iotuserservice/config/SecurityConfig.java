@@ -18,9 +18,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        return http.csrf().disable()
-                .cors().and()
+        return http
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/v1/iot-user/validate-api-key").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/v1/iot-user/api-key").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/v1/iot-user/login").permitAll()
                         .pathMatchers(HttpMethod.GET, "/v1/iot-user/token/refresh").permitAll()
@@ -31,12 +35,10 @@ public class SecurityConfig {
                         .pathMatchers("/actuator/health/**").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated())
-                .exceptionHandling()
-                .accessDeniedHandler(jwtAccessDeniedHandler)
-                .and()
-                .headers()
-                .frameOptions().disable()
-                .and()
+                .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
+                        .accessDeniedHandler(jwtAccessDeniedHandler))
+                .headers(headersSpec -> headersSpec
+                        .frameOptions(ServerHttpSecurity.HeaderSpec.FrameOptionsSpec::disable))
                 .build();
     }
 }

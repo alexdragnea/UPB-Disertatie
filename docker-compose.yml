@@ -138,11 +138,13 @@ services:
       - kafka-service
       - influxdb
       - iot-discovery-service
+      - mongodb_container
     ports:
       - "8002:8002"
       - "5006:5006"
     environment:
       - spring.kafka.bootstrap-servers=kafka-service:9092
+      - SPRING_DATA_MONGODB_URI=mongodb://root:mongopw@mongodb_container:27017
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8002/actuator/health"]
       interval: 5s
@@ -200,6 +202,18 @@ services:
       - "9090:9090"
     networks:
       - iot-network
+  
+  # react-app:
+  #   build:
+  #     context: ./iot-dashboard  # Ensure this is the correct path to your React app
+  #     dockerfile: Dockerfile
+  #   container_name: react-app
+  #   ports:
+  #     - "3333:3333"  # Correct format for mapping ports
+  #   networks:
+  #     - iot-network
+  #   depends_on:
+  #     - iot-discovery-service
 
   grafana:
     image: grafana/grafana:latest

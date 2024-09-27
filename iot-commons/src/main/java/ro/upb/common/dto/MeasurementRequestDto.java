@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class MeasurementRequestDto {
 
     private String measurement;
+    private String sensorName;
     private String userId;
     private Double value;
     private String unit;

@@ -1,36 +1,62 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { Suspense, lazy, useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import DeviceList from './components/DeviceList';
-import DeviceDetails from './components/DeviceDetails';
-import AddDevice from './components/AddDevice';
-import UserProfile from './components/UserProfile';
+import { AuthProvider, AuthContext } from './AuthContext'; 
+import PrivateRoute from './PrivateRoute'; // Adjust the path if necessary
+import SensorList from './components/SensorList';
+import SensorDetails from './components/SensorDetails';
+
+// Lazy load the components
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const AddDevice = lazy(() => import('./components/AddDevice'));
+const UserProfile = lazy(() => import('./components/UserProfile'));
+const LoginPage = lazy(() => import('./components/LoginPage'));
+const RegisterPage = lazy(() => import('./components/RegisterPage'));
+const ApiUsagePage = lazy(() => import('./components/ApiUsagePage'));
 
 function App() {
-    const devices = [
-        { id: '1', name: 'Sensor A', type: 'Temperature' },
-        { id: '2', name: 'Sensor B', type: 'Humidity' },
-    ];
-
     return (
-        <Router>
-            <Header />
-            <div style={{ display: 'flex', marginTop: '60px' }}>
-                <Sidebar />
-                <div style={{ flexGrow: 1, padding: '20px' }}>
-                    <Routes>
-                        <Route path="/admin/dashboard" element={<Dashboard />} />
-                        <Route path="/admin/devices" element={<DeviceList devices={devices} />} />
-                        <Route path="/admin/devices/:id" element={<DeviceDetails devices={devices} />} />
-                        <Route path="/admin/add-device" element={<AddDevice />} />
-                        <Route path="/admin/profile" element={<UserProfile />} />
-                    </Routes>
-                </div>
-            </div>
-        </Router>
+        <AuthProvider>
+            <Router>
+                <AppWithAuth />
+            </Router>
+        </AuthProvider>
     );
 }
+
+const AppWithAuth = () => {
+    const { isAuthenticated } = useContext(AuthContext);
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
+    };
+
+    return (
+        <>
+            <Header onLogout={handleLogout} isAuthenticated={isAuthenticated} />
+            <div style={{ display: 'flex', marginTop: '50px' }}>
+                {isAuthenticated && <Sidebar />}
+                <div style={{ flexGrow: 1, padding: '20px' }}>
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <Routes>
+                            <Route path="/" element={<PrivateRoute Component={Dashboard} />} />
+                            <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
+                            <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
+                            <Route path="/sensors" element={<PrivateRoute Component={SensorList} />} />
+                            <Route path="/sensors/:id" element={<PrivateRoute Component={SensorDetails} />} />
+                            <Route path="/add-device" element={<PrivateRoute Component={AddDevice} />} />
+                            <Route path="/profile" element={<PrivateRoute Component={UserProfile} />} />
+                            <Route path="/api-usage" element={<PrivateRoute Component={ApiUsagePage} />} />
+                            <Route path="*" element={<Navigate to="/" />} />
+                        </Routes>
+                    </Suspense>
+                </div>
+            </div>
+        </>
+    );
+};
 
 export default App;

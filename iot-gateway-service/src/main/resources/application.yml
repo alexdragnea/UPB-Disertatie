@@ -21,17 +21,46 @@ spring:
           uri: lb://iot-bridge-service
           predicates:
             - Path=/v1/iot-bridge/**
+          metadata:
+            cors:
+              allowedOrigins: "http://localhost:3333"
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - OPTIONS
+              allowedHeaders: "*"
 
         - id: iot-core-service
           uri: lb://iot-core-service
           predicates:
             - Path=/v1/iot-core/**
+          metadata:
+            cors:
+              allowedOrigins: "http://localhost:3333"
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - OPTIONS
+              allowedHeaders: "*"
 
         - id: iot-user-service
           uri: lb://iot-user-service
           predicates:
             - Path=/v1/iot-user/**
-
+          metadata:
+            cors:
+              allowedOrigins: "http://localhost:3333"
+              allowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - OPTIONS
+              allowedHeaders: "*"
 
       discovery:
         locator:

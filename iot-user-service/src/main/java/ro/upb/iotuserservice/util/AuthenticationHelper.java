@@ -33,8 +33,7 @@ public class AuthenticationHelper {
     public LoginResponse getLoginResponse(UserPrincipal user) {
         return new LoginResponse(
                 jwtTokenProvider.generateAccessToken(user),
-                jwtTokenProvider.generateRefreshToken(user),
-                user.getRole());
+                jwtTokenProvider.generateRefreshToken(user));
     }
 
     public Mono<Void> authenticate(String email, String password) {

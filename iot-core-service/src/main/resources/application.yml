@@ -3,6 +3,7 @@ server:
   error:
     include-message: always
 
+
 influxdb:
   url: http://influxdb:8086
   token: tDdAyUYuIau7IFtxvLQ23gIoprJ5x1-xhJ7iN0Na8Sq_29rCDPiG-lEnTcDw9-CQ4M3IFyTSXhuC0Thf5pUy4g==
@@ -14,11 +15,20 @@ spring:
     name: iot-core-service
   main:
     web-application-type: reactive
+  data:
+    mongodb:
+      authentication-database: admin
+      uri: mongodb://localhost:27017
+      database: iot
   kafka:
     bootstrap-servers: kafka-service:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      session-timeout-ms: 10000
+      request-timeout-ms: 30000
+      max-poll-interval-ms: 300000
 
 eureka:
   client:
