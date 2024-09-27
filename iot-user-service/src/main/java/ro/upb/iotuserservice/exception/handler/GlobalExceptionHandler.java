@@ -13,6 +13,10 @@ import ro.upb.common.errorhandling.HttpResponse;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<HttpResponse> generalExceptionHandler(Exception exception) {
+        return createHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+    }
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<HttpResponse> handleMissingRequestHeaders(MissingRequestHeaderException ex) {
         return createHttpResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
