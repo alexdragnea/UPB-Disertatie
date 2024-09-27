@@ -1,16 +1,11 @@
 package ro.upb.iotuserservice.util;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import ro.upb.iotuserservice.exception.TokenNotValidException;
 import ro.upb.iotuserservice.model.UserPrincipal;
@@ -41,7 +36,7 @@ public class JWTTokenProvider {
                 .withIssuedAt(new Date())
                 .withSubject(userPrincipal.getUsername())
                 .withArrayClaim(AUTHORITIES, claims)
-                .withClaim("userId", userPrincipal.getUserId().toString())
+                .withClaim("userId", userPrincipal.getUserId())
                 .withClaim("firstName", userPrincipal.getFirstName())
                 .withClaim("lastName", userPrincipal.getLastName())
                 .withClaim("email", userPrincipal.getEmail())
@@ -54,7 +49,7 @@ public class JWTTokenProvider {
                 .withIssuer(Company_LLC)
                 .withAudience(Company_ADMINISTRATION)
                 .withIssuedAt(new Date())
-                .withSubject(userPrincipal.getUserId().toString())
+                .withSubject(userPrincipal.getUserId())
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXP))
                 .sign(HMAC256(secret.getBytes()));
     }
@@ -64,22 +59,27 @@ public class JWTTokenProvider {
         return stream(claims).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    public Authentication getAuthentication(
-            String email, List<GrantedAuthority> authorities, HttpServletRequest request) {
-        UsernamePasswordAuthenticationToken userPasswordAuthToken =
-                new UsernamePasswordAuthenticationToken(email, null, authorities);
-        userPasswordAuthToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        return userPasswordAuthToken;
-    }
-
     public DecodedJWT decodeToken(String value) {
         if (isNull(value)) {
             throw new TokenNotValidException("Token has not been provided");
         }
 
         DecodedJWT decodedJWT = JWT.decode(value);
+
+        if (isJWTExpired(decodedJWT)) {
+            throw new TokenNotValidException("Token has expired");
+        }
+
         log.info("Token decoded successfully");
         return decodedJWT;
+    }
+
+
+    public boolean isJWTExpired(DecodedJWT decodedJWT) {
+        Date expiresAt = decodedJWT.getExpiresAt();
+        log.info("Token expires at: {}", expiresAt);
+
+        return expiresAt.before(new Date());
     }
 
     private String[] getClaimsFromUser(UserPrincipal user) {

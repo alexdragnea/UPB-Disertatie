@@ -6,7 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ro.upb.iotbridgeservice.dto.ApiKeyResponse;
 
-import static ro.upb.iotbridgeservice.util.WebConstants.API_KEY_HEADER;
+import static ro.upb.common.constant.WebConstants.API_KEY_HEADER;
 
 @RequiredArgsConstructor
 @Component

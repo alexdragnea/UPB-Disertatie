@@ -96,7 +96,7 @@ public class UserController {
     }
 
     @GetMapping("/logged")
-    public Mono<ResponseEntity<LoggedInDetails>> getLoggedInDetails(@RequestHeader(AUTHORIZATION) String authorizationHeader) {
+    public Mono<ResponseEntity<LoggedInDetails>> getLoggedInDetails(@RequestHeader(value = AUTHORIZATION, required = true) String authorizationHeader) {
         String token = authorizationHeader.substring(TOKEN_PREFIX.length());
         log.info("Fetching logged in details for token: {}", token);
         return userService.getLoggedInDetails(token)

@@ -10,6 +10,8 @@ import ro.upb.iotuserservice.exception.ApiKeyUnauthorizedException;
 import ro.upb.iotuserservice.service.ApiKeyService;
 import ro.upb.iotuserservice.util.JWTTokenProvider;
 
+import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @RequestMapping("/v1/iot-user")
 @RequiredArgsConstructor
@@ -20,21 +22,21 @@ public class ApiKeyController {
     private final JWTTokenProvider jwtTokenProvider;
 
     @GetMapping("/api-key")
-    public Mono<ApiKeyResponse> getApiKey(@RequestHeader("Authorization") String authHeader) {
+    public Mono<ApiKeyResponse> getApiKey(@RequestHeader(AUTHORIZATION) String authHeader) {
         String userId = jwtTokenProvider.decodeToken(authHeader.substring(7)).getClaim("userId").asString();
         return apiKeyService.getApiKeyByUserId(userId)
                 .switchIfEmpty(Mono.error(new ApiKeyUnauthorizedException("No API key found for the user.")));
     }
 
     @GetMapping("/validate-api-key")
-    public Mono<ApiKeyResponse> getApiKey(@RequestHeader(WebConstants.API_KEY_HEADER) String apiKey, String userId) {
+    public Mono<ApiKeyResponse> getApiKey(@RequestHeader(WebConstants.API_KEY_HEADER) String apiKey, @RequestParam String userId) {
         return apiKeyService.getApiKeyByUserId(userId)
                 .filter(apiKeyResponse -> apiKeyResponse.getApiKey().equals(apiKey))
                 .switchIfEmpty(Mono.error(new ApiKeyUnauthorizedException("API key is invalid.")));
     }
 
     @PostMapping("/refresh-api-key")
-    public Mono<ApiKeyResponse> refreshApiKey(@RequestHeader("Authorization") String authHeader) {
+    public Mono<ApiKeyResponse> refreshApiKey(@RequestHeader(AUTHORIZATION) String authHeader) {
         String userId = jwtTokenProvider.decodeToken(authHeader.substring(7)).getClaim("userId").asString();
         return apiKeyService.generateApiKey(userId);
     }
