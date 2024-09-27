@@ -1,7 +1,7 @@
 package ro.upb.iotuserservice.constants;
 
 public class SecurityConstant {
-    public static final long EXPIRATION_TIME = 15 * 60 * 1000; // 15 minutes
+    public static final long EXPIRATION_TIME = 30 * 60 * 1000; // 15 minutes
     public static final long REFRESH_TOKEN_EXP = 7 * 24 * 60 * 60 * 1000; // 7 days
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String Company_LLC = "Iot-Platform";

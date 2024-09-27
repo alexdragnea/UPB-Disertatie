@@ -226,19 +226,18 @@ Body:
 
     return (
         <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: '100vh',
-                backgroundColor: '#f0f0f0',
-                paddingY: 1,
-                width: '100%',
-                marginTop: -6,
-            }}
-        >
-            <CssBaseline />
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100vh',
+            backgroundColor: '#f9f9f9',
+            paddingY: 3,
+            width: '100%',
+        }}
+    >
+        <CssBaseline />
 
-            <Container sx={{ mt: 2, mb: 2, width: '100%', maxWidth: 'xl', paddingX: { xs: 2, sm: 4 } }}>
+        <Container sx={{ mt: 4, mb: 4, width: '100%', maxWidth: 'lg', paddingX: { xs: 2, sm: 4 } }}>
                 <Paper sx={{ padding: { xs: 2, sm: 3 }, borderRadius: 2, boxShadow: 3, backgroundColor: '#fff' }}>
                     <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                         <DeviceHub sx={{ marginRight: 1 }} /> API Usage Overview
