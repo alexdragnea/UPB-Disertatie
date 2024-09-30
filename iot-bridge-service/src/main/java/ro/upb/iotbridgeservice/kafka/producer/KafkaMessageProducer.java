@@ -60,9 +60,6 @@ public class KafkaMessageProducer {
         if (value == null) {
             throw new KafkaValidationEx("Value must not be null");
         }
-        if (value <= 0) {
-            throw new KafkaValidationEx("Value must be greater than 0");
-        }
 
         String unit = measurementRequestDto.getUnit();
         if (unit == null || unit.trim().isEmpty()){

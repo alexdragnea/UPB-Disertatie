@@ -17,9 +17,12 @@ import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
+import ro.upb.iotcoreservice.dto.IotMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,12 +111,22 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                         "|> filter(fn: (r) => r._measurement == \"%s\" and r.userId == \"%s\")",
                 measurementFilter.getStartTime(), measurementFilter.getEndTime(),
                 measurementFilter.getMeasurement(), measurementFilter.getUserId());
-
-
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(queryByTimestamp, IotMeasurement.class);
 
         return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, measurementFilter))));
+    }
+
+    @Override
+    public IotMeasurementDto mapToDto(IotMeasurement iotMeasurement) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+        return new IotMeasurementDto(
+                iotMeasurement.getMeasurement(),
+                iotMeasurement.getUserId(),
+                iotMeasurement.getValue(),
+                formatter.format(iotMeasurement.getTime()),
+                iotMeasurement.getUnit()
+        );
     }
 }

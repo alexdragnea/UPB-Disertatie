@@ -5,6 +5,7 @@ import reactor.core.publisher.Mono;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
+import ro.upb.iotcoreservice.dto.IotMeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
 public interface IotMeasurementService {
@@ -15,4 +16,6 @@ public interface IotMeasurementService {
     Mono<UserMeasurementDto> findUserMeasurements(String userId);
 
     Flux<IotMeasurement> findMeasurementsByTimestampAndUserId(MeasurementFilter measurementFilter);
+
+    IotMeasurementDto mapToDto(IotMeasurement iotMeasurement);
 }

@@ -9,8 +9,8 @@ import ro.upb.common.constant.ExMessageConstants;
 import ro.upb.common.errorhandling.UnauthorizedException;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
+import ro.upb.iotcoreservice.dto.IotMeasurementDto;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
-import ro.upb.iotcoreservice.model.IotMeasurement;
 import ro.upb.iotcoreservice.service.auth.AuthService;
 import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 import ro.upb.iotcoreservice.service.core.MeasurementFilterService;
@@ -28,11 +28,11 @@ public class IotMeasurementController {
     private final MeasurementFilterService measurementFilterService;
     private final AuthService authService;
 
-    @GetMapping("/measurements-by-filter")
-    public Flux<IotMeasurement> getMeasurementsByFilter(@RequestBody MeasurementFilter filter, @RequestHeader(AUTHORIZATION) String authorizationHeader) {
+    @PostMapping("/measurements-by-filter")
+    public Flux<IotMeasurementDto> getMeasurementsByFilter(@RequestBody MeasurementFilter filter, @RequestHeader(AUTHORIZATION) String authorizationHeader) {
         return authService.isAuthorized(filter.getUserId(), authorizationHeader).flatMapMany(isAuthorized -> {
             if (Boolean.TRUE.equals(isAuthorized)) {
-                return measurementFilterService.filterMeasurements(filter).onErrorResume(MeasurementNotFoundEx.class, ex -> {
+                return measurementFilterService.filterMeasurements(filter).map(iotMeasurementService::mapToDto).onErrorResume(MeasurementNotFoundEx.class, ex -> {
                     log.warn("Exception occurred: {}.", ex.getMessage());
                     return Flux.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, filter)));
                 });
@@ -40,7 +40,6 @@ public class IotMeasurementController {
                 return Flux.error(new UnauthorizedException(USER_NOT_AUTHORIZED));
             }
         });
-
     }
 
     @GetMapping("/measurements")
@@ -57,5 +56,4 @@ public class IotMeasurementController {
             }
         });
     }
-
 }

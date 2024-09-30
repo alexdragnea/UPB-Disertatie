@@ -36,7 +36,7 @@ const Sidebar = () => {
               <ul className={`ml-2 ${!open ? "hidden" : ""}`}>
                 {sensors.map((sensor, index) => (
                   <li key={index} className="text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
-                    <Link to={`/devices/${sensor}`}>{sensor}</Link>
+                    <Link to={`/sensor/${sensor}`}>{sensor}</Link>
                   </li>
                 ))}
               </ul>
@@ -44,10 +44,6 @@ const Sidebar = () => {
           ) : (
             <li className="text-gray-300 p-1 text-sm">No Sensors Available</li>
           )}
-          <li className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
-            <AddBoxIcon fontSize="small" />
-            <Link to="/add-device" className={`${!open && "hidden"} ml-2 text-sm`}>Add Device</Link>
-          </li>
           <li className="flex items-center text-gray-300 cursor-pointer p-1 hover:bg-gray-700 text-sm">
             <ApiIcon fontSize="small" />
             <Link to="/api-usage" className={`${!open && "hidden"} ml-2 text-sm`}>API Usage</Link>
