@@ -42,6 +42,11 @@ public class CoreExceptionHandler extends ResponseEntityExceptionHandler {
         return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
+    @ExceptionHandler(InfluxDbFailedOperationEx.class)
+    public ResponseEntity<HttpResponse> influxDbFailedOperationEx(InfluxDbFailedOperationEx e) {
+        return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<HttpResponse> unauthorizedEx(UnauthorizedException e) {
         return createHttpResponse(UNAUTHORIZED, e.getMessage());

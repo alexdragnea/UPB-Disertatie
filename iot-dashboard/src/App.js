@@ -35,7 +35,7 @@ const AppWithAuth = () => {
     return (
         <>
             <Header onLogout={handleLogout} isAuthenticated={isAuthenticated} />
-            <div style={{ display: 'flex', marginTop: '50px' }}>
+            <div style={{ display: 'flex', marginTop: '10px' }}>
                 {isAuthenticated && <Sidebar />}
                 <div style={{ flexGrow: 1, padding: '20px' }}>
                     <Suspense fallback={<div>Loading...</div>}>

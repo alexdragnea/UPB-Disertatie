@@ -302,7 +302,7 @@ export default function SensorDetail() {
             {/* Conditionally Render the Chart with Consistent Dimensions */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 0 }}>
                 {chartType === 'line' && graphData && (
-                    <div style={{ width: '100%', height: '480px' }}>
+                    <div style={{ width: '100%', height: '520px' }}>
                         <Line
                             data={graphData}
                             options={{
@@ -316,7 +316,7 @@ export default function SensorDetail() {
                     </div>
                 )}
                 {chartType === 'bar' && graphData && (
-                    <div style={{ width: '100%', height: '480px' }}>
+                    <div style={{ width: '100%', height: '520px' }}>
                         <Bar
                             data={graphData}
                             options={{
@@ -334,7 +334,7 @@ export default function SensorDetail() {
                     </div>
                 )}
                 {chartType === 'pie' && graphData && (
-                    <div style={{ width: '100%', height: '480px' }}>
+                    <div style={{ width: '100%', height: '520px' }}>
                         <Pie
                             data={graphData}
                             options={{

@@ -5,9 +5,8 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderOptions;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotbridgeservice.kafka.serializer.IotRequestSerializer;
 
@@ -21,16 +20,19 @@ public class KafkaProducerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ProducerFactory<String, MeasurementRequestDto> producerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IotRequestSerializer.class);
-        return new DefaultKafkaProducerFactory<>(configProps);
+    public SenderOptions<String, MeasurementRequestDto> kafkaSenderOptions() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IotRequestSerializer.class);
+        props.put(ProducerConfig.ACKS_CONFIG, "all");
+        props.put(ProducerConfig.RETRIES_CONFIG, 10);
+
+        return SenderOptions.create(props);
     }
 
     @Bean
-    public KafkaTemplate<String, MeasurementRequestDto> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
+    public KafkaSender<String, MeasurementRequestDto> kafkaSender(SenderOptions<String, MeasurementRequestDto> kafkaSenderOptions) {
+        return KafkaSender.create(kafkaSenderOptions);
     }
 }

@@ -11,11 +11,10 @@ import ro.upb.common.dto.LoggedInDetails;
 @RequiredArgsConstructor
 public class UserServiceClient {
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient webClient;
 
     public Mono<LoggedInDetails> getUser(String authorizationHeader) {
-        return webClientBuilder
-                .build()
+        return webClient
                 .get()
                 .uri("http://iot-user-service:8003/v1/iot-user/logged")
                 .header(HttpHeaders.AUTHORIZATION, authorizationHeader)

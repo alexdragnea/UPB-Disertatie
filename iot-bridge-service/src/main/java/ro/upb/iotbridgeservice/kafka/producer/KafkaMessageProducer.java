@@ -2,37 +2,33 @@ package ro.upb.iotbridgeservice.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.KafkaException;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderRecord;
 import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
-
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaMessageProducer {
 
-    private final KafkaTemplate<String, MeasurementRequestDto> kafkaTemplate;
+    private final KafkaSender<String, MeasurementRequestDto> kafkaSender;
 
-    public void sendIotMeasurement(String topic, MeasurementRequestDto sensor) {
+    public Mono<Void> sendIotMeasurement(String topic, MeasurementRequestDto sensor) {
         validateMeasurement(sensor);
 
         log.info("Sending IotMeasurement: {}, to topic: {}.", sensor, topic);
 
-        CompletableFuture<SendResult<String, MeasurementRequestDto>> future = kafkaTemplate.send(topic, sensor);
-
-        future.whenComplete((result, ex) -> {
-            if (ex == null) {
-                log.info("Successfully sent message: {} to topic: {} with offset: {}", sensor, topic, result.getRecordMetadata().offset());
-            } else {
-                log.error("Failed to send message: {} to topic: {} due to: {}", sensor, topic, ex.getMessage());
-                throw new KafkaException(ex.getMessage());
-            }
-        });
+        return kafkaSender.send(Mono.just(SenderRecord.create(topic, null, null, null, sensor, null)))
+                .doOnError(ex -> {
+                    log.error("Failed to send message: {} to topic: {} due to: {}", sensor, topic, ex.getMessage());
+                    throw new KafkaProcessingEx("Failed to send message to Kafka");
+                })
+                .doOnNext(result -> log.info("Successfully sent message: {} to topic: {} with offset: {}", sensor, topic, result.recordMetadata().offset()))
+                .then();
     }
 
     private void validateMeasurement(MeasurementRequestDto measurementRequestDto) {
@@ -62,7 +58,7 @@ public class KafkaMessageProducer {
         }
 
         String unit = measurementRequestDto.getUnit();
-        if (unit == null || unit.trim().isEmpty()){
+        if (unit == null || unit.trim().isEmpty()) {
             throw new KafkaValidationEx("Unit must not be blank");
         }
     }

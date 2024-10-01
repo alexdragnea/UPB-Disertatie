@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.config.cache;
+package ro.upb.iotbridgeservice.config.cache;
 
 import com.github.benmanes.caffeine.cache.AsyncCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -33,7 +33,7 @@ public class CacheConfig {
     }
 
     @Bean
-    public AsyncCache<Object, Object> asyncCaffeineCache(Caffeine<Object, Object> caffeine) {
+    public AsyncCache<String, Boolean> asyncCaffeineCache(Caffeine<Object, Object> caffeine) {
         return caffeine.buildAsync();
     }
 

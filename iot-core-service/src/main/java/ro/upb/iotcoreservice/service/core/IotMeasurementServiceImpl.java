@@ -4,8 +4,6 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.reactive.InfluxDBClientReactive;
 import com.influxdb.client.reactive.QueryReactiveApi;
 import com.influxdb.client.reactive.WriteReactiveApi;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.disposables.Disposable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -18,6 +16,7 @@ import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.dto.IotMeasurementDto;
+import ro.upb.iotcoreservice.exception.InfluxDbFailedOperationEx;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
@@ -55,9 +54,13 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         log.info("Persisting IoTMeasurementPoint.");
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);
 
-        Disposable subscriber = Flowable.fromPublisher(publisher).subscribe(info -> log.info("Successfully persisted measurement: {}.", iotMeasurement));
-
-        subscriber.dispose();
+        Mono.from(publisher)
+                .doOnSuccess(success -> log.info("Successfully persisted measurement: {}.", iotMeasurement))
+                .doOnError(error -> {
+                    log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage());
+                    throw new InfluxDbFailedOperationEx("Failed to persist measurement", error);
+                })
+                .subscribe();
     }
 
     @Override

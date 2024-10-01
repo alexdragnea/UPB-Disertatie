@@ -1,14 +1,15 @@
 package ro.upb.iotcoreservice.aop;
 
+import com.github.benmanes.caffeine.cache.AsyncCache;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
+
+import java.util.concurrent.CompletableFuture;
 
 @Aspect
 @Component
@@ -16,39 +17,30 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class CacheAspect {
 
-    private final CacheManager cacheManager;
+    private final AsyncCache<Object, Object> asyncCache;
 
     @Around("@annotation(customCacheable)")
     public Object around(ProceedingJoinPoint joinPoint, CustomCacheable customCacheable) throws Throwable {
-        String cacheName = customCacheable.cacheName();
-        Cache cache = cacheManager.getCache(cacheName);
-        if (cache == null) {
-            log.warn("Cache '{}' not found. Proceeding with method execution.", cacheName);
-            return joinPoint.proceed();
-        }
-
         String key = generateKey(joinPoint.getArgs());
         log.info("Generated cache key: '{}'.", key);
-        Cache.ValueWrapper cachedValue = cache.get(key);
-        if (cachedValue != null) {
+
+        CompletableFuture<Object> cachedValueFuture = asyncCache.getIfPresent(key);
+        if (cachedValueFuture != null) {
             log.info("Cache hit for key '{}'. Returning cached value.", key);
-            return cachedValue.get();
+            return cachedValueFuture.get();
         }
 
         log.info("Cache miss for key '{}'. Executing method and caching result.", key);
         Object result = joinPoint.proceed();
 
         if (result instanceof Flux<?>) {
-            return ((Flux<?>) result)
-                    .collectList()
-                    .doOnNext(list -> {
-                        log.info("Caching result list for key '{}'.", key);
-                        cache.put(key, list);
-                    })
-                    .flatMapMany(Flux::fromIterable);
+            return ((Flux<?>) result).collectList().doOnNext(list -> {
+                log.info("Caching result list for key '{}'.", key);
+                asyncCache.put(key, CompletableFuture.completedFuture(list));
+            }).flatMapMany(Flux::fromIterable);
         } else {
             log.info("Caching result object for key '{}'.", key);
-            cache.put(key, result);
+            asyncCache.put(key, CompletableFuture.completedFuture(result));
             return result;
         }
     }
