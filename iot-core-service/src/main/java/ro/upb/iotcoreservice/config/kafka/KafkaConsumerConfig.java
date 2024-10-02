@@ -43,6 +43,14 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, requestTimeoutMs);   // Request timeout
         configProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalMs); // Max poll interval
 
+        // new props for performance tweaking
+        configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);  // Fetch 500 records per poll
+        configProps.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 1024);  // Minimum data (1 KB)
+        configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 50);  // Wait up to 50ms to fetch data
+        configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);  // Disable auto-commit
+
+
+
         return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new IotRequestDeserializer());
     }
 
@@ -50,7 +58,14 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, MeasurementRequestDto> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, MeasurementRequestDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
+
+        // new prop for performance tweaking
+        factory.setConcurrency(5);
+        // add error handler
         return factory;
     }
+
+    //For large-scale, high-frequency systems, consider integrating metrics (e.g., count of successfully or failed deserializations).
+    // You could use something like Micrometer for that, though it's more of an advanced optimization for monitoring.
 
 }
