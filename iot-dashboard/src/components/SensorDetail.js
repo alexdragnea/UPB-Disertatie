@@ -14,6 +14,13 @@ import {
     MenuItem,
     Snackbar,
     Alert,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TablePagination,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'; // Green check mark for online
 import CancelIcon from '@mui/icons-material/Cancel'; // Red cross for offline
@@ -44,14 +51,20 @@ export default function SensorDetail() {
     const { user, refreshToken } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [graphData, setGraphData] = useState(null);
+    const [tableData, setTableData] = useState([]); // State for table data
     const [error, setError] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [chartType, setChartType] = useState('line');
     const [filterOption, setFilterOption] = useState('last7days');
+    const [aggregationLevel, setAggregationLevel] = useState('minute');
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [lastMeasurementTime, setLastMeasurementTime] = useState(null);
     const [isOnline, setIsOnline] = useState(false);
+
+    // Pagination state
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5); // Adjust number of rows per page as needed
 
     // Function to calculate start time based on filter option
     const getStartTime = (option) => {
@@ -66,6 +79,41 @@ export default function SensorDetail() {
             default:
                 return ''; // Default to empty for custom range
         }
+    };
+
+    // Function to aggregate data based on selected interval
+    const aggregateData = (measurements, interval) => {
+        const aggregated = {};
+
+        measurements.forEach((measurement) => {
+            const date = new Date(measurement.time);
+            let key;
+
+            switch (interval) {
+                case 'minute':
+                    key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+                    break;
+                case 'hour':
+                    key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}`;
+                    break;
+                case 'day':
+                    key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+                    break;
+                default:
+                    return;
+            }
+
+            if (!aggregated[key]) {
+                aggregated[key] = { sum: 0, count: 0 };
+            }
+            aggregated[key].sum += measurement.value;
+            aggregated[key].count += 1;
+        });
+
+        return Object.entries(aggregated).map(([key, { sum, count }]) => ({
+            time: key,
+            value: sum / count, // Calculate average
+        }));
     };
 
     const fetchData = async () => {
@@ -99,13 +147,18 @@ export default function SensorDetail() {
             });
 
             const measurements = response.data;
-            const labels = measurements.map(m => format(new Date(m.time), 'MMM d, yyyy, h:mm a'));
-            const dataValues = measurements.map(m => m.value);
             const unit = measurements.length > 0 ? measurements[0].unit : '';
             const lastTime = measurements.length > 0 ? new Date(measurements[measurements.length - 1].time) : null;
 
+            // Aggregate data based on selected aggregation level
+            const aggregatedMeasurements = aggregateData(measurements, aggregationLevel);
+
+            // Prepare data for charts
+            const labels = aggregatedMeasurements.map(m => m.time);
+            const dataValues = aggregatedMeasurements.map(m => m.value);
+
             setGraphData({
-                labels,
+                labels: labels,
                 datasets: [
                     {
                         label: `${sensorId} (${unit})`,
@@ -116,6 +169,8 @@ export default function SensorDetail() {
                     },
                 ],
             });
+
+            setTableData(measurements); // Save raw measurements for the table display
 
             // Update sensor online status based on the last measurement time
             if (lastTime) {
@@ -139,14 +194,13 @@ export default function SensorDetail() {
             setStartTime(initialStartTime);
             setEndTime(initialEndTime);
             setFilterOption('last7days'); // Default filter option
-
             fetchData();
         }
     }, [user]);
 
     useEffect(() => {
         fetchData(); // Fetch data when time or filter option changes
-    }, [sensorId, startTime, endTime, filterOption]);
+    }, [sensorId, startTime, endTime, filterOption, aggregationLevel]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -175,9 +229,23 @@ export default function SensorDetail() {
         }
     };
 
+    const handleAggregationChange = (event) => {
+        setAggregationLevel(event.target.value); // Set aggregation level based on user selection
+    };
+
     // Function to handle snackbar close
     const handleSnackbarClose = () => {
         setSnackbarOpen(false);
+    };
+
+    // Handle pagination changes
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
     };
 
     if (loading) {
@@ -193,7 +261,7 @@ export default function SensorDetail() {
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 boxSizing: 'border-box',
-                overflow: 'hidden'
+                overflow: 'hidden',
             }}
         >
             <Typography variant="h6" gutterBottom style={{ textAlign: 'center' }}>
@@ -278,6 +346,25 @@ export default function SensorDetail() {
                 </Grid>
             </form>
 
+            {/* Aggregation Level Selector */}
+            <Grid container spacing={1} alignItems="center" justifyContent="center" style={{ marginBottom: 10 }}>
+                <Grid item xs={6}>
+                    <TextField
+                        label="Aggregation Level"
+                        select
+                        value={aggregationLevel}
+                        onChange={handleAggregationChange}
+                        fullWidth
+                        size="small"
+                        variant="outlined"
+                    >
+                        <MenuItem value="minute">Minute</MenuItem>
+                        <MenuItem value="hour">Hour</MenuItem>
+                        <MenuItem value="day">Day</MenuItem>
+                    </TextField>
+                </Grid>
+            </Grid>
+
             {/* Chart Type Selector */}
             <Grid container spacing={1} alignItems="center" justifyContent="center" style={{ marginBottom: 0 }}>
                 <Grid item xs={4}>
@@ -310,6 +397,28 @@ export default function SensorDetail() {
                                 maintainAspectRatio: false,
                                 plugins: {
                                     legend: { position: 'top' },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (tooltipItem) => {
+                                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)}`; // Show values with 2 decimals
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Time',
+                                        },
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: `${graphData.datasets[0].label}`,
+                                        },
+                                        beginAtZero: true,
+                                    },
                                 },
                             }}
                         />
@@ -326,7 +435,28 @@ export default function SensorDetail() {
                                     legend: { position: 'top' },
                                     title: {
                                         display: true,
-                                        text: `Measurement Data for ${sensorId} (${graphData.datasets[0].label})`,
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: (tooltipItem) => {
+                                                return `${tooltipItem.dataset.label}: ${tooltipItem.raw.toFixed(2)}`; // Show values with 2 decimals
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Time',
+                                        },
+                                    },
+                                    y: {
+                                        title: {
+                                            display: true,
+                                            text: `${graphData.datasets[0].label}`,
+                                        },
+                                        beginAtZero: true,
                                     },
                                 },
                             }}
@@ -344,7 +474,6 @@ export default function SensorDetail() {
                                     legend: { position: 'top' },
                                     title: {
                                         display: true,
-                                        text: `Measurement Data for ${sensorId} (${graphData.datasets[0].label})`,
                                     },
                                 },
                             }}
@@ -353,12 +482,46 @@ export default function SensorDetail() {
                 )}
             </div>
 
+            {/* Table for Measurement Data */}
+            <Typography variant="h6" style={{ marginTop: 20 }}>
+                Table
+            </Typography>
+            <TableContainer>
+                <Table style={{ minWidth: 300 }}> {/* Adjusted minWidth for a smaller table */}
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontSize: '0.9rem' }}>Time</TableCell>
+                            <TableCell style={{ fontSize: '0.9rem' }}>Value</TableCell>
+                            <TableCell style={{ fontSize: '0.9rem' }}>Unit</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((measurement, index) => (
+                            <TableRow key={index}>
+                                <TableCell style={{ fontSize: '0.8rem' }}>{format(new Date(measurement.time), 'MMM d, yyyy, h:mm a')}</TableCell>
+                                <TableCell style={{ fontSize: '0.8rem' }}>{measurement.value.toFixed(2)}</TableCell>
+                                <TableCell style={{ fontSize: '0.8rem' }}>{measurement.unit}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={tableData.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+
             {/* Snackbar for Error Messages */}
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="error" sx={{ width: '100%' }}>
                     {error}
                 </Alert>
             </Snackbar>
-        </Paper>
+        </Paper> 
     );
 }
