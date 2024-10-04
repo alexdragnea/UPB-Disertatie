@@ -50,7 +50,7 @@ const ApiUsagePage = () => {
         const token = localStorage.getItem('accessToken');
         if (token) {
             try {
-                const userResponse = await fetch('http://localhost:8888/v1/iot-user/logged', {
+                const userResponse = await fetch('https://localhost:8888/v1/iot-user/logged', {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ const ApiUsagePage = () => {
                 const userData = await userResponse.json();
                 setUserId(userData.userId);
 
-                const apiKeyResponse = await fetch('http://localhost:8888/v1/iot-user/api-key', {
+                const apiKeyResponse = await fetch('https://localhost:8888/v1/iot-user/api-key', {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ const ApiUsagePage = () => {
     const handleRefreshApiKey = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8888/v1/iot-user/refresh-api-key', {
+            const response = await fetch('https://localhost:8888/v1/iot-user/refresh-api-key', {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -105,7 +105,7 @@ const ApiUsagePage = () => {
                 if (text === "API key refreshed successfully") {
                     // If the response is the expected success message
                     // Fetch the new API key to update the state
-                    const apiKeyResponse = await fetch('http://localhost:8888/v1/iot-user/api-key', {
+                    const apiKeyResponse = await fetch('https://localhost:8888/v1/iot-user/api-key', {
                         method: 'GET',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -136,7 +136,7 @@ const ApiUsagePage = () => {
     const handleValidateApiKey = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8888/v1/iot-user/validate-api-key?userId=${userId}`, {
+            const response = await fetch(`https://localhost:8888/v1/iot-user/validate-api-key?userId=${userId}`, {
                 method: 'GET',
                 headers: {
                     'x-api-key': apiKey,
@@ -164,7 +164,7 @@ const ApiUsagePage = () => {
         switch (tabValue) {
             case 0:
                 return (
-                    `curl --location 'http://localhost:8888/v1/iot-bridge' \\
+                    `curl --location 'https://localhost:8888/v1/iot-bridge' \\
 --header 'x-api-key: ${apiKey}' \\
 --header 'Content-Type: application/json' \\
 --data '{
@@ -177,7 +177,7 @@ const ApiUsagePage = () => {
                 );
             case 1:
                 return (
-                    `POST http://localhost:8888/v1/iot-bridge
+                    `POST https://localhost:8888/v1/iot-bridge
 Headers:
 x-api-key: ${apiKey}
 Content-Type: application/json
@@ -193,7 +193,7 @@ Body:
                 );
             case 2:
                 return (
-                    `fetch('http://localhost:8888/v1/iot-bridge', {
+                    `fetch('https://localhost:8888/v1/iot-bridge', {
     method: 'POST',
     headers: {
         'x-api-key': '${apiKey}',

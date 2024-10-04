@@ -14,7 +14,7 @@ const FetchSensors = ({ setSensors }) => {
                 }
 
                 // Fetch sensor data using the userId from the auth context
-                const response = await axios.get(`http://localhost:8888/v1/iot-core/measurements`, {
+                const response = await axios.get(`https://localhost:8888/v1/iot-core/measurements`, {
                     params: { userId: user.userId },
                     headers: {
                         Authorization: `Bearer ${token}`,

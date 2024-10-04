@@ -3,7 +3,7 @@ import { TextField, Button, Paper, Grid, Snackbar, Alert, CircularProgress } fro
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../AuthContext'; // Adjust the import based on your structure
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8888/v1/iot-user';
+const API_URL = process.env.REACT_APP_API_URL || 'https://localhost:8888/v1/iot-user';
 
 export default function LoginPage() {
     const { login } = useContext(AuthContext); // Get login function from context

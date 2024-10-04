@@ -59,7 +59,7 @@ const Dashboard = () => {
 
     const fetchUserMeasurements = async (token) => {
         try {
-            const response = await axios.get(`http://localhost:8888/v1/iot-core/measurements?userId=${userId}`, {
+            const response = await axios.get(`https://localhost:8888/v1/iot-core/measurements?userId=${userId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ const Dashboard = () => {
             };
 
             try {
-                const response = await axios.post('http://localhost:8888/v1/iot-core/measurements-by-filter', filterData, {
+                const response = await axios.post('https://localhost:8888/v1/iot-core/measurements-by-filter', filterData, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',

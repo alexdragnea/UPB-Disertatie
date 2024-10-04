@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Paper, Grid, Snackbar, Alert } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const API_URL = 'http://localhost:8888/v1/iot-user';
+const API_URL = 'https://localhost:8888/v1/iot-user';
 
 export default function RegisterPage() {
     const [email, setEmail] = useState('');

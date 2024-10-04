@@ -97,7 +97,7 @@ export default function SensorDetail() {
                 throw new Error('Please select both start and end times for the custom date range.');
             }
 
-            const response = await axios.post('http://localhost:8888/v1/iot-core/measurements-by-filter', {
+            const response = await axios.post('https://localhost:8888/v1/iot-core/measurements-by-filter', {
                 userId: user.userId,
                 measurement: sensorId,
                 startTime: calculatedStartTime,
