@@ -118,7 +118,15 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
         Publisher<IotMeasurement> measurementPublisher = queryApi.query(queryByTimestamp, IotMeasurement.class);
 
-        return Flux.from(measurementPublisher).switchIfEmpty(Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, measurementFilter))));
+        return Flux.from(measurementPublisher)
+                .collectList()
+                .flatMapMany(measurements -> {
+                    if (measurements.isEmpty()) {
+                        return Mono.error(new MeasurementNotFoundEx(String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX, measurementFilter)));
+                    } else {
+                        return Flux.fromIterable(measurements);
+                    }
+                });
     }
 
     @Override

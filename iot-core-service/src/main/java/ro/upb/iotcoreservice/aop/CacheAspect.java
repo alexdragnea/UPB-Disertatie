@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Aspect
@@ -27,7 +28,12 @@ public class CacheAspect {
         CompletableFuture<Object> cachedValueFuture = asyncCache.getIfPresent(key);
         if (cachedValueFuture != null) {
             log.info("Cache hit for key '{}'. Returning cached value.", key);
-            return cachedValueFuture.get();
+            Object cachedValue = cachedValueFuture.get();
+            if (cachedValue instanceof List<?>) {
+                return Flux.fromIterable((List<?>) cachedValue);
+            } else {
+                return cachedValue;
+            }
         }
 
         log.info("Cache miss for key '{}'. Executing method and caching result.", key);

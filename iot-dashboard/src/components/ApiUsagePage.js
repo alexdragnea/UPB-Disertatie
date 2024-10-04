@@ -225,23 +225,32 @@ Body:
     };
 
     return (
-        <Box
-        sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            minHeight: '100vh',
-            backgroundColor: '#f9f9f9',
-            paddingY: 3,
-            width: '100%',
-        }}
-    >
-        <CssBaseline />
 
-        <Container sx={{ mt: 4, mb: 4, width: '100%', maxWidth: 'lg', paddingX: { xs: 2, sm: 4 } }}>
-                <Paper sx={{ padding: { xs: 2, sm: 3 }, borderRadius: 2, boxShadow: 3, backgroundColor: '#fff' }}>
-                    <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                        <DeviceHub sx={{ marginRight: 1 }} /> API Usage Overview
-                    </Typography>
+
+        <Container sx={{
+                mt: 0, // Adjust top margin to 0
+                mb: 0, // Adjust bottom margin to 0
+                width: '100%',
+                maxWidth: 'lg',
+                paddingX: { xs: 2, sm: 4 },
+            }}
+        >
+               <Paper
+                sx={{
+                    padding: { xs: 2, sm: 3 },
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    backgroundColor: '#fff',
+                    height: '100%', // Optional: Make Paper take full height of Box
+                }}
+            >
+                    <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{ fontWeight: 'bold', color: '#1976d2' }}
+                >
+                    <DeviceHub sx={{ marginRight: 1 }} /> API Usage Overview
+                </Typography>
                     <Divider sx={{ marginBottom: 2 }} />
 
                     <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
@@ -347,7 +356,7 @@ Body:
                     </Dialog>
                 </Paper>
             </Container>
-        </Box>
+        
     );
 };
 
