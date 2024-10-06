@@ -52,6 +52,13 @@ spring:
                 - OPTIONS
               allowedHeaders: "*"
 
+
+        - id: iot-core-ws
+          uri: lb://iot-core-service
+          predicates:
+            - Path=/ws/**
+            - Header=Upgrade, websocket
+
         - id: iot-user-service
           uri: lb://iot-user-service
           predicates:

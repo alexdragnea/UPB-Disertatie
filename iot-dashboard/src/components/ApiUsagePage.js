@@ -228,18 +228,21 @@ Body:
 
 
         <Container sx={{
-                mt: 0, // Adjust top margin to 0
-                mb: 0, // Adjust bottom margin to 0
-                width: '100%',
-                maxWidth: 'lg',
-                paddingX: { xs: 2, sm: 4 },
+                    mt: 4,             // Added top margin
+                    mb: 4,             // Added bottom margin
+                    maxWidth: '100%',   // Full width
+                    width: '90vw',      // Set width to 90% of the viewport width
+                    display: 'flex',
+                    justifyContent: 'center'
             }}
         >
                <Paper
                 sx={{
-                    padding: { xs: 2, sm: 3 },
+                    padding: { xs: 4, sm: 5 },
                     borderRadius: 2,
                     boxShadow: 3,
+                    maxWidth: '1200px',
+                    width: '100%',
                     backgroundColor: '#fff',
                     height: '100%', // Optional: Make Paper take full height of Box
                 }}
