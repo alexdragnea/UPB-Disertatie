@@ -69,7 +69,7 @@ const Dashboard = () => {
             wsRef.current.close();  // Close the previous WebSocket connection if it exists
         }
 
-        wsRef.current = new WebSocket('ws://localhost:8002/ws');
+        wsRef.current = new WebSocket('wss://localhost:8888/ws');
 
         wsRef.current.onopen = () => {
             console.log('WebSocket connection opened.');

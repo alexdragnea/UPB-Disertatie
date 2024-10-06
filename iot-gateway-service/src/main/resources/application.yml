@@ -22,6 +22,11 @@ spring:
           type: FIXED
           metrics: true
       routes:
+        - id: iot-core-ws
+          uri: lb:ws://iot-core-service/ws
+          predicates:
+            - Path=/ws
+            - Header=Upgrade, websocket
         - id: iot-bridge-service
           uri: lb://iot-bridge-service
           predicates:
@@ -87,6 +92,10 @@ eureka:
     registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: true
+
+logging:
+  level:
+    org.springframework.web.reactive.socket: DEBUG
 
 management:
   health:

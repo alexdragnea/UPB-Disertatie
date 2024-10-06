@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -17,14 +16,17 @@ import ro.upb.iotcoreservice.dto.WSMessage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class IotCoreWebSocketHandler {
 
-    private final Sinks.Many<String> sink;
-    private final ObjectMapper objectMapper; // Add ObjectMapper for JSON serialization
+    private final ObjectMapper objectMapper;
+
+    // A map to store WebSocketSession ID -> Sink
+    private final Map<String, Sinks.Many<String>> sessionSinks = new ConcurrentHashMap<>();
 
     @Bean
     public SimpleUrlHandlerMapping simpleUrlHandlerMapping() {
@@ -39,14 +41,28 @@ public class IotCoreWebSocketHandler {
     }
 
     public Mono<Void> handle(WebSocketSession session) {
-        log.info("Websocket connected");
+        String sessionId = session.getId();
+        log.info("Websocket connected with sessionId: " + sessionId);
 
+        // Create a new sink for this session
+        Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer();
+        sessionSinks.put(sessionId, sink);
+
+        // Handle incoming messages (if needed)
+        Flux<WebSocketMessage> incomingMessages = session.receive()
+                .doOnNext(message -> {
+                    log.info("Received message: " + message.getPayloadAsText());
+                    // Process the incoming messages if necessary
+                })
+                .thenMany(Flux.empty()); // If not processing incoming, you can just leave it as empty
+
+        // Handle outgoing messages for this session
         Flux<WebSocketMessage> outputMessages = sink.asFlux()
-                .map(o -> {
+                .map(msg -> {
                     try {
-                        WSMessage message = objectMapper.readValue(o, WSMessage.class);
-                        log.info("[Before Send] Message to be sent with timestamp " + message.getTimestamp());
-                        String jsonMessage = objectMapper.writeValueAsString(message);
+                        WSMessage wsMessage = objectMapper.readValue(msg, WSMessage.class);
+                        log.info("[Before Send] Message to be sent with timestamp " + wsMessage.getTimestamp());
+                        String jsonMessage = objectMapper.writeValueAsString(wsMessage);
                         return session.textMessage(jsonMessage);
                     } catch (Exception e) {
                         log.error("Error serializing message", e);
@@ -54,8 +70,28 @@ public class IotCoreWebSocketHandler {
                     }
                 });
 
+        // Use thenMany to send the output messages after handling the incoming ones
         return session.send(outputMessages)
-                .doOnError(e -> log.error("Error sending message", e))
-                .then();
+                .thenMany(incomingMessages)
+                .doOnTerminate(() -> {
+                    log.info("WebSocket disconnected: " + sessionId);
+                    sessionSinks.remove(sessionId);  // Clean up when session is closed
+                })
+                .then();  // Return Mono<Void> as WebSocketSession.send() expects it
+    }
+
+
+    // You will need a method to emit messages to specific sessions or all sessions
+    public void sendToSession(String sessionId, String message) {
+        Sinks.Many<String> sink = sessionSinks.get(sessionId);
+        if (sink != null) {
+            sink.tryEmitNext(message);
+        } else {
+            log.warn("Session not found for sessionId: " + sessionId);
+        }
+    }
+
+    public void broadcast(String message) {
+        sessionSinks.values().forEach(sink -> sink.tryEmitNext(message));
     }
 }
