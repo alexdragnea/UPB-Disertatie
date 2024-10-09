@@ -18,7 +18,8 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      uri: mongodb://localhost:27017
+#      uri: mongodb://localhost:27017
+      uri: mongodb://mongodb:27017
       database: iot
   kafka:
     bootstrap-servers: kafka-service:9092
