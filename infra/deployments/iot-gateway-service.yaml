@@ -26,15 +26,15 @@ spec:
             memory: 768Mi
         ports:
         - containerPort: 8888
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8888
-          initialDelaySeconds: 100
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8888
-          initialDelaySeconds: 100
-          periodSeconds: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8888
+        #   initialDelaySeconds: 100
+        #   periodSeconds: 5
+        # readinessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8888
+        #   initialDelaySeconds: 100
+        #   periodSeconds: 5
