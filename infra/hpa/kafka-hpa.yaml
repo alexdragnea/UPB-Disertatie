@@ -8,6 +8,6 @@ spec:
     kind: Deployment
     name: kafka-deployment
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
