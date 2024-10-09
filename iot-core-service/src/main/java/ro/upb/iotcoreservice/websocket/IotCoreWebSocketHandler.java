@@ -12,8 +12,10 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Schedulers;
 import ro.upb.iotcoreservice.dto.WSMessage;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,22 +44,27 @@ public class IotCoreWebSocketHandler {
 
     public Mono<Void> handle(WebSocketSession session) {
         String sessionId = session.getId();
-        log.info("Websocket connected with sessionId: " + sessionId);
+        log.info("WebSocket connected with sessionId: " + sessionId);
 
-        // Create a new sink for this session
-        Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer();
+        // Use multicast sink for better scalability with multiple consumers
+        Sinks.Many<String> sink = Sinks.many().multicast().onBackpressureBuffer();
         sessionSinks.put(sessionId, sink);
 
-        // Handle incoming messages (if needed)
+        // Timeout after 30 minutes of inactivity
         Flux<WebSocketMessage> incomingMessages = session.receive()
-                .doOnNext(message -> {
-                    log.info("Received message: " + message.getPayloadAsText());
-                    // Process the incoming messages if necessary
+                .timeout(Duration.ofMinutes(30))
+                .doOnNext(message -> log.info("Received message: " + message.getPayloadAsText()))
+                .doOnError(e -> {
+                    log.error("Error in WebSocket session: " + sessionId, e);
+                    session.close();  // Graceful error handling - close session on error
                 })
-                .thenMany(Flux.empty()); // If not processing incoming, you can just leave it as empty
+                .onErrorResume(e -> Mono.empty())  // Handle errors without breaking the stream
+                .thenMany(Flux.empty());  // Complete without emitting any values
 
-        // Handle outgoing messages for this session
+        // Handle outgoing messages for this session (with pre-serialization and parallel processing)
         Flux<WebSocketMessage> outputMessages = sink.asFlux()
+                .parallel()  // Enable parallel processing
+                .runOn(Schedulers.parallel())  // Use parallel scheduler for processing
                 .map(msg -> {
                     try {
                         WSMessage wsMessage = objectMapper.readValue(msg, WSMessage.class);
@@ -68,29 +75,24 @@ public class IotCoreWebSocketHandler {
                         log.error("Error serializing message", e);
                         return session.textMessage("Error serializing message");
                     }
-                });
+                })
+                .sequential();  // Convert back to sequential after parallel processing
 
-        // Use thenMany to send the output messages after handling the incoming ones
+        // Send outgoing messages and clean up when WebSocket is disconnected
         return session.send(outputMessages)
                 .thenMany(incomingMessages)
                 .doOnTerminate(() -> {
                     log.info("WebSocket disconnected: " + sessionId);
                     sessionSinks.remove(sessionId);  // Clean up when session is closed
                 })
-                .then();  // Return Mono<Void> as WebSocketSession.send() expects it
+                .doOnError(e -> {
+                    log.error("Error in WebSocket processing: " + sessionId, e);
+                    sessionSinks.remove(sessionId);  // Ensure clean up even on error
+                })
+                .then();
     }
 
-
-    // You will need a method to emit messages to specific sessions or all sessions
-    public void sendToSession(String sessionId, String message) {
-        Sinks.Many<String> sink = sessionSinks.get(sessionId);
-        if (sink != null) {
-            sink.tryEmitNext(message);
-        } else {
-            log.warn("Session not found for sessionId: " + sessionId);
-        }
-    }
-
+    // Overloaded method to broadcast a pre-serialized String message
     public void broadcast(String message) {
         sessionSinks.values().forEach(sink -> sink.tryEmitNext(message));
     }
