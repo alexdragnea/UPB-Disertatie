@@ -1,13 +1,13 @@
 #!/bin/bash
 
 
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo update
-helm install prometheus bitnami/kube-prometheus --namespace observability
+# helm repo add bitnami https://charts.bitnami.com/bitnami
+# helm repo update
+# helm install prometheus bitnami/kube-prometheus --namespace observability
 
-sleep 30
+# sleep 30
 
-helm install grafana bitnami/grafana --namespace observability
+# helm install grafana bitnami/grafana --namespace observability
 
 # Kafka
 kafka=(
@@ -17,7 +17,7 @@ kafka=(
 
 for kafka in "${kafka[@]}"; do
     kubectl apply -f "$kafka"
-    sleep 10
+    sleep 30
 done
 
 # Services
