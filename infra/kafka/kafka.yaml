@@ -1,13 +1,11 @@
-# Kafka StatefulSet
+kind: Deployment
 apiVersion: apps/v1
-kind: StatefulSet
 metadata:
-  name: kafka
+  name: kafka-deployment
   labels:
     app: kafka
 spec:
-  serviceName: kafka-headless
-  replicas: 2  # Adjust the number of replicas based on your need
+  replicas: 1
   selector:
     matchLabels:
       app: kafka
@@ -19,20 +17,11 @@ spec:
       containers:
       - name: broker
         image: confluentinc/cp-kafka:7.0.1
-        resources:
-          limits:
-            memory: 2048Mi  # Increase to 2GB
-            cpu: 2000m      # Increase to 2 vCPUs
-          requests:
-            memory: 1536Mi  # Increase to 1.5GB
-            cpu: 1500m      # Increase to 1.5 vCPUs
         ports:
         - containerPort: 9092
         env:
         - name: KAFKA_BROKER_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name  # Generates unique ID for each pod
+          value: "1"
         - name: KAFKA_ZOOKEEPER_CONNECT
           value: 'zookeeper-service:2181'
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
@@ -40,24 +29,12 @@ spec:
         - name: KAFKA_ADVERTISED_LISTENERS
           value: PLAINTEXT://:29092,PLAINTEXT_INTERNAL://kafka-service:9092
         - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
-          value: "2"  # Replication for better fault tolerance
+          value: "1"
         - name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR
           value: "1"
         - name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR
-          value: "2"
-        volumeMounts:
-        - name: kafka-storage
-          mountPath: /var/lib/kafka/data
-  volumeClaimTemplates:
-  - metadata:
-      name: kafka-storage
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi  # Persistent storage size for Kafka data
+          value: "1"
 ---
-# Kafka Service
 apiVersion: v1
 kind: Service
 metadata:
@@ -69,61 +46,6 @@ spec:
     - protocol: TCP
       port: 9092
       targetPort: 9092
----
-# Headless Service for Kafka StatefulSet
-apiVersion: v1
-kind: Service
-metadata:
-  name: kafka-headless
-spec:
-  clusterIP: None
-  selector:
-    app: kafka
-  ports:
-    - protocol: TCP
-      port: 9092
-      targetPort: 9092
----
-# Zookeeper Deployment (for Kafka)
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: zookeeper
-  labels:
-    app: zookeeper
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: zookeeper
-  template:
-    metadata:
-      labels:
-        app: zookeeper
-    spec:
-      containers:
-      - name: zookeeper
-        image: confluentinc/cp-zookeeper:7.0.1
-        ports:
-        - containerPort: 2181
-        env:
-        - name: ZOOKEEPER_CLIENT_PORT
-          value: "2181"
-        - name: ZOOKEEPER_TICK_TIME
-          value: "2000"
----
-# Zookeeper Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-service
-spec:
-  selector:
-    app: zookeeper
-  ports:
-    - protocol: TCP
-      port: 2181
-      targetPort: 2181
 ---
 # Kafka Drop Service
 apiVersion: v1
@@ -140,8 +62,8 @@ spec:
   type: LoadBalancer
 ---
 # Kafka Drop Deployment
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: kafka-drop-deployment
   labels:

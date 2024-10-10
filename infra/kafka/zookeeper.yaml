@@ -1,13 +1,11 @@
-# ZooKeeper StatefulSet
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: zookeeper
+  name: zookeeper-deployment
   labels:
     app: zookeeper
 spec:
-  serviceName: zookeeper-headless
-  replicas: 3  # Use 3 replicas for quorum
+  replicas: 1
   selector:
     matchLabels:
       app: zookeeper
@@ -26,39 +24,7 @@ spec:
           value: "2181"
         - name: ZOOKEEPER_TICK_TIME
           value: "2000"
-        - name: ZOOKEEPER_INIT_LIMIT
-          value: "10"
-        - name: ZOOKEEPER_SYNC_LIMIT
-          value: "5"
-        - name: ZOOKEEPER_SERVERS
-          value: "zookeeper-0.zookeeper-headless,zookeeper-1.zookeeper-headless,zookeeper-2.zookeeper-headless"  # Stable network identities
-        volumeMounts:
-        - name: zookeeper-data
-          mountPath: /var/lib/zookeeper/data
-  volumeClaimTemplates:
-  - metadata:
-      name: zookeeper-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 5Gi  # Persistent storage for ZooKeeper
 ---
-# Headless Service for ZooKeeper
-apiVersion: v1
-kind: Service
-metadata:
-  name: zookeeper-headless
-spec:
-  clusterIP: None
-  selector:
-    app: zookeeper
-  ports:
-    - protocol: TCP
-      port: 2181
-      targetPort: 2181
----
-# ZooKeeper Service (for external access)
 apiVersion: v1
 kind: Service
 metadata:
