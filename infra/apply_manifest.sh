@@ -35,6 +35,17 @@ for service in "${services[@]}"; do
     sleep 1
 done
 
+# PVC
+
+pvc=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml"
+)
+
+for pvc in "${pvc[@]}"; do
+    kubectl apply -f "$pvc"
+    sleep 1
+done
+
 # Deployments
 deployments=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-discovery-service.yaml"
