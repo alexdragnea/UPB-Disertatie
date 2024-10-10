@@ -20,10 +20,6 @@ spec:
         env:
         - name: MONGO_INITDB_DATABASE
           value: iot
-        - name: MONGO_INITDB_ROOT_USERNAME
-          value: mongo
-        - name: MONGO_INITDB_ROOT_PASSWORD
-          value: mongo
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
