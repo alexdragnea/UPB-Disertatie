@@ -26,15 +26,15 @@ spec:
             memory: 768Mi
         ports:
         - containerPort: 8002
-        # livenessProbe:
-        #   httpGet:
-        #     path: /actuator/health
-        #     port: 8002
-        #   initialDelaySeconds: 100
-        #   periodSeconds: 5
-        # readinessProbe:
-        #   httpGet:
-        #     path: /actuator/health
-        #     port: 8002
-        #   initialDelaySeconds: 100
-        #   periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 5
