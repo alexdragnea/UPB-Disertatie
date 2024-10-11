@@ -11,7 +11,7 @@ spring:
   data:
     mongodb:
       authentication-database: admin
-      uri: mongodb://mongo:mongo@mongodb:27017
+      uri: mongodb://localhost:27017
       database: iot
 
 jwt:

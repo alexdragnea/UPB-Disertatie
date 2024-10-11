@@ -11,7 +11,6 @@
 
 # Kafka
 kafka=(
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/zookeeper.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml"
 )
 
@@ -62,12 +61,13 @@ sleep 5
 
 for deployment in "${deployments[@]}"; do
     kubectl apply -f "$deployment"
-    sleep 60
+    sleep 30
 done
 
 # Horizontal Pod Autoscaler (HPA)
 hpa_files=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/iot-core-service-hpa.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie//master/infra/hpa/influxdb-hpa.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-discovery-service-hpa.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
