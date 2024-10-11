@@ -30,11 +30,17 @@ spec:
           httpGet:
             path: /actuator/health
             port: 8002
-          initialDelaySeconds: 30
+          initialDelaySeconds: 30             # Increase delay to give the container more time to be ready
           periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8002
-          initialDelaySeconds: 30
+          initialDelaySeconds: 30             # Increase delay to give the container more time to be ready
           periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
