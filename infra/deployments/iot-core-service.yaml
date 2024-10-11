@@ -26,21 +26,21 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 8002
-        livenessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8002
-          initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /actuator/health
-            port: 8002
-          initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+        # livenessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8002
+        #   initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:
+        #     path: /actuator/health
+        #     port: 8002
+        #   initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3

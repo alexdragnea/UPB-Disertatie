@@ -19,6 +19,18 @@ for kafka in "${kafka[@]}"; do
     sleep 30
 done
 
+# PVC
+
+pvc=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml"
+)
+
+for pvc in "${pvc[@]}"; do
+    kubectl apply -f "$pvc"
+    sleep 1
+done
+
+
 db=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml"
@@ -41,17 +53,6 @@ services=(
 
 for service in "${services[@]}"; do
     kubectl apply -f "$service"
-    sleep 1
-done
-
-# PVC
-
-pvc=(
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml"
-)
-
-for pvc in "${pvc[@]}"; do
-    kubectl apply -f "$pvc"
     sleep 1
 done
 
