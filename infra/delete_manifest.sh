@@ -7,11 +7,11 @@ deployments=(
     "iot-bridge-service"
     "iot-gateway-service"
     "iot-user-service"
-    "kafka-deployment"
+    "kafka"
     "kafka-drop-deployment"
     "zookeeper-deployment"
     "influxdb"
-    mongodb
+    "mongodb"
 )
 
 # Define hpas
@@ -21,6 +21,7 @@ hpas=(
     "hpa-iot-bridge-service"
     "hpa-iot-gateway-service"
     "hpa-iot-user-service"
+    "hpa-influxdb"
 )
 
 # Define services
@@ -34,7 +35,7 @@ services=(
     "kafka-drop-service"
     "zookeeper-service"
     "influxdb"
-    mongodb
+    "mongodb"
 )
 
 read -p "This will delete the deployments, services, and HPAs. Are you sure? (y/n): " confirmation
@@ -73,6 +74,8 @@ for hpa in "${hpas[@]}"; do
     fi
 done
 
-kubectl delete servicemonitors service-monitor
-helm uninstall grafana
-helm uninstall prometheus
+kubectl delete statefulset kafka
+kubectl delete statefulset zookeeper
+# kubectl delete servicemonitors service-monitor
+# helm uninstall grafana
+# helm uninstall prometheus
