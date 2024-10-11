@@ -19,6 +19,16 @@ for kafka in "${kafka[@]}"; do
     sleep 30
 done
 
+db=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml"
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml"
+)
+
+for db in "${db[@]}"; do
+    kubectl apply -f "$db"
+    sleep 30
+done
+
 # Services
 services=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-core-service-svc.yaml"
@@ -52,8 +62,6 @@ deployments=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-gateway-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-core-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-bridge-service.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml"
-    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml"
 )
 
 
@@ -61,7 +69,7 @@ sleep 5
 
 for deployment in "${deployments[@]}"; do
     kubectl apply -f "$deployment"
-    sleep 30
+    sleep 60
 done
 
 # Horizontal Pod Autoscaler (HPA)
@@ -72,6 +80,8 @@ hpa_files=(
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-bridge-service-hpa.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/iot-gateway-service-hpa.yaml"
 )
+
+sleep 30
 
 for hpa_file in "${hpa_files[@]}"; do
     kubectl apply -f "$hpa_file"

@@ -20,11 +20,11 @@ spec:
         image: alexdragnea/disertatie-iot-discovery-service:latest
         resources:
           limits:
-            memory: 1024Mi
-            cpu: 1024m
-          requests:
-            cpu: 768m
             memory: 768Mi
+            cpu: 768m
+          requests:
+            cpu: 512m
+            memory: 512Mi
         ports:
         - containerPort: 8761
         livenessProbe:
