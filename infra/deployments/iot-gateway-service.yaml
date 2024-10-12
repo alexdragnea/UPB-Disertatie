@@ -26,23 +26,23 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 8888
-        livenessProbe:
-          httpGet:                           # Use httpGet but specify the scheme as HTTPS
-            path: /actuator/health
-            port: 8888
-            scheme: HTTPS                    # Add this line to indicate HTTPS
-          initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:                           # Use httpGet but specify the scheme as HTTPS
-            path: /actuator/health
-            port: 8888
-            scheme: HTTPS                    # Add this line to indicate HTTPS
-          initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+        # livenessProbe:
+        #   httpGet:                           # Use httpGet but specify the scheme as HTTPS
+        #     path: /actuator/health
+        #     port: 8888
+        #     scheme: HTTPS                    # Add this line to indicate HTTPS
+        #   initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
+        # readinessProbe:
+        #   httpGet:                           # Use httpGet but specify the scheme as HTTPS
+        #     path: /actuator/health
+        #     port: 8888
+        #     scheme: HTTPS                    # Add this line to indicate HTTPS
+        #   initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
+        #   periodSeconds: 10
+        #   timeoutSeconds: 5
+        #   successThreshold: 1
+        #   failureThreshold: 3
