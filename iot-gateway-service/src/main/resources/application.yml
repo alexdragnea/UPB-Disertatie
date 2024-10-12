@@ -5,6 +5,9 @@ server:
     key-store-password: changeit
     key-store-type: PKCS12
     key-alias: gateway
+    handshake-timeout-millis: 20000
+    close-notify-flush-timeout-millis: 3000
+    close-notify-read-timeout-millis: 0
   error:
     include-message: always
 
@@ -130,6 +133,15 @@ resilience4j:
         slidingWindowSize: 10
         eventConsumerBufferSize: 10
         registerHealthIndicator: true
+      iot-user-service:
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        minimumNumberOfCalls: 5
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        eventConsumerBufferSize: 10
+        registerHealthIndicator: true
   retry:
     instances:
       iot-bridge-service:
@@ -138,8 +150,14 @@ resilience4j:
       iot-core-service:
         maxAttempts: 3
         waitDuration: 1s
+      iot-user-service:
+        maxAttempts: 3
+        waitDuration: 1s
   time-limiter:
     instances:
       iot-bridge-service:
+        timeoutDuration: 5s
+        cancelRunningFuture: true
+      iot-user-service:
         timeoutDuration: 5s
         cancelRunningFuture: true

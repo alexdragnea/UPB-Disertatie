@@ -10,6 +10,8 @@ import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import ro.upb.common.constant.ExMessageConstants;
 import ro.upb.common.dto.MeasurementRequestDto;
 import ro.upb.iotcoreservice.aop.CustomCacheable;
@@ -31,6 +33,7 @@ import java.util.Objects;
 public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     private final InfluxDBClientReactive influxDBClient;
+    private final Scheduler scheduler = Schedulers.newParallel("core-scheduler", 4);
 
     private static IotMeasurement buildIotMeasurement(MeasurementRequestDto measurementRequestDto) {
 
@@ -60,6 +63,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                     log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage());
                     throw new InfluxDbFailedOperationEx("Failed to persist measurement", error);
                 })
+                .subscribeOn(scheduler)
                 .subscribe();
     }
 
