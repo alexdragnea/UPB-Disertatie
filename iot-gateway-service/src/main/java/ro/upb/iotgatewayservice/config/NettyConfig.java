@@ -31,7 +31,7 @@ public class NettyConfig {
             return httpServer
                     .secure(sslContextSpec -> sslContextSpec
                             .sslContext(sslContext)
-                            .handshakeTimeout(Duration.ofSeconds(30)) // Set SSL handshake timeout
+                                .handshakeTimeout(Duration.ofSeconds(15)) // Set SSL handshake timeout
                     )
                     .wiretap("reactor.netty.http.server.HttpServer", LogLevel.DEBUG); // Optional logging
         });
