@@ -24,6 +24,10 @@ spring:
           max-connections: 1500
           type: FIXED
           metrics: true
+        ssl:
+          handshake-timeout: 20000ms
+          close-notify-flush-timeout: 3000ms
+          close-notify-read-timeout: 0ms
       routes:
         - id: iot-core-ws
           uri: lb:ws://iot-core-service/ws
