@@ -10,8 +10,8 @@ import java.time.Duration;
 
 public class IotBridgeSimulation extends Simulation {
     String baseUrl = System.getProperty("baseUrl", "https://localhost:8888");
-    String apiKey = System.getProperty("apiKey", "$2a$10$BPSrEbCCft9x6lgLgU974.soO302ks0S3hWgsEN5/Bq1FOZHZOnEO");
-    String userId = System.getProperty("userId", "67097d5b408ce60abe6bf2a3");
+    String apiKey = System.getProperty("apiKey", "$2a$10$S7R7vCBFHVXnZfMLGiEMsuZuogqrxg0Tq8xnVNt3Hc4cOHBRQVwWG");
+    String userId = System.getProperty("userId", "670a8e98d6260840b5d856ec");
 
     // Parse users and duration from system properties
     int users = Integer.parseInt(System.getProperty("users", "100")); // Increased number of users

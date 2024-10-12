@@ -76,6 +76,8 @@ done
 
 kubectl delete statefulset kafka
 kubectl delete statefulset zookeeper
+kubectl delete pvc --all
+kubectl delete pv --all
 # kubectl delete servicemonitors service-monitor
 # helm uninstall grafana
 # helm uninstall prometheus
