@@ -5,7 +5,7 @@ server:
     key-store-password: changeit
     key-store-type: PKCS12
     key-alias: gateway
-    handshake-timeout-millis: 20000
+    handshake-timeout: 20000ms
     close-notify-flush-timeout-millis: 3000
     close-notify-read-timeout-millis: 0
   error:
