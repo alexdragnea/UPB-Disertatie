@@ -1,9 +1,9 @@
 package ro.upb.iotuserservice.service;
 
+import org.springframework.stereotype.Service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,16 +13,11 @@ public class LoginAttemptService {
 
     public LoginAttemptService() {
         super();
-        loginAttemptCache =
-                CacheBuilder.newBuilder()
-                        .expireAfterWrite(15, TimeUnit.MINUTES)
-                        .maximumSize(100)
-                        .build(
-                                new CacheLoader<>() {
-                                    public Integer load(String key) {
-                                        return 0;
-                                    }
-                                });
+        loginAttemptCache = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES).maximumSize(100).build(new CacheLoader<>() {
+            public Integer load(String key) {
+                return 0;
+            }
+        });
     }
 
     public void evictUserFromLoginAttemptCache(String email) {
