@@ -18,7 +18,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: '17'
+          java-version: '21'
 
       - name: Deploy to GitHub
         run: mvn --batch-mode -DuseGitHubPackages=true deploy --file iot-commons/pom.xml
@@ -40,7 +40,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: '17'
+          java-version: '21'
 
       - name: Cache Maven packages
         uses: actions/cache@v1
