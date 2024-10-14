@@ -10,6 +10,10 @@ import {
   Row,
   Col,
   Alert,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom"; // Use useNavigate for redirection
 import { AuthContext } from "../AuthContext"; // Import AuthContext for user details
@@ -21,6 +25,7 @@ function UserProfile() {
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
+  const [confirmEmail, setConfirmEmail] = useState(""); // New state for confirm email
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -28,18 +33,39 @@ function UserProfile() {
   const [successMessage, setSuccessMessage] = useState(""); // State for success messages
   const [profileSuccess, setProfileSuccess] = useState(""); // State for profile update success message
   const [passwordSuccess, setPasswordSuccess] = useState(""); // State for password change success message
+  const [confirmProfileDialogOpen, setConfirmProfileDialogOpen] = useState(false); // State for profile confirmation dialog
+  const [confirmPasswordDialogOpen, setConfirmPasswordDialogOpen] = useState(false); // State for password confirmation dialog
 
-  // Validate form fields
-  const isValidForm = () => {
+  // Validate form fields for profile update
+  const isValidProfileForm = () => {
     setErrorMessage(""); // Reset error message
-    setPasswordError(""); // Reset password error message
     let isValid = true;
 
-    if (!firstName || !lastName || !email) {
+    if (!firstName || !lastName || !email || !confirmEmail) {
       setErrorMessage("All fields are required.");
       isValid = false;
     }
 
+    if (email !== confirmEmail) {
+      setErrorMessage("Email and confirm email do not match.");
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  // Validate form fields for password change
+  const isValidPasswordForm = () => {
+    setPasswordError(""); // Reset password error message
+    let isValid = true;
+
+    // Check if newPassword is provided
+    if (!newPassword) {
+      setPasswordError("New password is required.");
+      isValid = false;
+    }
+    
+    // Check if newPassword and confirmPassword match
     if (newPassword && newPassword !== confirmPassword) {
       setPasswordError("New password and confirm password do not match.");
       isValid = false;
@@ -49,10 +75,8 @@ function UserProfile() {
   };
 
   // Handle profile update
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!isValidForm()) return; // Validate before submitting
+  const handleProfileSubmit = async () => {
+    if (!isValidProfileForm()) return; // Validate before submitting
 
     const token = localStorage.getItem("accessToken");
 
@@ -75,7 +99,7 @@ function UserProfile() {
       if (!response.ok) {
         if (response.status === 401) { // Unauthorized access
           await refreshToken(); // Attempt to refresh token
-          return handleProfileSubmit(e); // Retry profile update after token refresh
+          return handleProfileSubmit(); // Retry profile update after token refresh
         }
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to update profile");
@@ -92,10 +116,8 @@ function UserProfile() {
   };
 
   // Handle password change
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!isValidForm()) return; // Validate before submitting
+  const handlePasswordSubmit = async () => {
+    if (!isValidPasswordForm()) return; // Validate before submitting
 
     const token = localStorage.getItem("accessToken");
 
@@ -116,7 +138,7 @@ function UserProfile() {
       if (!response.ok) {
         if (response.status === 401) { // Unauthorized access
           await refreshToken(); // Attempt to refresh token
-          return handlePasswordSubmit(e); // Retry password change after token refresh
+          return handlePasswordSubmit(); // Retry password change after token refresh
         }
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to change password");
@@ -132,6 +154,38 @@ function UserProfile() {
     }
   };
 
+  // Handle profile confirmation dialog
+  const handleSaveProfileClick = () => {
+    if (isValidProfileForm()) {
+      setConfirmProfileDialogOpen(true); // Open the profile confirmation dialog
+    }
+  };
+
+  const handleConfirmProfileSubmit = async () => {
+    setConfirmProfileDialogOpen(false); // Close the profile confirmation dialog
+    await handleProfileSubmit(); // Call profile submit function
+  };
+
+  const handleCancelProfileSubmit = () => {
+    setConfirmProfileDialogOpen(false); // Close the dialog on cancel
+  };
+
+  // Handle password confirmation dialog
+  const handleSavePasswordClick = () => {
+    if (isValidPasswordForm()) {
+      setConfirmPasswordDialogOpen(true); // Open the password confirmation dialog
+    }
+  };
+
+  const handleConfirmPasswordSubmit = async () => {
+    setConfirmPasswordDialogOpen(false); // Close the password confirmation dialog
+    await handlePasswordSubmit(); // Call password submit function
+  };
+
+  const handleCancelPasswordSubmit = () => {
+    setConfirmPasswordDialogOpen(false); // Close the dialog on cancel
+  };
+
   return (
     <>
       <div className="content">
@@ -142,7 +196,7 @@ function UserProfile() {
                 <h5 className="user-title">Edit Profile</h5>
               </CardHeader>
               <CardBody>
-                <Form onSubmit={handleProfileSubmit}>
+                <Form>
                   <Row>
                     <Col className="pr-md-1" md="6">
                       <FormGroup>
@@ -183,9 +237,23 @@ function UserProfile() {
                       </FormGroup>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col md="12">
+                      <FormGroup>
+                        <label>Confirm Email address</label>
+                        <Input
+                          value={confirmEmail}
+                          placeholder="Confirm Email address"
+                          type="email"
+                          onChange={(e) => setConfirmEmail(e.target.value)}
+                          required
+                        />
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   {errorMessage && <Alert color="danger">{errorMessage}</Alert>}
                   {profileSuccess && <Alert color="success">{profileSuccess}</Alert>}
-                  <Button className="btn-fill" color="primary" type="submit">
+                  <Button className="btn-fill" color="primary" type="button" onClick={handleSaveProfileClick}>
                     Save Profile
                   </Button>
                 </Form>
@@ -200,7 +268,7 @@ function UserProfile() {
                 <h5 className="user-title">Change Password</h5>
               </CardHeader>
               <CardBody>
-                <Form onSubmit={handlePasswordSubmit}>
+                <Form>
                   <FormGroup>
                     <label>New Password</label>
                     <Input
@@ -225,7 +293,7 @@ function UserProfile() {
                     <Alert color="danger">{passwordError}</Alert>
                   )}
                   {passwordSuccess && <Alert color="success">{passwordSuccess}</Alert>}
-                  <Button className="btn-fill" color="primary" type="submit">
+                  <Button className="btn-fill" color="primary" type="button" onClick={handleSavePasswordClick}>
                     Save Password
                   </Button>
                 </Form>
@@ -233,6 +301,30 @@ function UserProfile() {
             </Card>
           </Col>
         </Row>
+
+        {/* Confirmation Dialog for Profile Update */}
+        <Modal isOpen={confirmProfileDialogOpen} toggle={handleCancelProfileSubmit}>
+          <ModalHeader toggle={handleCancelProfileSubmit}>Confirm Changes</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to save these changes? You will be logged out after the modification.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={handleCancelProfileSubmit}>Cancel</Button>
+            <Button color="primary" onClick={handleConfirmProfileSubmit}>Confirm</Button>
+          </ModalFooter>
+        </Modal>
+
+        {/* Confirmation Dialog for Password Change */}
+        <Modal isOpen={confirmPasswordDialogOpen} toggle={handleCancelPasswordSubmit}>
+          <ModalHeader toggle={handleCancelPasswordSubmit}>Confirm Password Change</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to change your password? You will be logged out after the modification.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={handleCancelPasswordSubmit}>Cancel</Button>
+            <Button color="primary" onClick={handleConfirmPasswordSubmit}>Confirm</Button>
+          </ModalFooter>
+        </Modal>
       </div>
     </>
   );
