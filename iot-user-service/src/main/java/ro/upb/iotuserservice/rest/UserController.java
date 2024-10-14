@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.*;
+import ro.upb.iotuserservice.exception.TokenNotValidException;
 import ro.upb.iotuserservice.model.UserPrincipal;
 import ro.upb.iotuserservice.service.UserService;
 import ro.upb.iotuserservice.util.AuthenticationHelper;
@@ -69,5 +70,40 @@ public class UserController {
         return userService.getLoggedInDetails(token)
                 .map(ResponseEntity::ok)
                 .doOnError(e -> log.info("Error fetching logged in detail. Error: {}", e.getMessage()));
+    }
+
+
+    @PutMapping("/profile")
+    public Mono<ResponseEntity<String>> updateUserProfile(@RequestHeader(value = AUTHORIZATION) String authorizationHeader, @RequestBody UpdateUserRequest updateUserRequest) {
+        try {
+            String token = authorizationHeader.substring(TOKEN_PREFIX.length());
+            String userId = authenticationHelper.getUserIdFromToken(token);
+            updateUserRequest.setUserId(userId);
+            log.info("Updating user with ID: {}", userId);
+            return userService.updateUserProfile(updateUserRequest)
+                    .doOnSuccess(unused -> log.info("User profile updated successfully: {}", userId))
+                    .then(Mono.just(ResponseEntity.ok("User profile updated successfully")))
+                    .doOnError(e -> log.error("Failed to update user. Error: {}", e.getMessage()));
+        } catch (TokenNotValidException e) {
+            log.error("Invalid token. Error: {}", e.getMessage());
+            return Mono.just(ResponseEntity.status(401).body("Invalid token"));
+        }
+    }
+
+    @PutMapping("/password")
+    public Mono<ResponseEntity<String>> updateUserPassword(@RequestHeader(value = AUTHORIZATION) String authorizationHeader, @RequestBody UpdateUserRequest updateUserRequest) {
+        try {
+            String token = authorizationHeader.substring(TOKEN_PREFIX.length());
+            String userId = authenticationHelper.getUserIdFromToken(token);
+            updateUserRequest.setUserId(userId);
+            log.info("Updating user with ID: {}", userId);
+            return userService.updateUserPassword(updateUserRequest)
+                    .doOnSuccess(unused -> log.info("Password updated successfully: {}", userId))
+                    .then(Mono.just(ResponseEntity.ok("User password updated successfully")))
+                    .doOnError(e -> log.error("Failed to update password for user: {}. Error: {}", userId, e.getMessage()));
+        } catch (TokenNotValidException e) {
+            log.error("Invalid token. Error: {}", e.getMessage());
+            return Mono.just(ResponseEntity.status(401).body("Invalid token"));
+        }
     }
 }

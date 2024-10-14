@@ -2,6 +2,7 @@ import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import Footer from './components/Footer'; // Import Footer component
 import { AuthProvider, AuthContext } from './AuthContext'; // Import AuthContext
 import PrivateRoute from './PrivateRoute'; // PrivateRoute component
 import SensorDetail from './components/SensorDetail';
@@ -35,21 +36,26 @@ const AppWithAuth = () => {
     return (
         <>
             <Header onLogout={handleLogout} isAuthenticated={isAuthenticated} />
-            <div style={{ display: 'flex', marginTop: '10px' }}>
-                {isAuthenticated && <Sidebar />}
-                <div style={{ flexGrow: 1, padding: '20px' }}>
-                    <Suspense fallback={<div>Loading...</div>}>
-                        <Routes>
-                            <Route path="/" element={<PrivateRoute Component={Dashboard} />} />
-                            <Route path="/sensor/:id" element={<PrivateRoute Component={SensorDetail} />} />
-                            <Route path="/profile" element={<PrivateRoute Component={UserProfile} />} />
-                            <Route path="/api-usage" element={<PrivateRoute Component={ApiUsagePage} />} />
-                            <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
-                            <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
-                            <Route path="*" element={<Navigate to="/" />} />
-                        </Routes>
-                    </Suspense>
+            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                <div style={{ display: 'flex', flexGrow: 1, marginTop: '10px' }}>
+                    {isAuthenticated && <Sidebar />}
+                    <div style={{ flexGrow: 1, padding: '20px' }}>
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <Routes>
+                                <Route path="/" element={<PrivateRoute Component={Dashboard} />} />
+                                <Route path="/sensor/:id" element={<PrivateRoute Component={SensorDetail} />} />
+                                <Route path="/profile" element={<PrivateRoute Component={UserProfile} />} />
+                                <Route path="/api-usage" element={<PrivateRoute Component={ApiUsagePage} />} />
+                                <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />} />
+                                <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />} />
+                                <Route path="*" element={<Navigate to="/" />} />
+                            </Routes>
+                        </Suspense>
+                    </div>
                 </div>
+
+                {/* Footer Component */}
+                <Footer />
             </div>
         </>
     );

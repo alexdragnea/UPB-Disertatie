@@ -1,12 +1,16 @@
 package ro.upb.iotuserservice.dto;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateUserRequest {
+    private String userId;
     private String email;
     private String firstName;
     private String lastName;
     private String password;
-    private String profileImageURL;
 }
