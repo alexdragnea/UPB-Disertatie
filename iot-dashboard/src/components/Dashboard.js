@@ -14,7 +14,12 @@ import {
     Paper,
     Grid,
     Tooltip,
+    IconButton,
+    Divider,
+    Chip,
 } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import SensorsIcon from '@mui/icons-material/Sensors';
 
 const Dashboard = () => {
     const [sensors, setSensors] = useState([]);  // List of sensor objects
@@ -127,10 +132,28 @@ const Dashboard = () => {
     }, [userId, authLoading]);
 
     return (
-        <Box sx={{ fontFamily: 'Arial, sans-serif', padding: 2 }}>
-            <Typography variant="h5" component="h2" gutterBottom align="center">
-                Live Data
+        <Box sx={{ fontFamily: 'Arial, sans-serif', padding: 4 }}>
+            <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ marginBottom: 4 }}>
+                Live Data Dashboard
             </Typography>
+
+            <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
+                <SensorsIcon sx={{ fontSize: 40, color: '#1976d2' }} />
+                <Typography variant="h6" sx={{ marginLeft: 2 }}>
+                    Sensor Measurements
+                </Typography>
+                <IconButton
+                    color="primary"
+                    onClick={fetchInitialData}
+                    sx={{ marginLeft: 2 }}
+                >
+                    <RefreshIcon />
+                </IconButton>
+            </Box>
+
+            <Divider sx={{ marginBottom: 3 }}>
+                <Chip label="Live Data Feed" color="primary" />
+            </Divider>
 
             {loading ? (
                 <Box display="flex" justifyContent="center">
@@ -139,20 +162,26 @@ const Dashboard = () => {
             ) : error ? (
                 <Typography color="error" align="center">{error}</Typography>
             ) : (
-                <Grid container spacing={2}>
+                <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
+                        <TableContainer component={Paper} elevation={3} sx={{ borderRadius: 3 }}>
+                            <Table sx={{ minWidth: 650 }} aria-label="sensor data table">
+                                <TableHead sx={{ backgroundColor: '#1976d2' }}>
                                     <TableRow>
-                                        <TableCell><strong>Measurement</strong></TableCell>
-                                        <TableCell><strong>Value</strong></TableCell>
-                                        <TableCell><strong>Timestamp</strong></TableCell>
+                                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Measurement</TableCell>
+                                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Value</TableCell>
+                                        <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Timestamp</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {sensors.map((sensor) => (
-                                        <TableRow key={sensor.name}>
+                                        <TableRow
+                                            key={sensor.name}
+                                            sx={{
+                                                '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' },
+                                                '&:hover': { backgroundColor: '#e3f2fd' },
+                                            }}
+                                        >
                                             <TableCell>
                                                 <Tooltip title={`View details for ${sensor.name}`} arrow>
                                                     <a
@@ -163,12 +192,8 @@ const Dashboard = () => {
                                                     </a>
                                                 </Tooltip>
                                             </TableCell>
-                                            <TableCell>
-                                                {sensor.value !== undefined ? sensor.value : 'N/A'}
-                                            </TableCell>
-                                            <TableCell>
-                                                {sensor.timestamp ? new Date(sensor.timestamp).toLocaleString() : 'N/A'}
-                                            </TableCell>
+                                            <TableCell>{sensor.value !== undefined ? sensor.value : 'N/A'}</TableCell>
+                                            <TableCell>{sensor.timestamp ? new Date(sensor.timestamp).toLocaleString() : 'N/A'}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

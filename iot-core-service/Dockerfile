@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjdk:21
 EXPOSE 8002
 COPY ./target/iot-core-service-0.0.1-SNAPSHOT.jar iot-core-service.jar
 

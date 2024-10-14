@@ -63,4 +63,9 @@ public class AuthenticationHelper {
             return Mono.error(new TokenNotValidException("Refresh token is missing"));
         }
     }
+
+    public String getUserIdFromToken(String token) {
+        DecodedJWT decodedJWT = jwtTokenProvider.decodeToken(token);
+        return decodedJWT.getClaim("userId").asString();
+    }
 }

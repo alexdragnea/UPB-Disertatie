@@ -2,6 +2,9 @@ server:
   port: 8002
   error:
     include-message: always
+  netty:
+    connection-timeout: 5000
+
 
 
 influxdb:
@@ -9,6 +12,8 @@ influxdb:
   token: tDdAyUYuIau7IFtxvLQ23gIoprJ5x1-xhJ7iN0Na8Sq_29rCDPiG-lEnTcDw9-CQ4M3IFyTSXhuC0Thf5pUy4g==
   organization: upb
   bucket: iot-measurement-bucket
+
+
 
 spring:
   application:

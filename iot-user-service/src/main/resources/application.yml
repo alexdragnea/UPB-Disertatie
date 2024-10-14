@@ -2,6 +2,8 @@ server:
   port: 8003
   error:
     include-message: always
+  netty:
+    connection-timeout: 5000
 
 spring:
   application:

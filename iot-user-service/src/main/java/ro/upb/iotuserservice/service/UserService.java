@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import ro.upb.common.dto.LoggedInDetails;
 import ro.upb.iotuserservice.dto.RegisterUserRequest;
+import ro.upb.iotuserservice.dto.UpdateUserRequest;
 import ro.upb.iotuserservice.dto.UserDto;
 import ro.upb.iotuserservice.exception.EmailExistException;
 import ro.upb.iotuserservice.exception.EmailNotFoundException;
@@ -104,6 +105,28 @@ public class UserService implements ReactiveUserDetailsService {
         log.info("LoggedInDetails: {}", loggedInDetails);
         return Mono.just(loggedInDetails);
     }
+
+    public Mono<Void> updateUserProfile(UpdateUserRequest updateUserRequest) {
+        return userRepository.findById(updateUserRequest.getUserId())
+                .flatMap(user -> {
+                    user.setFirstName(updateUserRequest.getFirstName());
+                    user.setLastName(updateUserRequest.getLastName());
+                    user.setEmail(updateUserRequest.getEmail());
+                    return userRepository.save(user);
+                })
+                .then();
+    }
+
+
+    public Mono<Void> updateUserPassword(UpdateUserRequest updateUserRequest) {
+        return userRepository.findById(updateUserRequest.getUserId())
+                .flatMap(user -> {
+                    user.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+                    return userRepository.save(user);
+                })
+                .then();
+    }
+
     private Mono<Void> validateEmail(String email) {
         return userRepository.findUserByEmail(email)
                 .flatMap(existingUser -> Mono.error(new EmailExistException("Email already exists.")))

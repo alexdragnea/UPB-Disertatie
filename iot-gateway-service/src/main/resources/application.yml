@@ -2,6 +2,8 @@ server:
   port: 8888
   error:
     include-message: always
+  netty:
+    connection-timeout: 5000
 
 spring:
   application:
@@ -12,6 +14,7 @@ spring:
     gateway:
       httpclient:
         connect-timeout: 20000
+        response-timeout: 5000
         pool:
           max-connections: 1500
           type: FIXED

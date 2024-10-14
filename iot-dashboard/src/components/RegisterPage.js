@@ -12,12 +12,48 @@ export default function RegisterPage() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [validationErrors, setValidationErrors] = useState({});
+
+    const validateEmail = (email) => {
+        // Basic email regex for validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
 
     const handleRegister = async (e) => {
         e.preventDefault();
 
+        // Clear previous validation errors
+        setValidationErrors({});
+        let errors = {};
+
+        // Validate email
+        if (!validateEmail(email)) {
+            errors.email = 'Invalid email format.';
+        }
+
+        // Check required fields
+        if (!firstName) {
+            errors.firstName = 'First Name is required.';
+        }
+
+        if (!lastName) {
+            errors.lastName = 'Last Name is required.';
+        }
+
+        // Check if password is not empty
+        if (!password) {
+            errors.password = 'Password is required.';
+        }
+
+        // Check if passwords match
         if (password !== confirmPassword) {
-            setError('Passwords do not match.');
+            errors.confirmPassword = 'Passwords do not match.';
+        }
+
+        // If there are validation errors, set them and return early
+        if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
             return;
         }
 
@@ -58,6 +94,8 @@ export default function RegisterPage() {
                             margin="normal"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            error={!!validationErrors.email}
+                            helperText={validationErrors.email}
                             required
                         />
                     </Grid>
@@ -69,6 +107,8 @@ export default function RegisterPage() {
                             margin="normal"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
+                            error={!!validationErrors.firstName}
+                            helperText={validationErrors.firstName}
                             required
                         />
                     </Grid>
@@ -80,6 +120,8 @@ export default function RegisterPage() {
                             margin="normal"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
+                            error={!!validationErrors.lastName}
+                            helperText={validationErrors.lastName}
                             required
                         />
                     </Grid>
@@ -92,6 +134,8 @@ export default function RegisterPage() {
                             margin="normal"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            error={!!validationErrors.password}
+                            helperText={validationErrors.password}
                             required
                         />
                     </Grid>
@@ -104,6 +148,8 @@ export default function RegisterPage() {
                             margin="normal"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
+                            error={!!validationErrors.confirmPassword}
+                            helperText={validationErrors.confirmPassword}
                             required
                         />
                     </Grid>
