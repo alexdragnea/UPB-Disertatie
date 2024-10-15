@@ -3,9 +3,11 @@ server:
   error:
     include-message: always
   netty:
-    connection-timeout: 5000
+    use-native-transport: true
 
 spring:
+  netty:
+    use-native-transport: true
   application:
     name: iot-gateway-service
   main:
