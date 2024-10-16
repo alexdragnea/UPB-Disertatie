@@ -37,19 +37,3 @@ management:
     web:
       exposure:
         include: "*"
-
-#logging:
-#  level:
-#    io:
-#      reflectoring: DEBUG
-#    org:
-#      springframework:
-#        web: DEBUG
-#        data:
-#          mongodb:
-#            core:
-#              ReactiveMongoTemplate: DEBUG
-#    reactor:
-#      netty:
-#        http:
-#          client: DEBUG

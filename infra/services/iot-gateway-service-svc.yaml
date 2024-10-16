@@ -8,8 +8,12 @@ spec:
   type: LoadBalancer
   ports:
   - protocol: TCP
-    port: 8888
-    targetPort: 8888
-    name: metrics
+    port: 8888            # This is the port exposed by the service
+    targetPort: 8888      # This is the port the container listens on for your application
+    name: metrics          # Name for this port
+  - protocol: TCP
+    port: 5101            # Exposing JMX port via the service
+    targetPort: 5101      # This should match your container's JMX port
+    name: jmx              # Name for this port
   selector:
     app: iot-gateway-service
