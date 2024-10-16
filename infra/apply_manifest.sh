@@ -3,6 +3,7 @@
 
 # helm repo add bitnami https://charts.bitnami.com/bitnami
 # helm repo update
+# kubectl create namespace observability
 # helm install prometheus bitnami/kube-prometheus --namespace observability
 
 # sleep 30
@@ -89,5 +90,5 @@ for hpa_file in "${hpa_files[@]}"; do
     sleep 5
 done
 
-# kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090:9090
-# kubectl port-forward --namespace default svc/grafana 8080:3000
+# kubectl port-forward --namespace observability svc/prometheus-kube-prometheus-prometheus 9090:9090
+# kubectl port-forward --namespace observability svc/grafana 3000:1111

@@ -102,7 +102,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,metrics,prometheus
+        include: "*"
 
 resilience4j:
   circuit-breaker:
