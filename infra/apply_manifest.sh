@@ -8,7 +8,10 @@
 
 # sleep 30
 
-# helm install grafana bitnami/grafana --namespace observability
+# helm install grafana bitnami/grafana \
+#   --namespace observability \
+#   --set admin.user=admin \
+#   --set admin.password=admin
 
 # Kafka
 kafka=(
@@ -91,4 +94,5 @@ for hpa_file in "${hpa_files[@]}"; do
 done
 
 # kubectl port-forward --namespace observability svc/prometheus-kube-prometheus-prometheus 9090:9090
-# kubectl port-forward --namespace observability svc/grafana 3000:1111
+# kubectl port-forward --namespace observability svc/grafana 3000:
+# http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090

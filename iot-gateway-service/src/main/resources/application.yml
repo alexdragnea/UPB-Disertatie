@@ -3,6 +3,7 @@ server:
   error:
     include-message: always
 
+
 spring:
   application:
     name: iot-gateway-service
@@ -93,6 +94,9 @@ eureka:
     prefer-ip-address: true
 
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   health:
     circuit-breakers:
       enabled: true
