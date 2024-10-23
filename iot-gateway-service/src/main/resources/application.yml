@@ -3,7 +3,6 @@ server:
   error:
     include-message: always
 
-
 spring:
   application:
     name: iot-gateway-service
