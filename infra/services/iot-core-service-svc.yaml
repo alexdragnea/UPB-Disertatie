@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: iot-core-service
   labels:
-    micrometer-prometheus-discovery: 'true'
+    micrometer-prometheus-discovery-http: 'true'  # Label for HTTP scraping
 spec:
   selector:
     app: iot-core-service
@@ -12,4 +12,3 @@ spec:
       port: 8002
       targetPort: 8002
       name: metrics
-        

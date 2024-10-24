@@ -17,7 +17,11 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
 
+
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoint:
     health:
       show-details: always

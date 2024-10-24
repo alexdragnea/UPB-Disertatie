@@ -3,11 +3,18 @@
 
 # helm repo add bitnami https://charts.bitnami.com/bitnami
 # helm repo update
-# helm install prometheus bitnami/kube-prometheus --namespace observability
+# kubectl create namespace observability
+# helm install prometheus bitnami/kube-prometheus --namespace observability \
+#   --set prometheus.replicaCount=2 \
+#   --set admin.user=admin \
+#   --set admin.password=admin
 
 # sleep 30
 
-# helm install grafana bitnami/grafana --namespace observability
+# helm install grafana bitnami/grafana \
+#   --namespace observability \
+#   --set admin.user=admin \
+#   --set admin.password=admin
 
 # Kafka
 kafka=(
@@ -89,5 +96,6 @@ for hpa_file in "${hpa_files[@]}"; do
     sleep 5
 done
 
-# kubectl port-forward --namespace default svc/prometheus-kube-prometheus-prometheus 9090:9090
-# kubectl port-forward --namespace default svc/grafana 8080:3000
+# kubectl port-forward --namespace observability svc/prometheus-kube-prometheus-prometheus 9090:9090
+# kubectl port-forward --namespace observability svc/grafana 3000:3000
+# http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090

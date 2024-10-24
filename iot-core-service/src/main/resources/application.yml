@@ -53,6 +53,9 @@ cache:
 
 
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoint:
     health:
       show-details: always
@@ -60,8 +63,3 @@ management:
     web:
       exposure:
         include: "*"
-
-logging:
-  level:
-    org.springframework.web.reactive.socket: DEBUG
-    ro.upb.iotcoreservice.websocket: DEBUG

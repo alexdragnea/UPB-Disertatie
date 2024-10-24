@@ -4,6 +4,8 @@ server:
     include-message: always
 
 spring:
+  jmx:
+    enabled: true
   application:
     name: iot-gateway-service
   main:
@@ -92,11 +94,10 @@ eureka:
   instance:
     prefer-ip-address: true
 
-logging:
-  level:
-    org.springframework.web.reactive.socket: DEBUG
-
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   health:
     circuit-breakers:
       enabled: true

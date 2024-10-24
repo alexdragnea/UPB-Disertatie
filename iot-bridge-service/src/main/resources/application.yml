@@ -35,6 +35,9 @@ cache:
     recordStats: true
 
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoint:
     health:
       show-details: always
