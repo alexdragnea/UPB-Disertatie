@@ -161,3 +161,8 @@ resilience4j:
       iot-user-service:
         timeoutDuration: 5s
         cancelRunningFuture: true
+
+logging:
+  level:
+    org.springframework.jmx: DEBUG
+    org.apache.catalina.mbeans: DEBUG
