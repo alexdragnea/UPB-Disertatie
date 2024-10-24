@@ -25,7 +25,7 @@ spec:
                     -Dcom.sun.management.jmxremote.local.only=false \
                     -Dcom.sun.management.jmxremote.port=1099 \
                     -Dcom.sun.management.jmxremote.rmi.port=1099 \
-                    -Djava.rmi.server.hostname=$(POD_IP)"
+                    -Djava.rmi.server.hostname=127.0.0.1"
         resources:
           limits:
             memory: 768Mi
@@ -35,6 +35,7 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 8888
+        - containerPort: 1099
         # livenessProbe:
         #   httpGet:                           # Use httpGet but specify the scheme as HTTPS
         #     path: /actuator/health
