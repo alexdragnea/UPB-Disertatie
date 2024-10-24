@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: iot-discovery-service
   labels:
-    micrometer-prometheus-discovery: 'true'
+    micrometer-prometheus-discovery-http: 'true'  # Label for HTTP scraping
 spec:
   type: LoadBalancer
   selector:

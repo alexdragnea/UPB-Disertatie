@@ -4,6 +4,8 @@ server:
     include-message: always
 
 spring:
+  jmx:
+    enabled: true
   application:
     name: iot-gateway-service
   main:
