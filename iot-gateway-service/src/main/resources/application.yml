@@ -162,7 +162,3 @@ resilience4j:
         timeoutDuration: 5s
         cancelRunningFuture: true
 
-logging:
-  level:
-    org.springframework.jmx: DEBUG
-    org.apache.catalina.mbeans: DEBUG
