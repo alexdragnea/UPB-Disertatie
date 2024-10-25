@@ -29,38 +29,40 @@ jobs:
     needs: publish
     name: OWASP ZAP SCANS
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
 
       - name: Building Docker Images
-        run: docker-compose build
+        run: docker-compose -f ./docker-compose.yml build
 
       - name: Launching the app
-        run: docker-compose up --detach
+        run: docker-compose -f ./docker-compose.yml up --detach
 
-      # OWASP ZAP scan for the first target
+      # OWASP ZAP scans for each service
       - name: OWASP ZAP Baseline Scan - Gateway Service
         uses: zaproxy/action-baseline@v0.13.0
         with:
           target: 'http://localhost:8888'
           issue_title: OWASP Security Testing for Gateway Service
 
-      # OWASP ZAP scan for the second target
       - name: OWASP ZAP Baseline Scan - Bridge Service
         uses: zaproxy/action-baseline@v0.13.0
         with:
           target: 'http://localhost:8001'
           issue_title: OWASP Security Testing for Bridge Service
 
-      # OWASP ZAP scan for the second target
       - name: OWASP ZAP Baseline Scan - Core Service
         uses: zaproxy/action-baseline@v0.13.0
         with:
           target: 'http://localhost:8002'
           issue_title: OWASP Security Testing for Core Service
 
-      # OWASP ZAP scan for the second target
       - name: OWASP ZAP Baseline Scan - User Service
         uses: zaproxy/action-baseline@v0.13.0
         with:
@@ -95,7 +97,6 @@ jobs:
         uses: s4u/maven-settings-action@v2.5.0
         with:
           servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
-
 
       - name: Build with Maven
         run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
