@@ -29,6 +29,9 @@ jobs:
     needs: publish
     name: OWASP ZAP SCANS
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]  
     steps:
       - uses: actions/checkout@v2
 
