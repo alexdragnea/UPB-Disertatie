@@ -81,7 +81,7 @@ metadata:
   name: kafka
 spec:
   serviceName: kafka-service
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       service: kafka
@@ -147,42 +147,42 @@ spec:
       port: 30092
       targetPort: 9092
 ---
-# Kafka Drop Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: kafka-drop-service
-spec:
-  selector:
-    app: kafka-drop
-  ports:
-    - protocol: TCP
-      port: 9000
-      targetPort: 9000
-  type: LoadBalancer
----
-# Kafka Drop Deployment
-kind: Deployment
-apiVersion: apps/v1
-metadata:
-  name: kafka-drop-deployment
-  labels:
-    app: kafka-drop
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: kafka-drop
-  template:
-    metadata:
-      labels:
-        app: kafka-drop
-    spec:
-      containers:
-      - name: kafka-drop
-        image: obsidiandynamics/kafdrop:latest
-        ports:
-        - containerPort: 9000
-        env:
-        - name: KAFKA_BROKERCONNECT
-          value: "kafka-service:9092"
+# # Kafka Drop Service
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: kafka-drop-service
+# spec:
+#   selector:
+#     app: kafka-drop
+#   ports:
+#     - protocol: TCP
+#       port: 9000
+#       targetPort: 9000
+#   type: LoadBalancer
+# ---
+# # Kafka Drop Deployment
+# kind: Deployment
+# apiVersion: apps/v1
+# metadata:
+#   name: kafka-drop-deployment
+#   labels:
+#     app: kafka-drop
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: kafka-drop
+#   template:
+#     metadata:
+#       labels:
+#         app: kafka-drop
+#     spec:
+#       containers:
+#       - name: kafka-drop
+#         image: obsidiandynamics/kafdrop:latest
+#         ports:
+#         - containerPort: 9000
+#         env:
+#         - name: KAFKA_BROKERCONNECT
+#           value: "kafka-service:9092"

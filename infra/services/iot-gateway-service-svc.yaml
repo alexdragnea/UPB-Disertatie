@@ -11,9 +11,5 @@ spec:
       port: 8888            # This is the port exposed by the service
       targetPort: 8888      # This is the port the container listens on for your application
       name: metrics         # Name for this port
-    - protocol: TCP
-      port: 1099            # Exposing JMX port via the service (should match the deployment)
-      targetPort: 1099      # This should match the container's JMX port in your deployment
-      name: jmx             # Name for this port
   selector:
     app: iot-gateway-service

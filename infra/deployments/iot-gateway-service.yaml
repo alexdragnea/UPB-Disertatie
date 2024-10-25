@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: iot-gateway-service
 spec:
-  replicas: 1
+  replicas: 2
   strategy:
     type: RollingUpdate
   selector:
@@ -18,14 +18,6 @@ spec:
       - name: iot-gateway-service
         image: alexdragnea/disertatie-iot-gateway-service:latest
         env:
-          - name: JAVA_OPTS
-            value: "-Dcom.sun.management.jmxremote \
-                    -Dcom.sun.management.jmxremote.authenticate=false \
-                    -Dcom.sun.management.jmxremote.ssl=false \
-                    -Dcom.sun.management.jmxremote.local.only=false \
-                    -Dcom.sun.management.jmxremote.port=1099 \
-                    -Dcom.sun.management.jmxremote.rmi.port=1099 \
-                    -Djava.rmi.server.hostname=127.0.0.1"
         resources:
           limits:
             memory: 768Mi
@@ -35,7 +27,6 @@ spec:
             memory: 512Mi
         ports:
         - containerPort: 8888
-        - containerPort: 1099
         # livenessProbe:
         #   httpGet:                           # Use httpGet but specify the scheme as HTTPS
         #     path: /actuator/health
