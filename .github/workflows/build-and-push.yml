@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Define both the service name and corresponding port for each service
+        # Define the service name and corresponding port for each scan
         include:
           - service: iot-core-service
             service_port: 8002
@@ -61,7 +61,7 @@ jobs:
         with:
           servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
 
-      - name: Build with Maven
+      - name: Build all services with Maven
         run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
 
       - name: Install Docker Compose
@@ -70,20 +70,21 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: Build Docker Image for ${{ matrix.service }}
+      - name: Build and Run All Containers
         run: |
-          cd ${{ matrix.service }}
-          docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
+          docker-compose -f ./docker-compose.yml build
+          docker-compose -f ./docker-compose.yml up -d  # This will start all containers defined in docker-compose.yml
 
-      - name: Run Docker Container for ${{ matrix.service }}
-        run: |
-          docker-compose -f ./docker-compose.yml up -d ${{ matrix.service }}
-
+      # Run OWASP ZAP scan targeting each service on its specific port
       - name: OWASP ZAP Baseline Scan for ${{ matrix.service }}
         uses: zaproxy/action-baseline@v0.13.0
         with:
           target: "http://localhost:${{ matrix.service_port }}"  # Each service will use its specified port here
           issue_title: "OWASP Security Testing for ${{ matrix.service }}"
+
+      - name: Shut down all containers
+        run: docker-compose -f ./docker-compose.yml down  # Ensures containers are stopped after testing
+
 
   build_and_push:
     name: Build & Push to DockerHub
