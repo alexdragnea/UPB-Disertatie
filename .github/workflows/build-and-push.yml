@@ -68,7 +68,7 @@ jobs:
       - name: OWASP ZAP Baseline Scan - Gateway Service
         uses: zaproxy/action-baseline@v0.13.0
         with:
-          target: 'http://localhost:8888'
+          target: 'https://localhost:8888'
           issue_title: OWASP Security Testing for Gateway Service
 
       - name: OWASP ZAP Baseline Scan - Bridge Service
