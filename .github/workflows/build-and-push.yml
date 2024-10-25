@@ -94,6 +94,10 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
+      - name: LS
+        run: |
+          ls
+
       - name: Start All Services
         run: |
           docker-compose up -d  # This will start all services defined in docker-compose.yml
