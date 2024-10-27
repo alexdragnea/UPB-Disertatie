@@ -108,6 +108,10 @@ jobs:
     name: OWASP ZAP Scans
     runs-on: ubuntu-latest
     steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Install jq (JSON processor)
         run: sudo apt-get install -y jq
 
@@ -116,7 +120,7 @@ jobs:
           curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
-
+          
       - name: List Files (Verify docker-compose.yml presence)
         run: ls -la  # Ensures docker-compose.yml is present
 
