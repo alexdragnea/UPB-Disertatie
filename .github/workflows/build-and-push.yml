@@ -91,15 +91,20 @@ jobs:
           docker pull alexdragnea/disertatie-iot-gateway-service:latest
           docker pull alexdragnea/disertatie-iot-user-service:latest
 
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Set up Docker Compose
         run: |
           curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
-      - name: Start All Services
-        run: |
-          docker-compose up -d  # Ensure all services are defined correctly in docker-compose.yml
+      - name: List Files (Verify docker-compose.yml presence)
+        run: ls -la  # Should display docker-compose.yml in the output
+
+      - name: Start All Services with Docker Compose
+        run: docker-compose up -d  # No need to specify -f since docker-compose.yml is in the root directory
 
       - name: Wait for Services to be Ready
         run: sleep 20  # Adjust sleep time based on service startup time if needed
