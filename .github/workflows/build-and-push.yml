@@ -103,69 +103,69 @@ jobs:
   #     - name: Build iot-user-service
   #       run: mvn -B package -DskipTests --file iot-user-service/pom.xml
 
-owasp:
-    name: Build & OWASP ZAP Scans
-    runs-on: ubuntu-latest
-    needs: publish
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  owasp:
+      name: Build & OWASP ZAP Scans
+      runs-on: ubuntu-latest
+      needs: publish
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v3
 
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '21'
+        - name: Set up JDK
+          uses: actions/setup-java@v1
+          with:
+            java-version: '21'
 
-      - name: Set up Maven settings
-        uses: s4u/maven-settings-action@v2.5.0
-        with:
-          servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
+        - name: Set up Maven settings
+          uses: s4u/maven-settings-action@v2.5.0
+          with:
+            servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
 
-      # Build all services
-      - name: Build iot-core-service
-        run: mvn -B package -DskipTests --file iot-core-service/pom.xml
+        # Build all services
+        - name: Build iot-core-service
+          run: mvn -B package -DskipTests --file iot-core-service/pom.xml
 
-      - name: Build iot-discovery-service
-        run: mvn -B package -DskipTests --file iot-discovery-service/pom.xml
+        - name: Build iot-discovery-service
+          run: mvn -B package -DskipTests --file iot-discovery-service/pom.xml
 
-      - name: Build iot-bridge-service
-        run: mvn -B package -DskipTests --file iot-bridge-service/pom.xml
+        - name: Build iot-bridge-service
+          run: mvn -B package -DskipTests --file iot-bridge-service/pom.xml
 
-      - name: Build iot-gateway-service
-        run: mvn -B package -DskipTests --file iot-gateway-service/pom.xml
+        - name: Build iot-gateway-service
+          run: mvn -B package -DskipTests --file iot-gateway-service/pom.xml
 
-      - name: Build iot-user-service
-        run: mvn -B package -DskipTests --file iot-user-service/pom.xml
+        - name: Build iot-user-service
+          run: mvn -B package -DskipTests --file iot-user-service/pom.xml
 
-      # Install and verify Docker Compose
-      - name: Install jq (JSON processor)
-        run: sudo apt-get install -y jq
+        # Install and verify Docker Compose
+        - name: Install jq (JSON processor)
+          run: sudo apt-get install -y jq
 
-      - name: Set up Docker Compose
-        run: |
-          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-          
-      # Start Docker Compose and run OWASP ZAP Scans
-      - name: Start All Services with Docker Compose
-        run: docker-compose up -d
+        - name: Set up Docker Compose
+          run: |
+            curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            chmod +x /usr/local/bin/docker-compose
+            docker-compose --version
+            
+        # Start Docker Compose and run OWASP ZAP Scans
+        - name: Start All Services with Docker Compose
+          run: docker-compose up -d
 
-      - name: Wait for Services to be Ready
-        run: sleep 20  # Adjust sleep time as needed
+        - name: Wait for Services to be Ready
+          run: sleep 20  # Adjust sleep time as needed
 
-      - name: Run OWASP ZAP Baseline Scans
-        run: |
-          services=( 
-            "iot-core-service:8002" 
-            "iot-bridge-service:8001" 
-            "iot-user-service:8003" 
-          )
-          for service in "${services[@]}"; do
-            IFS=":" read -r name port <<< "$service"
-            echo "Running OWASP ZAP scan on $name at port $port"
-            docker run --network="host" zaproxy/zap2docker-stable zap-baseline.py -t http://localhost:$port -r zap_report_$name.html
-          done
+        - name: Run OWASP ZAP Baseline Scans
+          run: |
+            services=( 
+              "iot-core-service:8002" 
+              "iot-bridge-service:8001" 
+              "iot-user-service:8003" 
+            )
+            for service in "${services[@]}"; do
+              IFS=":" read -r name port <<< "$service"
+              echo "Running OWASP ZAP scan on $name at port $port"
+              docker run --network="host" zaproxy/zap2docker-stable zap-baseline.py -t http://localhost:$port -r zap_report_$name.html
+            done
 
-      - name: Shut down all containers
-        run: docker-compose down
+        - name: Shut down all containers
+          run: docker-compose down
