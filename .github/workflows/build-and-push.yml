@@ -82,6 +82,12 @@ jobs:
         with:
           java-version: '21'
 
+      - name: Set up Maven settings
+        uses: s4u/maven-settings-action@v2.5.0
+        with:
+          servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
+
+
       - name: Build iot-core-service
         run: mvn -B package -DskipTests --file iot-core-service/pom.xml
 
