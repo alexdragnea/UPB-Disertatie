@@ -4,7 +4,6 @@ on:
   push:
     branches: [deploy]
   workflow_dispatch:
-
 jobs:
   publish:
     name: Publish Iot-Commons to GitHub Package
@@ -24,6 +23,51 @@ jobs:
         run: mvn --batch-mode -DuseGitHubPackages=true deploy --file iot-commons/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
+
+  build_and_push:
+    name: Build & Push to DockerHub
+    needs: publish
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]  
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '21'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      
+      - name: Set up Maven settings
+        uses: s4u/maven-settings-action@v2.5.0
+        with:
+          servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
+
+
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Docker Build and Push to DockerHub
+        run: |
+          cd ${{ matrix.service }}
+          docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
+          docker push alexdragnea/disertatie-${{ matrix.service }}:latest
 
   build_services:
     name: Build Service JARs Locally
@@ -60,20 +104,6 @@ jobs:
     steps:
       - name: Install jq (JSON processor)
         run: sudo apt-get install -y jq
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-      - name: Pull All Docker Images
-        run: |
-          docker pull alexdragnea/disertatie-iot-core-service:latest
-          docker pull alexdragnea/disertatie-iot-discovery-service:latest
-          docker pull alexdragnea/disertatie-iot-bridge-service:latest
-          docker pull alexdragnea/disertatie-iot-gateway-service:latest
-          docker pull alexdragnea/disertatie-iot-user-service:latest
 
       - name: Set up Docker Compose
         run: |
