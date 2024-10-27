@@ -122,21 +122,21 @@ jobs:
 
         # Run OWASP ZAP scan for each service
         - name: OWASP ZAP Baseline Scan for IoT User Service
-          uses: zaproxy/action-baseline@v0.7.0
+          uses: zaproxy/action-full-scan@v0.11.0
           with:
             target: 'http://localhost:8003'
             fail_action: "warn"
             issue_title: OWASP Security Testing - IoT User Service
 
         - name: OWASP ZAP Baseline Scan for IoT Core Service
-          uses: zaproxy/action-baseline@v0.7.0
+          uses: zaproxy/action-full-scan@v0.11.0
           with:
             target: 'http://localhost:8002'
             fail_action: "warn"
             issue_title: OWASP Security Testing - IoT Core Service
 
         - name: OWASP ZAP Baseline Scan for IoT Bridge Service
-          uses: zaproxy/action-baseline@v0.7.0
+          uses: zaproxy/action-full-scan@v0.11.0
           with:
             target: 'http://localhost:8001'
             fail_action: "warn"
