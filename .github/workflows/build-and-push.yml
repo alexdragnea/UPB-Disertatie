@@ -25,55 +25,58 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
 
-  build_and_push:
-    name: Build & Push to DockerHub
-    needs: publish
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]  
+  # build_and_push:
+  #   name: Build & Push to DockerHub
+  #   needs: publish
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
 
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: '21'
+  #     - name: Set up JDK
+  #       uses: actions/setup-java@v1
+  #       with:
+  #         java-version: '21'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      
-      - name: Set up Maven settings
-        uses: s4u/maven-settings-action@v2.5.0
-        with:
-          servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
+  #     - name: Cache Maven packages
+  #       uses: actions/cache@v1
+  #       with:
+  #         path: ~/.m2
+  #         key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
+  #         restore-keys: ${{ runner.os }}-m2
 
-      - name: Build with Maven
-        run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
+  #     - name: Set up Maven settings
+  #       uses: s4u/maven-settings-action@v2.5.0
+  #       with:
+  #         servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     - name: Build with Maven
+  #       run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
 
-      - name: Docker Build and Push to DockerHub
-        run: |
-          cd ${{ matrix.service }}
-          docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
-          docker push alexdragnea/disertatie-${{ matrix.service }}:latest
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+  #     - name: Docker Build and Push to DockerHub
+  #       run: |
+  #         cd ${{ matrix.service }}
+  #         docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
+  #         docker push alexdragnea/disertatie-${{ matrix.service }}:latest
 
   owasp:
-    needs: build_and_push
+    # needs: build_and_push
     name: OWASP ZAP SCANS
     runs-on: ubuntu-latest
     steps:
+      - name: Install jq (JSON processor)
+        run: sudo apt-get install -y jq
+
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
@@ -88,21 +91,19 @@ jobs:
           docker pull alexdragnea/disertatie-iot-gateway-service:latest
           docker pull alexdragnea/disertatie-iot-user-service:latest
 
-      - name: Install Docker Compose
+      - name: Set up Docker Compose
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
+          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
           docker-compose --version
-
-      - name: LS
-        run: |
-          ls
 
       - name: Start All Services
         run: |
-          docker-compose up -d  # This will start all services defined in docker-compose.yml
+          docker-compose up -d  # Ensure all services are defined correctly in docker-compose.yml
 
-      # Run OWASP ZAP scan targeting each service on its specific port
+      - name: Wait for Services to be Ready
+        run: sleep 20  # Adjust sleep time based on service startup time if needed
+
       - name: Run OWASP ZAP Baseline Scans
         run: |
           services=( 
@@ -117,4 +118,4 @@ jobs:
           done
 
       - name: Shut down all containers
-        run: docker-compose down  # Ensure containers are stopped after testing
+        run: docker-compose down
