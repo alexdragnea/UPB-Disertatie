@@ -1,20 +1,20 @@
 #!/bin/bash
 
 
-# helm repo add bitnami https://charts.bitnami.com/bitnami
-# helm repo update
-# kubectl create namespace observability
-# helm install prometheus bitnami/kube-prometheus --namespace observability \
-#   --set prometheus.replicaCount=2 \
-#   --set admin.user=admin \
-#   --set admin.password=admin
+ helm repo add bitnami https://charts.bitnami.com/bitnami
+ helm repo update
+ kubectl create namespace observability
+ helm install prometheus bitnami/kube-prometheus --namespace observability \
+   --set prometheus.replicaCount=2 \
+   --set admin.user=admin \
+   --set admin.password=admin
 
-# sleep 30
+ sleep 30
 
-# helm install grafana bitnami/grafana \
-#   --namespace observability \
-#   --set admin.user=admin \
-#   --set admin.password=admin
+ helm install grafana bitnami/grafana \
+   --namespace observability \
+   --set admin.user=admin \
+   --set admin.password=admin
 
 # Kafka
 kafka=(

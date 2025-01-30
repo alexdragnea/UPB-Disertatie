@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: iot-dashboard-service
 spec:
-  selector:
-    app: iot-dashboard
+  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 3333
-  type: LoadBalancer
+      port: 3333
+  selector:
+    app: iot-dashboard
