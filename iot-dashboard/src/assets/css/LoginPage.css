@@ -1,0 +1,72 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    height: 100%;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 110vh;
+    min-height: 50vh; /* Adjusted to reduce space between header and footer */
+    background-color: #f0f2f5;
+    padding: 6rem;
+}
+
+.login-form {
+    padding: 1.5rem;
+    max-width: 350px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.login-logo {
+    width: 60px;
+    margin-bottom: 8px;
+}
+
+.login-form h1 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.login-form .MuiTextField-root {
+    margin-bottom: 0.75rem;
+}
+
+.login-form .MuiButton-root {
+    margin-top: 0.75rem;
+}
+
+.login-form .MuiButton-containedPrimary {
+    background-color: #007bff;
+    color: white;
+}
+
+.login-form .MuiButton-outlinedPrimary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.login-form .MuiButton-containedPrimary:hover {
+    background-color: #0056b3;
+}
+
+.login-form .MuiButton-outlinedPrimary:hover {
+    border-color: #0056b3;
+    color: #0056b3;
+}
+
+.snackbar-alert {
+    width: 100%;
+}

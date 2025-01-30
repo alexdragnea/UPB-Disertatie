@@ -1,0 +1,71 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    height: 100%;
+}
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 10vh;
+    background-color: #f0f2f5;
+    padding: 2rem;
+}
+
+.register-form {
+    padding: 1rem;
+    max-width: 350px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.register-logo {
+    width: 60px;
+    margin-bottom: 8px;
+}
+
+.register-form h1 {
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.register-form .MuiTextField-root {
+    margin-bottom: 0.5rem;
+}
+
+.register-form .MuiButton-root {
+    margin-top: 0.5rem;
+}
+
+.register-form .MuiButton-containedPrimary {
+    background-color: #007bff;
+    color: white;
+}
+
+.register-form .MuiButton-outlinedPrimary {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.register-form .MuiButton-containedPrimary:hover {
+    background-color: #0056b3;
+}
+
+.register-form .MuiButton-outlinedPrimary:hover {
+    border-color: #0056b3;
+    color: #0056b3;
+}
+
+.snackbar-alert {
+    width: 100%;
+}

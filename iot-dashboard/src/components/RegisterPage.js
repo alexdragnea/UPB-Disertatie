@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { TextField, Button, Paper, Grid, Snackbar, Alert } from '@mui/material';
+import { TextField, Button, Paper, Grid, Snackbar, Alert, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
+import './RegisterPage.css'; // Import custom CSS
 
 const API_URL = 'https://localhost:8888/v1/iot-user';
 
@@ -82,112 +83,120 @@ export default function RegisterPage() {
     };
 
     return (
-        <Paper style={{ padding: 20 }}>
-            <h2>Register</h2>
-            <form>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            error={!!validationErrors.email}
-                            helperText={validationErrors.email}
-                            required
-                        />
+        <Box className="register-container">
+            <Paper elevation={6} className="register-form">
+                <Box className="register-header">
+                    <Typography variant="h4" component="h1" gutterBottom>
+                        Register
+                    </Typography>
+                </Box>
+                <form onSubmit={handleRegister}>
+                    <Grid container spacing={-1}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Email"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                error={!!validationErrors.email}
+                                helperText={validationErrors.email}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="First Name"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                error={!!validationErrors.firstName}
+                                helperText={validationErrors.firstName}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Last Name"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                error={!!validationErrors.lastName}
+                                helperText={validationErrors.lastName}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Password"
+                                type="password"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                error={!!validationErrors.password}
+                                helperText={validationErrors.password}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Confirm Password"
+                                type="password"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                error={!!validationErrors.confirmPassword}
+                                helperText={validationErrors.confirmPassword}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                sx={{ marginTop: 2 }}
+                            >
+                                Register
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} sx={{ textAlign: 'center', marginTop: 2 }}>
+                            <Button
+                                component={Link}
+                                to="/login"
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                sx={{ marginTop: 2 }}
+                            >
+                                Back to Login
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="First Name"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            error={!!validationErrors.firstName}
-                            helperText={validationErrors.firstName}
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Last Name"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            error={!!validationErrors.lastName}
-                            helperText={validationErrors.lastName}
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            error={!!validationErrors.password}
-                            helperText={validationErrors.password}
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Confirm Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            error={!!validationErrors.confirmPassword}
-                            helperText={validationErrors.confirmPassword}
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            onClick={handleRegister}
-                            variant="contained"
-                            color="primary"
-                            style={{ marginTop: 20 }}
-                        >
-                            Register
-                        </Button>
-                        <Button
-                            component={Link}
-                            to="/login"
-                            variant="outlined"
-                            color="primary"
-                            style={{ marginTop: 20, marginLeft: 10 }}
-                        >
-                            Back to Login
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
+                </form>
 
-            {/* Success Notification */}
-            <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
-                <Alert onClose={() => setMessage('')} severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-            </Snackbar>
+                <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
+                    <Alert onClose={() => setMessage('')} severity="success" sx={{ width: '100%' }}>
+                        {message}
+                    </Alert>
+                </Snackbar>
 
-            {/* Error Notification */}
-            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
-                <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
-                    {error}
-                </Alert>
-            </Snackbar>
-        </Paper>
+                <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
+                    <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
+                        {error}
+                    </Alert>
+                </Snackbar>
+            </Paper>
+        </Box>
     );
 }

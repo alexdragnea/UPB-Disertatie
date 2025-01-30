@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { TextField, Button, Paper, Grid, Snackbar, Alert, CircularProgress } from '@mui/material';
+import { TextField, Button, Paper, Grid, Snackbar, Alert, CircularProgress, Typography, Box, FormControlLabel, Checkbox, Link as MuiLink } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../AuthContext'; // Adjust the import based on your structure
+import logo from '../assets/img/icons/iot-logo.png'; // Add a logo
+import '../assets/css/LoginPage.css'; // Import custom CSS
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://localhost:8888/v1/iot-user';
 
@@ -9,6 +11,7 @@ export default function LoginPage() {
     const { login } = useContext(AuthContext); // Get login function from context
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false); // Loader state
@@ -24,7 +27,7 @@ export default function LoginPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ email, password, rememberMe }),
             });
 
             if (response.ok) {
@@ -51,67 +54,90 @@ export default function LoginPage() {
     };
 
     return (
-        <Paper style={{ padding: 20 }}>
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Email"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
+        <Box className="login-container">
+            <Paper elevation={6} className="login-form">
+                <Box className="login-header">
+                    <img src={logo} alt="IoT Dashboard Logo" className="login-logo" />
+                    <Typography variant="h5" component="h1" gutterBottom>
+                        IoT Dashboard Login
+                    </Typography>
+                </Box>
+                <form onSubmit={handleLogin}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Email"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Password"
+                                type="password"
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        color="primary"
+                                    />
+                                }
+                                label="Remember Me"
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                disabled={loading} // Disable button during loading
+                                sx={{ marginTop: 2 }}
+                            >
+                                {loading ? <CircularProgress size={24} /> : 'Login'}
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button
+                                component={Link}
+                                to="/register"
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                sx={{ marginTop: 2 }}
+                            >
+                                Register
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Password"
-                            type="password"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            style={{ marginTop: 20 }}
-                            disabled={loading} // Disable button during loading
-                        >
-                            {loading ? <CircularProgress size={24} /> : 'Login'}
-                        </Button>
-                        <Button
-                            component={Link}
-                            to="/register"
-                            variant="outlined"
-                            color="primary"
-                            style={{ marginTop: 20, marginLeft: 10 }}
-                        >
-                            Register
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
+                </form>
 
-            <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
-                <Alert onClose={() => setMessage('')} severity="success" sx={{ width: '100%' }}>
-                    {message}
-                </Alert>
-            </Snackbar>
+                <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
+                    <Alert onClose={() => setMessage('')} severity="success" className="snackbar-alert">
+                        {message}
+                    </Alert>
+                </Snackbar>
 
-            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
-                <Alert onClose={() => setError('')} severity="error" sx={{ width: '100%' }}>
-                    {error}
-                </Alert>
-            </Snackbar>
-        </Paper>
+                <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
+                    <Alert onClose={() => setError('')} severity="error" className="snackbar-alert">
+                        {error}
+                    </Alert>
+                </Snackbar>
+            </Paper>
+        </Box>
     );
 }
