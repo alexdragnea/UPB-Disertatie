@@ -50,6 +50,7 @@ done
 
 # Services
 services=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-dashboard-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-core-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-user-service-svc.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/iot-discovery-service-svc.yaml"
@@ -65,6 +66,7 @@ done
 
 # Deployments
 deployments=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-dashboard-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-discovery-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-user-service.yaml"
     "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/iot-gateway-service.yaml"

@@ -2,6 +2,7 @@
 
 # Define deployments
 deployments=(
+    "iot-dashboard-service"
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
@@ -26,6 +27,7 @@ hpas=(
 
 # Define services
 services=(
+    "iot-dashboard-service"
     "iot-discovery-service"
     "iot-core-service"
     "iot-bridge-service"
