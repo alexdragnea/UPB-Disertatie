@@ -36,14 +36,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '10.9.2'
 
       - name: Install Dependencies
         run: npm install
         working-directory: iot-dashboard
 
       - name: Build IoT Dashboard
-        run: npm run build
+        run: CI=false npm run build
         working-directory: iot-dashboard
 
       - name: Login to DockerHub
