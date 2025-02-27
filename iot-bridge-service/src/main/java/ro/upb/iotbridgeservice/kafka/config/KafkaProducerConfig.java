@@ -27,9 +27,6 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, IotRequestSerializer.class);
 
-        configProps.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        configProps.put(ProducerConfig.ACKS_CONFIG, "all");
-
         // new props for performance tweaking
         configProps.put(ProducerConfig.BATCH_SIZE_CONFIG, 65536);
         configProps.put(ProducerConfig.LINGER_MS_CONFIG, 10);
