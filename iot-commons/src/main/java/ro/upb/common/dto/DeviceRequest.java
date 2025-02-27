@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Data
-public class DeviceRequestDto {
+public class DeviceRequest {
 
     private String sensorName;
 
