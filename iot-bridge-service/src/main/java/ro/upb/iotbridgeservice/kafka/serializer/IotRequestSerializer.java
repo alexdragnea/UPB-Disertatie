@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Serializer;
-import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.common.dto.MeasurementRequest;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class IotRequestSerializer implements Serializer<MeasurementRequestDto> {
+public class IotRequestSerializer implements Serializer<MeasurementRequest> {
 
     private final ObjectMapper objectMapper;
 
@@ -25,7 +25,7 @@ public class IotRequestSerializer implements Serializer<MeasurementRequestDto> {
     }
 
     @Override
-    public byte[] serialize(String topic, MeasurementRequestDto data) {
+    public byte[] serialize(String topic, MeasurementRequest data) {
         if (data == null) {
             return null;
         }

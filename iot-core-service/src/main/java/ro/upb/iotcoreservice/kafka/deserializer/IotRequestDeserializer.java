@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.errors.SerializationException;
 import org.apache.kafka.common.serialization.Deserializer;
-import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.common.dto.MeasurementRequest;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class IotRequestDeserializer implements Deserializer<MeasurementRequestDto> {
+public class IotRequestDeserializer implements Deserializer<MeasurementRequest> {
 
     // Reuse ObjectMapper
     private final ObjectMapper objectMapper;
@@ -26,14 +26,14 @@ public class IotRequestDeserializer implements Deserializer<MeasurementRequestDt
     }
 
     @Override
-    public MeasurementRequestDto deserialize(String topic, byte[] data) {
+    public MeasurementRequest deserialize(String topic, byte[] data) {
         if (data == null || data.length == 0) {
             return null;
         }
 
         try {
 
-            return objectMapper.readValue(data, MeasurementRequestDto.class);
+            return objectMapper.readValue(data, MeasurementRequest.class);
         } catch (IOException e) {
             throw new SerializationException("Error deserializing byte[] to MeasurementRequestDto", e);
         }

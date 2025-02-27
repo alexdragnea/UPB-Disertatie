@@ -2,14 +2,14 @@ package ro.upb.iotbridgeservice.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -17,14 +17,15 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class KafkaMessageProducer {
 
-    private final KafkaTemplate<String, MeasurementRequestDto> kafkaTemplate;
+    private final KafkaTemplate<String, MeasurementRequest> kafkaTemplate;
 
-    public void sendIotMeasurement(String topic, MeasurementRequestDto sensor) {
+    public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
+        sensor.setUuid(UUID.randomUUID());
 
-        log.info("Sending IotMeasurement: {}, to topic: {}.", sensor, topic);
+        log.info("Sending Measurement: {}, to topic: {}.", sensor, topic);
 
-        CompletableFuture<SendResult<String, MeasurementRequestDto>> future = kafkaTemplate.send(topic, sensor);
+        CompletableFuture<SendResult<String, MeasurementRequest>> future = kafkaTemplate.send(topic, sensor);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
@@ -36,12 +37,12 @@ public class KafkaMessageProducer {
         });
     }
 
-    private void validateMeasurement(MeasurementRequestDto measurementRequestDto) {
-        if (measurementRequestDto == null) {
+    private void validateMeasurement(MeasurementRequest measurementRequest) {
+        if (measurementRequest == null) {
             throw new KafkaValidationEx("MeasurementRequestDto cannot be null");
         }
 
-        String measurement = measurementRequestDto.getMeasurement();
+        String measurement = measurementRequest.getMeasurement();
         if (measurement == null || measurement.trim().isEmpty()) {
             throw new KafkaValidationEx("Measurement must not be blank");
         }
@@ -49,7 +50,7 @@ public class KafkaMessageProducer {
             throw new KafkaValidationEx("Measurement must not exceed 50 characters");
         }
 
-        String userId = measurementRequestDto.getUserId();
+        String userId = measurementRequest.getUserId();
         if (userId == null || userId.trim().isEmpty()) {
             throw new KafkaValidationEx("User ID must not be blank");
         }
@@ -57,12 +58,12 @@ public class KafkaMessageProducer {
             throw new KafkaValidationEx("User ID must not exceed 36 characters");
         }
 
-        Double value = measurementRequestDto.getValue();
+        Double value = measurementRequest.getValue();
         if (value == null) {
             throw new KafkaValidationEx("Value must not be null");
         }
 
-        String unit = measurementRequestDto.getUnit();
+        String unit = measurementRequest.getUnit();
         if (unit == null || unit.trim().isEmpty()){
             throw new KafkaValidationEx("Unit must not be blank");
         }

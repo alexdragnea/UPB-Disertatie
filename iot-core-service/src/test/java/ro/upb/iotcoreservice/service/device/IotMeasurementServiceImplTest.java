@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.testcontainers.containers.InfluxDBContainer;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
-import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotcoreservice.config.InfluxDBTestContainer;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
@@ -50,7 +50,7 @@ class IotMeasurementServiceImplTest {
         when(influxDBClient.getWriteReactiveApi()).thenReturn(writeApi);
         when(writeApi.writeMeasurement(any(), any(IotMeasurement.class))).thenReturn(Flowable.just(new WriteReactiveApi.Success()));
 
-        MeasurementRequestDto requestDto = new MeasurementRequestDto();
+        MeasurementRequest requestDto = new MeasurementRequest();
         requestDto.setMeasurement("temperature");
         requestDto.setUserId("user1");
         requestDto.setValue(25.0);

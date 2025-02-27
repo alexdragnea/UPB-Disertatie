@@ -21,17 +21,23 @@ spring:
   main:
     web-application-type: reactive
 
+  redis:
+    host: redis-service  # This is the Kubernetes service name
+    port: 6379
+    password: ""         # Add your password if Redis is password-protected
+    database: 0          # Default database
+    jedis:
+      pool:
+        max-active: 10
+        max-wait: -1
+        min-idle: 1
+        max-idle: 5
+    timeout: 2000ms
   kafka:
     bootstrap-servers: kafka-service:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      session-timeout-ms: 10000
-      request-timeout-ms: 30000
-      max-poll-interval-ms: 300000
-      max-poll-records: 500
-      concurrency: 3
 
 eureka:
   client:
@@ -51,6 +57,9 @@ cache:
     weakKeys: true
     recordStats: true
 
+
+redis:
+  deduplicationExpiry: 3600
 
 management:
   metrics:

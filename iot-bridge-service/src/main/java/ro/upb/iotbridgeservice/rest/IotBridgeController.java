@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import ro.upb.common.constant.KafkaConstants;
-import ro.upb.common.dto.MeasurementRequestDto;
+import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.kafka.producer.KafkaMessageProducer;
 import ro.upb.iotbridgeservice.service.auth.AuthService;
 
@@ -21,10 +21,10 @@ public class IotBridgeController {
     private final AuthService authService;
 
     @PostMapping
-    public Mono<ResponseEntity<Void>> sendIotMeasurement(@RequestBody MeasurementRequestDto measurementRequestDto, @RequestHeader(API_KEY_HEADER) String apiKey) {
-        return authService.isAuthorizedWithApiKey(measurementRequestDto.getUserId(), apiKey).flatMap(isAuthorized -> {
+    public Mono<ResponseEntity<Void>> sendIotMeasurement(@RequestBody MeasurementRequest measurementRequest, @RequestHeader(API_KEY_HEADER) String apiKey) {
+        return authService.isAuthorizedWithApiKey(measurementRequest.getUserId(), apiKey).flatMap(isAuthorized -> {
             if (Boolean.TRUE.equals(isAuthorized)) {
-                kafkaMessageProducer.sendIotMeasurement(KafkaConstants.IOT_EVENT_TOPIC, measurementRequestDto);
+                kafkaMessageProducer.sendIotMeasurement(KafkaConstants.IOT_EVENT_TOPIC, measurementRequest);
                 return Mono.just(ResponseEntity.accepted().build());
             } else {
                 return Mono.just(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
