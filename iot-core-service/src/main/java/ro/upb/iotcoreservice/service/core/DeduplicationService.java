@@ -18,7 +18,6 @@ public class DeduplicationService {
     private long deduplicationExpiry;
 
     public Mono<Boolean> isMessageDuplicate(String messageId) {
-        // Check if the key already exists in Redis
         return reactiveRedisTemplate.hasKey(messageId);
     }
 

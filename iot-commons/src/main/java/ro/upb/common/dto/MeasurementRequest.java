@@ -15,6 +15,4 @@ public class MeasurementRequest {
     private String userId;
     private Double value;
     private String unit;
-    private UUID uuid;
-
 }

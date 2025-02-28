@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotcoreservice.kafka.deserializer.IotRequestDeserializer;
@@ -34,6 +35,7 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);   // Request timeout
         configProps.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000); // Max poll interval
 
+
         // new props for performance tweaking
         configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);  // Fetch 500 records per poll
         configProps.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 1024);  // Minimum data (1 KB)
@@ -52,6 +54,8 @@ public class KafkaConsumerConfig {
 
         // new prop for performance tweaking
         factory.setConcurrency(5);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+
         // add error handler
         return factory;
     }

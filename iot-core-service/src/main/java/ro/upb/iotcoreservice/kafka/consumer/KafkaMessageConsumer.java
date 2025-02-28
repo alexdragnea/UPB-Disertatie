@@ -3,24 +3,23 @@ package ro.upb.iotcoreservice.kafka.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotcoreservice.dto.WSMessage;
-import ro.upb.iotcoreservice.exception.KafkaProcessingEx;
 import ro.upb.iotcoreservice.service.core.DeduplicationService;
 import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 import ro.upb.iotcoreservice.websocket.IotCoreWebSocketHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 
 @Component
 @Slf4j
@@ -37,44 +36,46 @@ public class KafkaMessageConsumer {
             kafkaTemplate = "kafkaTemplate",
             backoff = @Backoff(delay = 3000, maxDelay = 15000)
     )
-    @Transactional
-    public void listen(MeasurementRequest measurementRequest, Acknowledgment acknowledgment) {
-        String messageId = measurementRequest.getUuid().toString();
+    public void listen(@Payload MeasurementRequest measurementRequest, ConsumerRecord<String, MeasurementRequest> record, Acknowledgment acknowledgment) {
+        // Extract the deduplicationKey from Kafka headers
+        String deduplicationKey = getDeduplicationKey(record);
+        if (deduplicationKey == null) {
+            log.warn("No deduplication key found in message headers. Skipping message.");
+            acknowledgment.acknowledge();
+            return;
+        }
 
         // Use DeduplicationService to check if the message has been processed already
-        deduplicationService.isMessageDuplicate(messageId)
+        deduplicationService.isMessageDuplicate(deduplicationKey)
                 .flatMap(isDuplicate -> {
                     if (isDuplicate) {
-                        log.info("Message with ID {} is a duplicate, skipping.", messageId);
-                        acknowledgment.acknowledge();  // Acknowledge the message without processing further
-                        return Mono.empty();
+                        log.info("Message with deduplicationKey {} is a duplicate, skipping.", deduplicationKey);
+                        return Mono.fromRunnable(acknowledgment::acknowledge);
                     }
 
-                    try {
-                        // Process the message
-                        log.info("Received IotMeasurement {} at {}.", measurementRequest, Instant.now());
-                        iotMeasurementService.persistIotMeasurement(measurementRequest);
+                    return deduplicationService.markMessageAsProcessed(deduplicationKey)
+                            .then(Mono.fromCallable(() -> {
+                                log.info("Received IotMeasurement {} at {}.", measurementRequest, Instant.now());
+                                iotMeasurementService.persistIotMeasurement(measurementRequest);
 
-                        // Create WebSocket message and send it
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
-                        String timestamp = Instant.now().atOffset(ZoneOffset.UTC).format(formatter);
-                        WSMessage wsMessage = new WSMessage(measurementRequest, timestamp);
+                                // Broadcast the message over WebSocket
+                                WSMessage wsMessage = new WSMessage(measurementRequest, Instant.now().toString());
+                                webSocketHandler.broadcast(objectMapper.writeValueAsString(wsMessage));
 
-                        String jsonMessage = objectMapper.writeValueAsString(wsMessage);
-                        webSocketHandler.broadcast(jsonMessage);
-
-                        // Mark the message as processed and store it in Redis with TTL
-                        return deduplicationService.markMessageAsProcessed(messageId)
-                                .then(Mono.just(acknowledgment));
-                    } catch (Exception ex) {
-                        log.error("Processing error: {}", ex.getMessage());
-                        acknowledgment.acknowledge();  // Acknowledge the message so it's not retried again
-                        return Mono.error(new KafkaProcessingEx("Failed to process Kafka message"));
-                    }
+                                return acknowledgment;
+                            }));
                 })
-                .doOnTerminate(acknowledgment::acknowledge)  // Acknowledge the message after processing completes
+                .doOnSuccess(Acknowledgment::acknowledge)
                 .subscribe();
-
     }
 
+    private String getDeduplicationKey(ConsumerRecord<String, MeasurementRequest> record) {
+        return record.headers()
+                .lastHeader("deduplicationKey") != null
+                ? new String(record.headers().lastHeader("deduplicationKey").value(), StandardCharsets.UTF_8)
+                : null;
+    }
 }
+
+
+

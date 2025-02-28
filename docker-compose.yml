@@ -226,19 +226,32 @@ services:
     networks:
       - iot-network
   
-  redis:
-  image: redis:latest
-  container_name: redis
-  ports:
-    - "6379:6379"
-  networks:
-    - iot-network
-  healthcheck:
-    test: ["CMD", "redis-cli", "ping"]
-    interval: 10s
-    timeout: 5s
-    retries: 5
-    start_period: 30s
+  redis-service:
+    image: redis:latest
+    container_name: redis-service
+    ports:
+      - "6379:6379"
+    networks:
+      - iot-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    environment:
+      - REDIS_HOST=redis-service
+      - REDIS_PORT=6379
+    ports:
+      - "8081:8081"  # Exposing the UI at port 8081
+    networks:
+      - iot-network
+    depends_on:
+      - redis-service
 
 volumes:
   influxdb-data:

@@ -20,19 +20,10 @@ spring:
     name: iot-core-service
   main:
     web-application-type: reactive
-
-  redis:
-    host: redis-service  # This is the Kubernetes service name
-    port: 6379
-    password: ""         # Add your password if Redis is password-protected
-    database: 0          # Default database
-    jedis:
-      pool:
-        max-active: 10
-        max-wait: -1
-        min-idle: 1
-        max-idle: 5
-    timeout: 2000ms
+  data:
+    redis:
+      host: redis-service
+      port: 6379
   kafka:
     bootstrap-servers: kafka-service:9092
     producer:

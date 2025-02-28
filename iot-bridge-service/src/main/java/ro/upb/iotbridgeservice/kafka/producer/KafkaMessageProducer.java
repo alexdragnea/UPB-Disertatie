@@ -2,6 +2,8 @@ package ro.upb.iotbridgeservice.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,11 +24,16 @@ public class KafkaMessageProducer {
 
     public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
-        sensor.setUuid(UUID.randomUUID());
+
+        String deduplicationKey = UUID.randomUUID().toString();
 
         log.info("Sending Measurement: {}, to topic: {}.", sensor, topic);
 
-        CompletableFuture<SendResult<String, MeasurementRequest>> future = kafkaTemplate.send(topic, sensor);
+        ProducerRecord<String, MeasurementRequest> record = new ProducerRecord<>(topic, sensor.getUserId(), sensor);
+
+        record.headers().add(new RecordHeader("deduplicationKey", deduplicationKey.getBytes(StandardCharsets.UTF_8)));
+
+        CompletableFuture<SendResult<String, MeasurementRequest>> future = kafkaTemplate.send(record);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
