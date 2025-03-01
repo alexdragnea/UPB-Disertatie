@@ -24,7 +24,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +34,9 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     private static IotMeasurement buildIotMeasurement(MeasurementRequest measurementRequest) {
 
-        return IotMeasurement.builder().measurement(measurementRequest.getMeasurement())
-                .uuid(UUID.randomUUID().toString())
+        return IotMeasurement.builder()
+                .id(measurementRequest.getId())
+                .measurement(measurementRequest.getMeasurement())
                 .userId(measurementRequest.getUserId())
                 .value(measurementRequest.getValue())
                 .unit(measurementRequest.getUnit()).build();

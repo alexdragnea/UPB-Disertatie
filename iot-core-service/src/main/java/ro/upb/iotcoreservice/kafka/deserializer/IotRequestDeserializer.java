@@ -9,21 +9,16 @@ import ro.upb.common.dto.MeasurementRequest;
 import java.io.IOException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IotRequestDeserializer implements Deserializer<MeasurementRequest> {
 
-    // Reuse ObjectMapper
-    private final ObjectMapper objectMapper;
-
-    public IotRequestDeserializer() {
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
-        this.objectMapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
-    }
-
-    @Override
-    public void configure(Map<String, ?> configs, boolean isKey) {
-    }
+    private static final Logger logger = LoggerFactory.getLogger(IotRequestDeserializer.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false)
+            .configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
 
     @Override
     public MeasurementRequest deserialize(String topic, byte[] data) {
@@ -32,14 +27,10 @@ public class IotRequestDeserializer implements Deserializer<MeasurementRequest> 
         }
 
         try {
-
             return objectMapper.readValue(data, MeasurementRequest.class);
         } catch (IOException e) {
-            throw new SerializationException("Error deserializing byte[] to MeasurementRequestDto", e);
+            logger.error("Deserialization error for topic {}: {}", topic, e.getMessage());
+            return null;  // Return null instead of crashing consumer
         }
-    }
-
-    @Override
-    public void close() {
     }
 }

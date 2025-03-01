@@ -37,9 +37,9 @@ public class KafkaConsumerConfig {
 
 
         // new props for performance tweaking
-        configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 500);  // Fetch 500 records per poll
+        configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1000);  // Fetch 1000 records per poll
         configProps.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, 1024);  // Minimum data (1 KB)
-        configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 50);  // Wait up to 50ms to fetch data
+        configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 25);  // Wait up to 50ms to fetch data
         configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);  // Disable auto-commit
 
 
@@ -53,7 +53,7 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(consumerFactory());
 
         // new prop for performance tweaking
-        factory.setConcurrency(5);
+        factory.setConcurrency(10);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 
         // add error handler
