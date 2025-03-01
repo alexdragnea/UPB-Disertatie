@@ -36,24 +36,18 @@ public class KafkaMessageConsumer {
             kafkaTemplate = "kafkaTemplate",
             backoff = @Backoff(delay = 3000, maxDelay = 15000)
     )
-    public void listen(@Payload MeasurementRequest measurementRequest, ConsumerRecord<String, MeasurementRequest> record, Acknowledgment acknowledgment) {
-        // Extract the deduplicationKey from Kafka headers
-        String deduplicationKey = getDeduplicationKey(record);
-        if (deduplicationKey == null) {
-            log.warn("No deduplication key found in message headers. Skipping message.");
-            acknowledgment.acknowledge();
-            return;
-        }
+    public void listen(@Payload MeasurementRequest measurementRequest, Acknowledgment acknowledgment) {
+        String id = measurementRequest.getId();
 
-        // Use DeduplicationService to check if the message has been processed already
-        deduplicationService.isMessageDuplicate(deduplicationKey)
+        // Use id to check if the message has been processed already
+        deduplicationService.isMessageDuplicate(id)
                 .flatMap(isDuplicate -> {
                     if (isDuplicate) {
-                        log.info("Message with deduplicationKey {} is a duplicate, skipping.", deduplicationKey);
+                        log.info("Message with id {} is a duplicate, skipping.", id);
                         return Mono.fromRunnable(acknowledgment::acknowledge);
                     }
 
-                    return deduplicationService.markMessageAsProcessed(deduplicationKey)
+                    return deduplicationService.markMessageAsProcessed(id)
                             .then(Mono.fromCallable(() -> {
                                 log.info("Received IotMeasurement {} at {}.", measurementRequest, Instant.now());
                                 iotMeasurementService.persistIotMeasurement(measurementRequest);
@@ -67,13 +61,6 @@ public class KafkaMessageConsumer {
                 })
                 .doOnSuccess(Acknowledgment::acknowledge)
                 .subscribe();
-    }
-
-    private String getDeduplicationKey(ConsumerRecord<String, MeasurementRequest> record) {
-        return record.headers()
-                .lastHeader("deduplicationKey") != null
-                ? new String(record.headers().lastHeader("deduplicationKey").value(), StandardCharsets.UTF_8)
-                : null;
     }
 }
 

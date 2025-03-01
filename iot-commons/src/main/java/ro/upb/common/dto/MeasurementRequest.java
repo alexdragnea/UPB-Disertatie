@@ -11,6 +11,7 @@ import java.util.UUID;
 @Data
 public class MeasurementRequest {
 
+    private String id;
     private String measurement;
     private String userId;
     private Double value;

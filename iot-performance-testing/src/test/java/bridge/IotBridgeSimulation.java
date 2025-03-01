@@ -10,8 +10,7 @@ import java.time.Duration;
 
 public class IotBridgeSimulation extends Simulation {
     String baseUrl = System.getProperty("baseUrl", "https://localhost:8888");
-    String apiKey = System.getProperty("apiKey", "$2a$10$LGsVnIOYbNox2/OhqtpFKumzy7K1cv6Yhx73.7qF8zDuswjr5NNl2");
-    String userId = System.getProperty("userId", "671a9c7a0fbecf4bf9a19b1b");
+    String apiKey = System.getProperty("apiKey", "$2a$10$XJSC0rkob./pDRSwV3weSuvAJ.rIXLo.wULR2Fp5fc6XPohDlzOWe");
 
     // Parse users and duration from system properties
     int users = Integer.parseInt(System.getProperty("users", "100")); // Increased number of users
@@ -26,15 +25,14 @@ public class IotBridgeSimulation extends Simulation {
     ScenarioBuilder iotBridgeScenario = scenario("IoT Bridge Load Test Scenario")
             .exec(session -> {
                 // Generate a random value for each request
-                int randomValue = (int) (Math.random() * 100);
-                String jsonBody = String.format("""
+                String jsonBody = """
                             {
-                                "measurement": "Iot Bridge Load Test",
-                                "userId": "%s",
-                                "value": %d,
-                                "unit": "C"
-                            }
-                        """, userId, randomValue);
+                                 "measurement": "humidity",
+                                 "userId": "67c222bb327fc9438eba846f",
+                                 "value": 30,
+                                 "unit": "%"
+                             }
+                        """;
 
                 // Store the JSON body in the session for the next request
                 return session.set("jsonBody", jsonBody);
