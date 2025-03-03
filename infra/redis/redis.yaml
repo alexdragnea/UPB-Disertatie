@@ -34,8 +34,8 @@ metadata:
 spec:
   selector:
     app: redis
+  type: LoadBalancer
   ports:
     - protocol: TCP
       port: 6379
       targetPort: 6379
-  clusterIP: None  # This creates a headless service, which is useful if you're running Redis in a statefulset

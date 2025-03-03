@@ -10,8 +10,8 @@ import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.constant.ExMessageConstants;
-import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
@@ -32,14 +32,14 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
 
     private final InfluxDBClientReactive influxDBClient;
 
-    private static IotMeasurement buildIotMeasurement(MeasurementRequest measurementRequest) {
+    private static IotMeasurement buildIotMeasurement(MeasurementMessage measurementMessage) {
 
         return IotMeasurement.builder()
-                .id(measurementRequest.getId())
-                .measurement(measurementRequest.getMeasurement())
-                .userId(measurementRequest.getUserId())
-                .value(measurementRequest.getValue())
-                .unit(measurementRequest.getUnit()).build();
+                .id(String.valueOf(measurementMessage.getId()))
+                .measurement(String.valueOf(measurementMessage.getMeasurement()))
+                .userId(String.valueOf(measurementMessage.getUserId()))
+                .value(measurementMessage.getValue())
+                .unit(String.valueOf(measurementMessage.getUnit())).build();
     }
 
     private static UserMeasurementDto buildUserMeasurementDto(String userId, List<String> measurements) {
@@ -47,11 +47,11 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public void persistIotMeasurement(MeasurementRequest measurementRequest) {
+    public void persistIotMeasurement(MeasurementMessage message) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
-        IotMeasurement iotMeasurement = buildIotMeasurement(measurementRequest);
-        log.info("Converting IotRequestDto: {} to IotMeasurement: {}.", measurementRequest, iotMeasurement);
+        IotMeasurement iotMeasurement = buildIotMeasurement(message);
+        log.info("Converting Message: {} to IotMeasurement: {}.", message, iotMeasurement);
 
         log.info("Persisting IoTMeasurementPoint.");
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);

@@ -97,8 +97,8 @@ const Dashboard = () => {
 
     // Process incoming WebSocket live data
     const processLiveData = (data) => {
-        const measurement = data.message.measurement; // Access the measurement name
-        const value = data.message.value; // Access the value
+        const measurement = data.measurement; // Access the measurement name
+        const value = data.value; // Access the value
         const timestamp = data.timestamp; // Access the timestamp
 
         console.log('Live measurement received:', measurement, 'Value:', value, 'Timestamp:', timestamp);

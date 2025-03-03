@@ -26,6 +26,15 @@ for kafka in "${kafka[@]}"; do
     sleep 30
 done
 
+# Redis
+redis=(
+    "https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml"
+)
+for redis in "${redis[@]}"; do
+    kubectl apply -f "$redis"
+    sleep 30
+done
+
 # PVC
 
 pvc=(

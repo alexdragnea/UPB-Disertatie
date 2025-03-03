@@ -4,6 +4,8 @@ server:
     include-message: always
   netty:
     connection-timeout: 5000
+    response-timeout: 5000
+    max-connections: 1000
 
 spring:
   application:
@@ -14,7 +16,7 @@ spring:
     bootstrap-servers: kafka-service:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: ro.upb.iotbridgeservice.kafka.serializer.MeasurementMessageSerializer
 
 eureka:
   client:

@@ -6,7 +6,7 @@ metadata:
   name: zookeeper
 spec:
   serviceName: zookeeper
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       service: zookeeper
@@ -113,6 +113,12 @@ spec:
             value: "INTERNAL:PLAINTEXT,LISTENER_EXTERNAL:PLAINTEXT"
           - name: KAFKA_ZOOKEEPER_CONNECT
             value: "zookeeper:2181"
+          - name: KAFKA_DEFAULT_REPLICATION_FACTOR
+            value: "2"
+          - name: KAFKA_MIN_INSYNC_REPLICAS
+            value: "2"
+          - name: KAFKA_NUM_PARTITIONS
+            value: "3"
         resources: {}
         volumeMounts:
           - mountPath: /var/lib/kafka/

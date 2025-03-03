@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
@@ -17,15 +18,13 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class KafkaMessageProducer {
 
-    private final KafkaTemplate<String, MeasurementRequest> kafkaTemplate;
+    private final KafkaTemplate<String, MeasurementMessage> kafkaTemplate;
 
     public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
-        sensor.setId(String.valueOf(UUID.randomUUID()));
+        MeasurementMessage message = buildMessage(sensor);
 
-        log.info("Sending Measurement: {}, to topic: {}.", sensor, topic);
-
-        CompletableFuture<SendResult<String, MeasurementRequest>> future = kafkaTemplate.send(topic, sensor);
+        CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
 
         future.whenComplete((result, ex) -> {
             if (ex == null) {
@@ -35,6 +34,16 @@ public class KafkaMessageProducer {
                 throw new KafkaProcessingEx(ex.getMessage());
             }
         });
+    }
+
+    private MeasurementMessage buildMessage(MeasurementRequest sensor) {
+        MeasurementMessage measurementMessage = new MeasurementMessage();
+        measurementMessage.setId(UUID.randomUUID().toString());
+        measurementMessage.setMeasurement(sensor.getMeasurement());
+        measurementMessage.setUserId(sensor.getUserId());
+        measurementMessage.setValue(sensor.getValue());
+        measurementMessage.setUnit(sensor.getUnit());
+        return measurementMessage;
     }
 
     private void validateMeasurement(MeasurementRequest measurementRequest) {

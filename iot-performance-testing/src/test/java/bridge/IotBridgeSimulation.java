@@ -10,7 +10,7 @@ import java.time.Duration;
 
 public class IotBridgeSimulation extends Simulation {
     String baseUrl = System.getProperty("baseUrl", "https://localhost:8888");
-    String apiKey = System.getProperty("apiKey", "$2a$10$XJSC0rkob./pDRSwV3weSuvAJ.rIXLo.wULR2Fp5fc6XPohDlzOWe");
+    String apiKey = System.getProperty("apiKey", "$2a$10$eLdebBR2BdSX3R4VtG9W1O/xOF1EQjdU0i6Sltmz/It7ZJg7S6Js6");
 
     // Parse users and duration from system properties
     int users = Integer.parseInt(System.getProperty("users", "100")); // Increased number of users
@@ -28,7 +28,7 @@ public class IotBridgeSimulation extends Simulation {
                 String jsonBody = """
                             {
                                  "measurement": "humidity",
-                                 "userId": "67c222bb327fc9438eba846f",
+                                 "userId": "67c4bf7cfd30c57edeb0b86b",
                                  "value": 30,
                                  "unit": "%"
                              }

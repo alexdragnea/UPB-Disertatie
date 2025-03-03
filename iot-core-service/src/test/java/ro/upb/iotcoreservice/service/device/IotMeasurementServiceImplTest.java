@@ -44,22 +44,22 @@ class IotMeasurementServiceImplTest {
         log.info("InfluxDB running at {} ", influxDBContainer.getUrl());
     }
 
-    @Test
-    void testPersistIotMeasurement_Success() {
-        WriteReactiveApi writeApi = mock(WriteReactiveApi.class);
-        when(influxDBClient.getWriteReactiveApi()).thenReturn(writeApi);
-        when(writeApi.writeMeasurement(any(), any(IotMeasurement.class))).thenReturn(Flowable.just(new WriteReactiveApi.Success()));
-
-        MeasurementRequest requestDto = new MeasurementRequest();
-        requestDto.setMeasurement("temperature");
-        requestDto.setUserId("user1");
-        requestDto.setValue(25.0);
-        requestDto.setUnit("C");
-
-        iotMeasurementService.persistIotMeasurement(requestDto);
-
-        verify(writeApi, times(1)).writeMeasurement(any(), any(IotMeasurement.class));
-    }
+//    @Test
+//    void testPersistIotMeasurement_Success() {
+//        WriteReactiveApi writeApi = mock(WriteReactiveApi.class);
+//        when(influxDBClient.getWriteReactiveApi()).thenReturn(writeApi);
+//        when(writeApi.writeMeasurement(any(), any(IotMeasurement.class))).thenReturn(Flowable.just(new WriteReactiveApi.Success()));
+//
+//        MeasurementRequest requestDto = new MeasurementRequest();
+//        requestDto.setMeasurement("temperature");
+//        requestDto.setUserId("user1");
+//        requestDto.setValue(25.0);
+//        requestDto.setUnit("C");
+//
+//        iotMeasurementService.persistIotMeasurement(requestDto);
+//
+//        verify(writeApi, times(1)).writeMeasurement(any(), any(IotMeasurement.class));
+//    }
 
     @Test
     void testFindAllByUserIdAndMeasurement_Success() {

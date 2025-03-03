@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class WSMessage {
-    private Object message;
+    private String measurement;
+    private double value;
     private String timestamp;
 }

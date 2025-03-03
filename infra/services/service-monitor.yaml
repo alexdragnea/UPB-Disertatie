@@ -11,8 +11,7 @@ spec:
     any: true
   selector:
     matchLabels:
-      micrometer-prometheus-discovery-http: 'true'  # Match HTTP services
-
+      micrometer-prometheus-discovery-http: 'true' 
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -23,7 +22,7 @@ spec:
     - interval: 15s
       path: /actuator/prometheus
       port: metrics  # Replace with the correct port name if different
-      scheme: https   # Specify HTTPS
+      scheme: https  
       tlsConfig:
         insecureSkipVerify: true  # Set to true for skipping TLS verification
   namespaceSelector:

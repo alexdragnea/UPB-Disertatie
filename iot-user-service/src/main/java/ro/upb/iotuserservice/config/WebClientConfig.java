@@ -1,4 +1,4 @@
-package ro.upb.iotcoreservice.config.web;
+package ro.upb.iotuserservice.config;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebClientConfig {
-
     @Bean
     public WebClient webClient() {
         ConnectionProvider connectionProvider = ConnectionProvider.builder("custom")

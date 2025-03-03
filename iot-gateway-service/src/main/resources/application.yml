@@ -13,8 +13,8 @@ spring:
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 6000  # ⏳ 6s connection timeout (slightly higher than Service A)
-        response-timeout: 12000  # ⏳ 12s total response timeout
+        connect-timeout: 12000  # ⏳ 6s connection timeout (slightly higher than Service A)
+        response-timeout: 18000  # ⏳ 12s total response timeout
         pool:
           max-connections: 2000  # 🚀 Allow 2000 concurrent connections
           eviction-interval: 30000ms  # 🧹 Clean up stale connections every 30s
@@ -114,53 +114,53 @@ management:
       exposure:
         include: "*"
 
-resilience4j:
-  circuit-breaker:
-    instances:
-      iot-bridge-service:
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        minimumNumberOfCalls: 5
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        eventConsumerBufferSize: 10
-        registerHealthIndicator: true
-      iot-core-service:
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        minimumNumberOfCalls: 5
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        eventConsumerBufferSize: 10
-        registerHealthIndicator: true
-      iot-user-service:
-        failureRateThreshold: 50
-        waitDurationInOpenState: 5s
-        permittedNumberOfCallsInHalfOpenState: 3
-        minimumNumberOfCalls: 5
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        eventConsumerBufferSize: 10
-        registerHealthIndicator: true
-  retry:
-    instances:
-      iot-bridge-service:
-        maxAttempts: 3
-        waitDuration: 1s
-      iot-core-service:
-        maxAttempts: 3
-        waitDuration: 1s
-      iot-user-service:
-        maxAttempts: 3
-        waitDuration: 1s
-  time-limiter:
-    instances:
-      iot-bridge-service:
-        timeoutDuration: 5s
-        cancelRunningFuture: true
-      iot-user-service:
-        timeoutDuration: 5s
-        cancelRunningFuture: true
+#resilience4j:
+#  circuit-breaker:
+#    instances:
+#      iot-bridge-service:
+#        failureRateThreshold: 50
+#        waitDurationInOpenState: 5s
+#        permittedNumberOfCallsInHalfOpenState: 3
+#        minimumNumberOfCalls: 5
+#        slidingWindowType: COUNT_BASED
+#        slidingWindowSize: 10
+#        eventConsumerBufferSize: 10
+#        registerHealthIndicator: true
+#      iot-core-service:
+#        failureRateThreshold: 50
+#        waitDurationInOpenState: 5s
+#        permittedNumberOfCallsInHalfOpenState: 3
+#        minimumNumberOfCalls: 5
+#        slidingWindowType: COUNT_BASED
+#        slidingWindowSize: 10
+#        eventConsumerBufferSize: 10
+#        registerHealthIndicator: true
+#      iot-user-service:
+#        failureRateThreshold: 50
+#        waitDurationInOpenState: 5s
+#        permittedNumberOfCallsInHalfOpenState: 3
+#        minimumNumberOfCalls: 5
+#        slidingWindowType: COUNT_BASED
+#        slidingWindowSize: 10
+#        eventConsumerBufferSize: 10
+#        registerHealthIndicator: true
+#  retry:
+#    instances:
+#      iot-bridge-service:
+#        maxAttempts: 3
+#        waitDuration: 1s
+#      iot-core-service:
+#        maxAttempts: 3
+#        waitDuration: 1s
+#      iot-user-service:
+#        maxAttempts: 3
+#        waitDuration: 1s
+#  time-limiter:
+#    instances:
+#      iot-bridge-service:
+#        timeoutDuration: 5s
+#        cancelRunningFuture: true
+#      iot-user-service:
+#        timeoutDuration: 5s
+#        cancelRunningFuture: true
 
