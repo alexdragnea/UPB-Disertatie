@@ -1,5 +1,6 @@
 ro/upb/common/dto/DeviceRequest$DeviceRequestBuilder.class
 ro/upb/common/constant/ExMessageConstants.class
+ro/upb/common/avro/MeasurementMessage$Builder.class
 ro/upb/common/errorhandling/UnauthorizedException.class
 ro/upb/common/dto/ErrorResponse.class
 ro/upb/common/dto/ApiKeyResponse.class
@@ -11,3 +12,4 @@ ro/upb/common/constant/WebConstants.class
 ro/upb/common/dto/LoggedInDetails$LoggedInDetailsBuilder.class
 ro/upb/common/dto/MeasurementRequest.class
 ro/upb/common/dto/ErrorResponse$ErrorResponseBuilder.class
+ro/upb/common/avro/MeasurementMessage.class
