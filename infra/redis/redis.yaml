@@ -59,7 +59,7 @@ spec:
         - name: redis-insight
           image: redislabs/redisinsight:latest
           ports:
-            - containerPort: 8001
+            - containerPort: 7010
           env:
             - name: REDIS_HOST
               value: "redis-service"  # Ensure this matches your Redis service name
@@ -77,6 +77,6 @@ spec:
     app: redis-insight
   ports:
     - protocol: TCP
-      port: 8001
-      targetPort: 8001
+      port: 7010
+      targetPort: 7010
   type: LoadBalancer  # Change to LoadBalancer for external access if using cloud providers
