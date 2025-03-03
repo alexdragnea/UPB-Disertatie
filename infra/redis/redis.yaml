@@ -42,46 +42,41 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-commander
+  name: redis-insight
   labels:
-    app: redis-commander
+    app: redis-insight
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-commander
+      app: redis-insight
   template:
     metadata:
       labels:
-        app: redis-commander
+        app: redis-insight
     spec:
       containers:
-        - name: redis-commander
-          image: rediscommander/redis-commander:latest
+        - name: redis-insight
+          image: redislabs/redisinsight:latest
           ports:
-            - containerPort: 7777
+            - containerPort: 8001
           env:
             - name: REDIS_HOST
-              value: "redis-service"
+              value: "redis-service"  # Ensure this matches your Redis service name
             - name: REDIS_PORT
               value: "6379"
-            - name: REDIS_COMMANDER_PORT  # This sets the port Redis Commander will listen on
-              value: "7777"
-          resources: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-commander
+  name: redis-insight
   labels:
-    app: redis-commander
+    app: redis-insight
 spec:
   selector:
-    app: redis-commander
+    app: redis-insight
   ports:
     - protocol: TCP
-      port: 7777
-      targetPort: 7777
-  type: LoadBalancer  # You can use LoadBalancer for external access
-
-
+      port: 8001
+      targetPort: 8001
+  type: LoadBalancer  # Change to LoadBalancer for external access if using cloud providers
