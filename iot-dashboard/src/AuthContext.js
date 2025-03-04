@@ -1,75 +1,77 @@
 import React, { createContext, useState, useEffect } from 'react';
-import api from './api'; 
+import api from './api';
 
 export const AuthContext = createContext(); // Export AuthContext
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(true);
     const [refreshTimeout, setRefreshTimeout] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (token) {
             const payload = JSON.parse(atob(token.split('.')[1]));
-            const now = Date.now() / 1000; // Current time in seconds
+            const now = Date.now() / 1000;
 
-            // Check if token is expired
             if (payload.exp < now) {
-                logout(); // Log out the user
+                logout();
             } else {
-                // Token is valid
                 setUser(payload);
                 setIsAuthenticated(true);
-                scheduleRefresh(token); // Schedule token refresh
+                scheduleRefresh(token);
             }
         } else {
             setIsAuthenticated(false);
             setUser(null);
         }
-        setLoading(false); // Set loading to false after checking
+        setLoading(false);
     }, []);
 
     const scheduleRefresh = (token) => {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const expiryTime = payload.exp * 1000; // Convert to milliseconds
+        const expiryTime = payload.exp * 1000;
         const now = Date.now();
 
-        // Calculate time until the token expires
-        const timeUntilExpiry = expiryTime - now;
+        let timeUntilExpiry = expiryTime - now - 60000; // 60 seconds before expiry
 
-        // Schedule token refresh 1 minute before expiry
+        if (timeUntilExpiry < 0) {
+            timeUntilExpiry = 5000; // Default to 5 seconds if already near expiry
+        }
+
         if (timeUntilExpiry > 0) {
             const timeout = setTimeout(() => {
                 refreshToken();
-            }, timeUntilExpiry - 60000); // 60 seconds before expiry
+            }, timeUntilExpiry);
             setRefreshTimeout(timeout);
         }
     };
 
-    const login = (token) => {
-        localStorage.setItem('accessToken', token);
+    const login = (token, refreshToken) => {
+        sessionStorage.setItem('accessToken', token);
+        sessionStorage.setItem('refreshToken', refreshToken);
         const payload = JSON.parse(atob(token.split('.')[1]));
         setUser(payload);
         setIsAuthenticated(true);
-        scheduleRefresh(token); // Schedule token refresh on login
+        scheduleRefresh(token);
     };
 
     const logout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         setIsAuthenticated(false);
         setUser(null);
         if (refreshTimeout) {
-            clearTimeout(refreshTimeout); // Clear scheduled refresh
+            clearTimeout(refreshTimeout);
+            setRefreshTimeout(null);
         }
     };
 
     const refreshToken = async () => {
-        const storedRefreshToken = localStorage.getItem('refreshToken');
+        const storedRefreshToken = sessionStorage.getItem('refreshToken');
         if (!storedRefreshToken) {
-            logout(); // Log out if no refresh token is available
+            logout();
             return null;
         }
 
@@ -78,15 +80,16 @@ export const AuthProvider = ({ children }) => {
                 headers: { 'refresh-token': storedRefreshToken }
             });
 
-            const { accessToken } = response.data;
-            localStorage.setItem('accessToken', accessToken);
+            const { accessToken, refreshToken } = response.data;
+            sessionStorage.setItem('accessToken', accessToken);
+            sessionStorage.setItem('refreshToken', refreshToken);
             const payload = JSON.parse(atob(accessToken.split('.')[1]));
-            setUser(payload); // Update user info
-            scheduleRefresh(accessToken); // Reschedule token refresh
+            setUser(payload);
+            scheduleRefresh(accessToken);
             return accessToken;
         } catch (error) {
             console.error('Error refreshing token', error);
-            logout(); // Log out if refresh fails
+            logout();
             return null;
         }
     };
