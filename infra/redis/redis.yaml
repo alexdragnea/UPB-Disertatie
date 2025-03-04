@@ -42,33 +42,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-insight
-  labels:
-    app: redis-insight
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: redis-insight
-  template:
-    metadata:
-      labels:
-        app: redis-insight
-    spec:
-      containers:
-        - name: redis-insight
-          image: redislabs/redisinsight:latest
-          ports:
-            - containerPort: 7010
-          env:
-            - name: REDIS_HOST
-              value: "redis-service"  # Ensure this matches your Redis service name
-            - name: REDIS_PORT
-              value: "6379"
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: redis-commander
   labels:
     app: redis-commander
@@ -90,6 +63,8 @@ spec:
           env:
             - name: REDIS_HOSTS
               value: "local:redis-service:6379"
+            - name: PORT
+              value: "7010"  # Explicitly set the port
 ---
 apiVersion: v1
 kind: Service

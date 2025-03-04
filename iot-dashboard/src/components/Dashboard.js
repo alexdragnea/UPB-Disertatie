@@ -54,10 +54,11 @@ const Dashboard = () => {
 
         try {
             const fetchedSensors = await fetchSensors(token);
-            // Initialize sensors with "N/A" values
-            const initializedSensors = fetchedSensors.map(sensor => ({
-                name: sensor,  // Using the sensor name directly
-                value: 'N/A', // Default value
+            const uniqueSensors = [...new Set(fetchedSensors)]; // Ensure unique names
+
+            const initializedSensors = uniqueSensors.map(sensor => ({
+                name: sensor,
+                value: 'N/A',
                 timestamp: null,
             }));
             setSensors(initializedSensors);  // Set the fetched sensors
@@ -97,26 +98,27 @@ const Dashboard = () => {
 
     // Process incoming WebSocket live data
     const processLiveData = (data) => {
-        const measurement = data.measurement; // Access the measurement name
-        const value = data.value; // Access the value
-        const timestamp = data.timestamp; // Access the timestamp
+        console.log("Live measurement received:", data.measurement, "Value:", data.value, "Timestamp:", data.timestamp);
 
-        console.log('Live measurement received:', measurement, 'Value:', value, 'Timestamp:', timestamp);
-
-        if (!measurement || value === undefined || !timestamp) {
-            return; // Ignore invalid data
+        if (!data.measurement || data.value === undefined || !data.timestamp) {
+            console.warn("Received incomplete data:", data);
+            return;
         }
 
         setSensors((prevSensors) => {
-            return prevSensors.map(sensor => {
-                if (sensor.name === measurement) {
-                    // Update existing sensor value and timestamp
-                    return { ...sensor, value, timestamp }; // Update value and timestamp
-                }
-                return sensor; // Return unchanged sensor
-            });
+            console.log("Previous Sensors:", prevSensors);
+
+            const updatedSensors = prevSensors.map((sensor) =>
+                sensor.name === data.measurement
+                    ? { ...sensor, value: data.value, timestamp: data.timestamp }
+                    : sensor
+            );
+
+            console.log("Updated Sensors:", updatedSensors);
+            return updatedSensors;
         });
     };
+
 
     useEffect(() => {
         if (!authLoading && userId) {
