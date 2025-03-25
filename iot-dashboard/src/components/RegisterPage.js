@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Paper, Grid, Snackbar, Alert, Typography, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-import './RegisterPage.css'; // Import custom CSS
+import '../assets/css/RegisterPage.css'; // Import custom CSS
 
 const API_URL = 'https://localhost:8888/v1/iot-user';
 

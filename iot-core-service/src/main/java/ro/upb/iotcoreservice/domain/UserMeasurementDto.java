@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +14,5 @@ import java.util.List;
 public class UserMeasurementDto {
 
     private String userId;
-    private List<String> measurements;
+    private Set<String> measurements;
 }

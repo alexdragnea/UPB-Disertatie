@@ -1,7 +1,7 @@
 .header {
     padding: 0 20px; /* Adjust padding */
     background-color: #007bff; /* Background color */
-    height: 60px; /* Header height */
+    height: 50px; /* Header height */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
 

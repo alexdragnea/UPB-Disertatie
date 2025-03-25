@@ -85,7 +85,7 @@ export default function SensorDetail() {
         setLoading(true);
         setError('');
         try {
-            let token = localStorage.getItem('accessToken');
+            let token = sessionStorage.getItem('accessToken');
             if (!token) {
                 token = await refreshToken();
             }

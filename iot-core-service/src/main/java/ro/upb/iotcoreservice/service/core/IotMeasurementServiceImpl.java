@@ -22,8 +22,9 @@ import ro.upb.iotcoreservice.model.IotMeasurement;
 
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                 .unit(String.valueOf(measurementMessage.getUnit())).build();
     }
 
-    private static UserMeasurementDto buildUserMeasurementDto(String userId, List<String> measurements) {
+    private static UserMeasurementDto buildUserMeasurementDto(String userId, Set<String> measurements) {
         return UserMeasurementDto.builder().userId(userId).measurements(measurements).build();
     }
 
@@ -103,9 +104,12 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                         return Mono.error(new MeasurementNotFoundEx(
                                 String.format(ExMessageConstants.MEASUREMENT_NOT_FOUND_EX_FOR_USERID, userId)));
                     } else {
-                        return Mono.just(buildUserMeasurementDto(userId, measurements));
+                        // Convert List to Set
+                        Set<String> measurementsSet = new HashSet<>(measurements);
+                        return Mono.just(buildUserMeasurementDto(userId, measurementsSet));
                     }
                 });
+
     }
 
     @Override

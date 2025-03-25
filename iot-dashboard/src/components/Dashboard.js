@@ -50,7 +50,7 @@ const Dashboard = () => {
     const fetchInitialData = async () => {
         setLoading(true);
         setError(null);
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
 
         try {
             const fetchedSensors = await fetchSensors(token);
@@ -206,6 +206,7 @@ const Dashboard = () => {
             )}
         </Box>
     );
+
 };
 
 export default Dashboard;

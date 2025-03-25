@@ -9,6 +9,7 @@ import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
+import ro.upb.iotbridgeservice.metric.KafkaProducerMetric;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,20 +20,40 @@ import java.util.concurrent.CompletableFuture;
 public class KafkaMessageProducer {
 
     private final KafkaTemplate<String, MeasurementMessage> kafkaTemplate;
+    private final KafkaProducerMetric kafkaProducerMetric;
 
     public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
         MeasurementMessage message = buildMessage(sensor);
 
+        // Track message size for metrics
+        long messageSize = message.toString().length();  // Measure message size
+        kafkaProducerMetric.recordMessageSize(messageSize);
+
+        long startTime = System.nanoTime();  // Track the start time of sending the message
+
         CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
 
         future.whenComplete((result, ex) -> {
+            long endTime = System.nanoTime();
+            long sendTimeMs = (endTime - startTime) / 1_000_000;  // Convert to milliseconds
+
+            // Record the message send time
+            kafkaProducerMetric.recordMessageSendTime(sendTimeMs);
+
             if (ex == null) {
+                // Message sent successfully
                 log.info("Successfully sent message: {} to topic: {} with offset: {}", sensor, topic, result.getRecordMetadata().offset());
+                kafkaProducerMetric.incrementMessagesSentSuccess();  // Increment success counter
             } else {
+                // Error occurred while sending the message
                 log.error("Failed to send message: {} to topic: {} due to: {}", sensor, topic, ex.getMessage());
+                kafkaProducerMetric.incrementMessagesSentFailure();  // Increment failure counter
                 throw new KafkaProcessingEx(ex.getMessage());
             }
+
+            // Increment message sent rate for throughput
+            kafkaProducerMetric.incrementMessageSentRate();
         });
     }
 

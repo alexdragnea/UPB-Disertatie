@@ -8,7 +8,7 @@ const FetchSensors = ({ setSensors }) => {
     useEffect(() => {
         const fetchSensors = async () => {
             try {
-                let token = localStorage.getItem('accessToken');
+                let token = sessionStorage.getItem('accessToken');
                 if (!token) {
                     token = await refreshToken(); // Try refreshing the token if it's not present
                 }

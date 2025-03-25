@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <Box component="footer" sx={{ 
             textAlign: 'center', 
-            padding: '10px 0', 
+            padding: '5px 0',
             backgroundColor: '#1976d2', // Your preferred color
             color: '#fff', // White text for contrast
             marginTop: 'auto' // Ensures footer sticks to the bottom

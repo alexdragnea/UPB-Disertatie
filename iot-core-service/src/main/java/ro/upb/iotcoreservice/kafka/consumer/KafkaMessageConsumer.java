@@ -16,6 +16,7 @@ import ro.upb.iotcoreservice.dto.WSMessage;
 import ro.upb.iotcoreservice.service.core.DeduplicationService;
 import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 import ro.upb.iotcoreservice.websocket.IotCoreWebSocketHandler;
+import ro.upb.iotcoreservice.metrics.KafkaConsumerMetric;  // Import your KafkaConsumerMetric class
 
 import java.time.Instant;
 
@@ -28,6 +29,7 @@ public class KafkaMessageConsumer {
     private final ObjectMapper objectMapper;
     private final IotCoreWebSocketHandler webSocketHandler;
     private final DeduplicationService deduplicationService;
+    private final KafkaConsumerMetric kafkaConsumerMetric;  // Inject KafkaConsumerMetric
 
     @KafkaListener(topics = KafkaConstants.IOT_EVENT_TOPIC, groupId = KafkaConstants.IOT_GROUP_ID)
     @RetryableTopic(
@@ -36,6 +38,10 @@ public class KafkaMessageConsumer {
     )
     public void listen(@Payload MeasurementMessage message, Acknowledgment acknowledgment) {
         String id = String.valueOf(message.getId());
+        long startTime = System.nanoTime();  // Track processing time
+
+        // Increment the message consumption rate
+        kafkaConsumerMetric.incrementMessageConsumedRate();
 
         // Use id to check if the message has been processed already
         deduplicationService.isMessageDuplicate(id)
@@ -64,6 +70,20 @@ public class KafkaMessageConsumer {
                     }).thenReturn(acknowledgment);
                 })
                 .doOnSuccess(Acknowledgment::acknowledge)
+                .doFinally(signalType -> {
+                    // Calculate the processing time
+                    long endTime = System.nanoTime();
+                    long processingTimeMs = (endTime - startTime) / 1_000_000;  // Convert to milliseconds
+
+                    // Record message processing time
+                    kafkaConsumerMetric.recordMessageProcessingTime(processingTimeMs);
+
+                    // Record message size (in bytes)
+                    kafkaConsumerMetric.recordMessageSize(message.toString().length());
+
+                    // You can also update the consumer lag metric if necessary
+                    // Example: kafkaConsumerMetric.updateConsumerLag(consumerLag);
+                })
                 .subscribe();
     }
 }

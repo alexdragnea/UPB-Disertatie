@@ -78,7 +78,7 @@ function UserProfile() {
   const handleProfileSubmit = async () => {
     if (!isValidProfileForm()) return; // Validate before submitting
 
-    const token = localStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
 
     try {
       const response = await fetch("https://localhost:8888/v1/iot-user/profile", {
@@ -119,7 +119,7 @@ function UserProfile() {
   const handlePasswordSubmit = async () => {
     if (!isValidPasswordForm()) return; // Validate before submitting
 
-    const token = localStorage.getItem("accessToken");
+    const token = sessionStorage.getItem("accessToken");
 
     try {
       const response = await fetch("https://localhost:8888/v1/iot-user/password", {

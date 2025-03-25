@@ -47,7 +47,7 @@ const ApiUsagePage = () => {
 
     const fetchUserIdAndApiKey = async () => {
         setLoading(true);
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (token) {
             try {
                 const userResponse = await fetch('https://localhost:8888/v1/iot-user/logged', {
@@ -96,7 +96,7 @@ const ApiUsagePage = () => {
             const response = await fetch('https://localhost:8888/v1/iot-user/refresh-api-key', {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                    Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
                 },
             });
     
@@ -108,7 +108,7 @@ const ApiUsagePage = () => {
                     const apiKeyResponse = await fetch('https://localhost:8888/v1/iot-user/api-key', {
                         method: 'GET',
                         headers: {
-                            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                            Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
                         },
                     });
                     if (!apiKeyResponse.ok) {

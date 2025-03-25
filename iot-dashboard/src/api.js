@@ -20,7 +20,7 @@ const tokenIsExpired = (token) => {
 // Add request interceptor
 api.interceptors.request.use(
     async (config) => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         const { refreshToken } = useContext(AuthContext); // Use the AuthContext here
 
         if (tokenIsExpired(token)) {

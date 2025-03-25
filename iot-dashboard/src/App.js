@@ -23,13 +23,12 @@ function App() {
         </AuthProvider>
     );
 }
-
 const AppWithAuth = () => {
-    const { isAuthenticated } = useContext(AuthContext); // Accessing AuthContext here
+    const { isAuthenticated } = useContext(AuthContext);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
         window.location.href = '/login';
     };
 
