@@ -99,7 +99,7 @@ const ApiUsagePage = () => {
                     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
                 },
             });
-    
+
             if (response.ok) {
                 const text = await response.text(); // Get the plain text response
                 if (text === "API key refreshed successfully") {
@@ -132,7 +132,7 @@ const ApiUsagePage = () => {
             handleCloseConfirm();
         }
     };
-    
+
     const handleValidateApiKey = async () => {
         setLoading(true);
         try {
@@ -228,7 +228,7 @@ Body:
 
 
         <Container sx={{
-                    mt: 4,             // Added top margin
+                    mt: 5   ,             // Added top margin
                     mb: 4,             // Added bottom margin
                     maxWidth: '100%',   // Full width
                     width: '90vw',      // Set width to 90% of the viewport width
@@ -262,17 +262,17 @@ Body:
                         <Tab label="JavaScript" />
                     </Tabs>
 
-                    <Box mt={2} sx={{ position: 'relative' }}>
-                        <IconButton
-                            sx={{ position: 'absolute', right: 0, top: 0 }}
-                            onClick={handleCopyCommand}
-                        >
-                            <CopyAll />
-                        </IconButton>
-                        <pre style={{ backgroundColor: '#f8f8f8', padding: 10, borderRadius: 5 }}>
-                            {commandExample}
-                        </pre>
-                    </Box>
+                   <Box mt={2} sx={{ position: 'relative', height: '200px' }}>
+                       <IconButton
+                           sx={{ position: 'absolute', right: 0, top: 0 }}
+                           onClick={handleCopyCommand}
+                       >
+                           <CopyAll />
+                       </IconButton>
+                       <pre style={{ backgroundColor: '#f8f8f8', padding: 10, borderRadius: 5, height: '100%', overflowY: 'scroll' }}>
+                         {commandExample}
+                       </pre>
+                   </Box>
 
                     <Grid container spacing={2} sx={{ marginTop: 3 }}>
                         <Grid item xs={12}>
@@ -359,7 +359,7 @@ Body:
                     </Dialog>
                 </Paper>
             </Container>
-        
+
     );
 };
 
