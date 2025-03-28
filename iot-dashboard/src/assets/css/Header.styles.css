@@ -1,39 +1,57 @@
 .header {
-    padding: 0 20px; /* Adjust padding */
-    background-color: #007bff; /* Background color */
-    height: 50px; /* Header height */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    padding: 0 20px; /* Modern spacing */
+    background: rgba(0, 123, 255, 0.6); /* Semi-transparent glassy effect */
+    backdrop-filter: blur(10px); /* Adds a frosted glass blur */
+    height: 40px; /* Balanced height for a futuristic look */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border for separation */
+    display: flex; /* Flex container */
+    align-items: center; /* Vertically center items */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Elegant shadow for depth */
 }
 
 .toolbar {
-    display: flex; /* Flex display for the toolbar */
+    display: flex; /* Flex layout */
     justify-content: space-between; /* Space between title and buttons */
-    align-items: center; /* Center items vertically */
-    width: 100%; /* Full width */
+    align-items: center; /* Vertically align items */
+    width: 100%; /* Full-width toolbar */
 }
 
 .title {
-    color: #ffffff; /* Title color */
-    cursor: pointer; /* Pointer cursor for title */
+    color: #ffffff; /* Title text color */
+    font-size: 1rem; /* Adjusted font size for better visibility */
+    font-weight: 500; /* Medium-weight font for a clean look */
+    cursor: pointer; /* Pointer cursor for interactivity */
+    margin: 0; /* No margin to avoid offsets */
+    text-align: left; /* Align title to the left */
+    line-height: 32px; /* Slightly reduced line-height for better control */
+    position: relative; /* Allows fine-tuning of the position */
+    top: -10px; /* Further lifts the text */
 }
+
 
 .nav-buttons {
     display: flex; /* Flex layout for buttons */
-    align-items: center; /* Center items vertically */
-    margin-left: auto; /* Push buttons to the right */
+    align-items: center; /* Vertically align buttons */
+    gap: 15px; /* Space between buttons */
+    top: -10px; /* Further lifts the text */
+
 }
 
 .nav-link {
-    font-size: 1rem; /* Font size for buttons */
-    color: #ffffff; /* Text color for links */
-    margin-left: 20px; /* Increased spacing between buttons */
+    font-size: 0.9rem; /* Clean font size for links */
+    color: #ffffff; /* White text */
+    padding: 6px 12px; /* Comfortable padding */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Border for button style */
+    border-radius: 8px; /* Rounded corners for sleekness */
+    background: rgba(255, 255, 255, 0.1); /* Transparent button background */
+    transition: all 0.3s ease; /* Smooth hover effect */
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3); /* Slight glow */
+    top: -10px; /* Further lifts the text */
+
 }
 
 .nav-link:hover {
-    color: #e0e0e0; /* Hover effect color */
-}
-
-/* Add some space to the right of the buttons */
-.nav-buttons .nav-link:last-child {
-    margin-right: -40px; /* Move Logout to the right */
+    background: rgba(255, 255, 255, 0.3); /* Brighten background on hover */
+    color: #e0e0e0; /* Lighten text on hover */
+    border-color: rgba(255, 255, 255, 0.5); /* Brighten border */
 }

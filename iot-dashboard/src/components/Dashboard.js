@@ -136,7 +136,7 @@ const Dashboard = () => {
     return (
         <Box sx={{ fontFamily: 'Arial, sans-serif', padding: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ marginBottom: 4 }}>
-                Live Data Dashboard
+                Live Data
             </Typography>
 
             <Box display="flex" justifyContent="center" alignItems="center" mb={3}>

@@ -33,26 +33,26 @@ const Header = ({ onLogout, isAuthenticated }) => {
     return (
         <AppBar position="static" className="header">
             <Toolbar className="toolbar">
-                <Typography 
-                    variant="h6" 
-                    className="title" 
+                <Typography
+                    variant="h6"
+                    className="title"
                     onClick={handleTitleClick}
                 >
                     IoT Dashboard
                 </Typography>
                 {isAuthenticated && (
                     <div className="nav-buttons">
-                        <Button 
-                            color="inherit" 
-                            onClick={handleProfileClick} 
+                        <Button
+                            color="inherit"
+                            onClick={handleProfileClick}
                             className="nav-link"
                             startIcon={<AccountCircleIcon />}
                         >
                             Profile
                         </Button>
-                        <Button 
-                            color="inherit" 
-                            onClick={handleLogoutClick} 
+                        <Button
+                            color="inherit"
+                            onClick={handleLogoutClick}
                             className="nav-link"
                             startIcon={<ExitToAppIcon />}
                         >

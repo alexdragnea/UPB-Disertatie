@@ -2,12 +2,10 @@ import React, { Suspense, lazy, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Footer from './components/Footer'; // Import Footer component
-import { AuthProvider, AuthContext } from './AuthContext'; // Import AuthContext
-import PrivateRoute from './PrivateRoute'; // PrivateRoute component
+import { AuthProvider, AuthContext } from './AuthContext';
+import PrivateRoute from './PrivateRoute';
 import SensorDetail from './components/SensorDetail';
 
-// Lazy loaded components
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const UserProfile = lazy(() => import('./components/UserProfile'));
 const LoginPage = lazy(() => import('./components/LoginPage'));
@@ -23,6 +21,7 @@ function App() {
         </AuthProvider>
     );
 }
+
 const AppWithAuth = () => {
     const { isAuthenticated } = useContext(AuthContext);
 
@@ -35,7 +34,7 @@ const AppWithAuth = () => {
     return (
         <>
             <Header onLogout={handleLogout} isAuthenticated={isAuthenticated} />
-            <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', flexGrow: 1, marginTop: '10px' }}>
                     {isAuthenticated && <Sidebar />}
                     <div style={{ flexGrow: 1, padding: '20px' }}>
@@ -52,9 +51,6 @@ const AppWithAuth = () => {
                         </Suspense>
                     </div>
                 </div>
-
-                {/* Footer Component */}
-                <Footer />
             </div>
         </>
     );
