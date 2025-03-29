@@ -26,33 +26,28 @@ public class KafkaMessageProducer {
         validateMeasurement(sensor);
         MeasurementMessage message = buildMessage(sensor);
 
-        // Track message size for metrics
-        long messageSize = message.toString().length();  // Measure message size
+        long messageSize = message.toString().length();
         kafkaProducerMetric.recordMessageSize(messageSize);
 
-        long startTime = System.nanoTime();  // Track the start time of sending the message
+        long startTime = System.nanoTime();
 
         CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
 
         future.whenComplete((result, ex) -> {
             long endTime = System.nanoTime();
-            long sendTimeMs = (endTime - startTime) / 1_000_000;  // Convert to milliseconds
+            long sendTimeMs = (endTime - startTime) / 1_000_000;
 
-            // Record the message send time
             kafkaProducerMetric.recordMessageSendTime(sendTimeMs);
 
             if (ex == null) {
-                // Message sent successfully
                 log.info("Successfully sent message: {} to topic: {} with offset: {}", sensor, topic, result.getRecordMetadata().offset());
-                kafkaProducerMetric.incrementMessagesSentSuccess();  // Increment success counter
+                kafkaProducerMetric.incrementMessagesSentSuccess();
             } else {
-                // Error occurred while sending the message
                 log.error("Failed to send message: {} to topic: {} due to: {}", sensor, topic, ex.getMessage());
-                kafkaProducerMetric.incrementMessagesSentFailure();  // Increment failure counter
+                kafkaProducerMetric.incrementMessagesSentFailure();
                 throw new KafkaProcessingEx(ex.getMessage());
             }
 
-            // Increment message sent rate for throughput
             kafkaProducerMetric.incrementMessageSentRate();
         });
     }
