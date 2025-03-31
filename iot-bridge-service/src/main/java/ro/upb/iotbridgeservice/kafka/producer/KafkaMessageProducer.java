@@ -24,31 +24,38 @@ public class KafkaMessageProducer {
 
     public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
+
         MeasurementMessage message = buildMessage(sensor);
 
-        long messageSize = message.toString().length();
-        kafkaProducerMetric.recordMessageSize(messageSize);
+        long originalSize = message.toString().length(); // Uncompressed size
+        kafkaProducerMetric.recordMessageSize(originalSize);
 
+        // Start tracking send time
         long startTime = System.nanoTime();
+        kafkaProducerMetric.incrementInFlightMessages();
 
         CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
 
         future.whenComplete((result, ex) -> {
             long endTime = System.nanoTime();
-            long sendTimeMs = (endTime - startTime) / 1_000_000;
+            long sendTimeMs = (endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
 
-            kafkaProducerMetric.recordMessageSendTime(sendTimeMs);
+            // Record latency
+            kafkaProducerMetric.recordSendLatency(sendTimeMs);
+            kafkaProducerMetric.decrementInFlightMessages();
 
             if (ex == null) {
-                log.info("Successfully sent message: {} to topic: {} with offset: {}", sensor, topic, result.getRecordMetadata().offset());
-                kafkaProducerMetric.incrementMessagesSentSuccess();
+                kafkaProducerMetric.incrementSuccess();
+                log.info("Successfully sent message to topic: {} with offset: {}", topic, result.getRecordMetadata().offset());
+
+                // Compression Ratio Calculation
+                long compressedSize = result.getRecordMetadata().serializedValueSize();
+                kafkaProducerMetric.recordCompressionRatio(originalSize, compressedSize);
             } else {
-                log.error("Failed to send message: {} to topic: {} due to: {}", sensor, topic, ex.getMessage());
-                kafkaProducerMetric.incrementMessagesSentFailure();
+                kafkaProducerMetric.incrementFailure();
+                log.error("Failed to send message to topic: {} due to: {}", topic, ex.getMessage());
                 throw new KafkaProcessingEx(ex.getMessage());
             }
-
-            kafkaProducerMetric.incrementMessageSentRate();
         });
     }
 
@@ -64,7 +71,7 @@ public class KafkaMessageProducer {
 
     private void validateMeasurement(MeasurementRequest measurementRequest) {
         if (measurementRequest == null) {
-            throw new KafkaValidationEx("MeasurementRequestDto cannot be null");
+            throw new KafkaValidationEx("MeasurementRequest cannot be null");
         }
 
         String measurement = measurementRequest.getMeasurement();
@@ -89,7 +96,7 @@ public class KafkaMessageProducer {
         }
 
         String unit = measurementRequest.getUnit();
-        if (unit == null || unit.trim().isEmpty()){
+        if (unit == null || unit.trim().isEmpty()) {
             throw new KafkaValidationEx("Unit must not be blank");
         }
     }

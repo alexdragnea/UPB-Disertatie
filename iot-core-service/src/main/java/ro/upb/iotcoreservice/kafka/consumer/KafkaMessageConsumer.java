@@ -13,10 +13,10 @@ import reactor.core.publisher.Mono;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.iotcoreservice.dto.WSMessage;
+import ro.upb.iotcoreservice.metrics.KafkaConsumerMetric;
 import ro.upb.iotcoreservice.service.core.DeduplicationService;
 import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 import ro.upb.iotcoreservice.websocket.IotCoreWebSocketHandler;
-import ro.upb.iotcoreservice.metrics.KafkaConsumerMetric;  // Import your KafkaConsumerMetric class
 
 import java.time.Instant;
 
@@ -29,7 +29,7 @@ public class KafkaMessageConsumer {
     private final ObjectMapper objectMapper;
     private final IotCoreWebSocketHandler webSocketHandler;
     private final DeduplicationService deduplicationService;
-    private final KafkaConsumerMetric kafkaConsumerMetric;  // Inject KafkaConsumerMetric
+    private final KafkaConsumerMetric kafkaConsumerMetric;
 
     @KafkaListener(topics = KafkaConstants.IOT_EVENT_TOPIC, groupId = KafkaConstants.IOT_GROUP_ID)
     @RetryableTopic(
@@ -38,16 +38,13 @@ public class KafkaMessageConsumer {
     )
     public void listen(@Payload MeasurementMessage message, Acknowledgment acknowledgment) {
         String id = String.valueOf(message.getId());
-        long startTime = System.nanoTime();  // Track processing time
+        long startTime = System.nanoTime();
 
-        // Increment the message consumption rate
-        kafkaConsumerMetric.incrementMessageConsumedRate();
-
-        // Use id to check if the message has been processed already
         deduplicationService.isMessageDuplicate(id)
                 .flatMap(isDuplicate -> {
                     if (isDuplicate) {
                         log.info("Message with id {} is a duplicate, skipping.", id);
+                        kafkaConsumerMetric.incrementDuplicateMessages(); // Increment duplicate messages counter
                         return Mono.fromRunnable(acknowledgment::acknowledge);
                     }
 
@@ -59,7 +56,6 @@ public class KafkaMessageConsumer {
                             }));
                 })
                 .flatMap(msg -> {
-                    // Broadcast the message over WebSocket asynchronously
                     WSMessage wsMessage = new WSMessage(msg.getMeasurement().toString(), msg.getValue(), Instant.now().toString());
                     return Mono.fromRunnable(() -> {
                         try {
@@ -69,20 +65,24 @@ public class KafkaMessageConsumer {
                         }
                     }).thenReturn(acknowledgment);
                 })
-                .doOnSuccess(Acknowledgment::acknowledge)
+                .doOnSuccess(ack -> {
+                    kafkaConsumerMetric.incrementMessagesConsumedSuccess();
+                    ack.acknowledge();
+                })
+                .doOnError(error -> kafkaConsumerMetric.incrementMessagesConsumedFailure()) // Track failure
                 .doFinally(signalType -> {
-                    // Calculate the processing time
                     long endTime = System.nanoTime();
-                    long processingTimeMs = (endTime - startTime) / 1_000_000;  // Convert to milliseconds
+                    long processingTimeMs = (endTime - startTime) / 1_000_000;
 
-                    // Record message processing time
+                    // Track Metrics
                     kafkaConsumerMetric.recordMessageProcessingTime(processingTimeMs);
 
-                    // Record message size (in bytes)
-                    kafkaConsumerMetric.recordMessageSize(message.toString().length());
-
-                    // You can also update the consumer lag metric if necessary
-                    // Example: kafkaConsumerMetric.updateConsumerLag(consumerLag);
+                    // Record offset commit time
+                    long offsetCommitStartTime = System.nanoTime();
+                    acknowledgment.acknowledge();
+                    long offsetCommitEndTime = System.nanoTime();
+                    long offsetCommitTimeMs = (offsetCommitEndTime - offsetCommitStartTime) / 1_000_000;
+                    kafkaConsumerMetric.recordOffsetCommitTime(offsetCommitTimeMs);
                 })
                 .subscribe();
     }

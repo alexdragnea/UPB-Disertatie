@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.MicrometerConsumerListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.constant.KafkaConstants;
@@ -15,12 +16,17 @@ import ro.upb.iotcoreservice.kafka.deserializer.MeasurementMessageDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
+    @Autowired
+    private MeterRegistry meterRegistry;
 
     @Bean
     public ConsumerFactory<String, MeasurementMessage> consumerFactory() {
@@ -29,7 +35,6 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.IOT_GROUP_ID);
         configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, MeasurementMessageDeserializer.class);
-
 
         // Timeout configurations
         configProps.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);   // Session timeout
@@ -42,7 +47,9 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 25);  // Wait up to 50ms to fetch data
         configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);  // Disable auto-commit
 
-        return new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new MeasurementMessageDeserializer());
+        DefaultKafkaConsumerFactory<String, MeasurementMessage> consumerFactory = new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new MeasurementMessageDeserializer());
+        consumerFactory.addListener(new MicrometerConsumerListener<>(meterRegistry));
+        return consumerFactory;
     }
 
     @Bean
