@@ -50,7 +50,7 @@ const ApiUsagePage = () => {
         const token = sessionStorage.getItem('accessToken');
         if (token) {
             try {
-                const userResponse = await fetch('https://localhost:8888/v1/iot-user/logged', {
+                const userResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/logged`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -60,7 +60,7 @@ const ApiUsagePage = () => {
                 const userData = await userResponse.json();
                 setUserId(userData.userId);
 
-                const apiKeyResponse = await fetch('https://localhost:8888/v1/iot-user/api-key', {
+                const apiKeyResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/api-key`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -93,7 +93,7 @@ const ApiUsagePage = () => {
     const handleRefreshApiKey = async () => {
         setLoading(true);
         try {
-            const response = await fetch('https://localhost:8888/v1/iot-user/refresh-api-key', {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/refresh-api-key`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
@@ -105,7 +105,7 @@ const ApiUsagePage = () => {
                 if (text === "API key refreshed successfully") {
                     // If the response is the expected success message
                     // Fetch the new API key to update the state
-                    const apiKeyResponse = await fetch('https://localhost:8888/v1/iot-user/api-key', {
+                    const apiKeyResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/api-key`, {
                         method: 'GET',
                         headers: {
                             Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
@@ -136,7 +136,7 @@ const ApiUsagePage = () => {
     const handleValidateApiKey = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`https://localhost:8888/v1/iot-user/validate-api-key?userId=${userId}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/validate-api-key?userId=${userId}`, {
                 method: 'GET',
                 headers: {
                     'x-api-key': apiKey,
@@ -164,7 +164,7 @@ const ApiUsagePage = () => {
         switch (tabValue) {
             case 0:
                 return (
-                    `curl --location 'https://localhost:8888/v1/iot-bridge' \\
+                    `curl --location '${process.env.REACT_APP_API_BASE_URL}/v1/iot-bridge' \\
 --header 'x-api-key: ${apiKey}' \\
 --header 'Content-Type: application/json' \\
 --data '{
@@ -177,7 +177,7 @@ const ApiUsagePage = () => {
                 );
             case 1:
                 return (
-                    `POST https://localhost:8888/v1/iot-bridge
+                    `POST ${process.env.REACT_APP_API_BASE_URL}/v1/iot-bridge
 Headers:
 x-api-key: ${apiKey}
 Content-Type: application/json
@@ -193,7 +193,7 @@ Body:
                 );
             case 2:
                 return (
-                    `fetch('https://localhost:8888/v1/iot-bridge', {
+                    `fetch('${process.env.REACT_APP_API_BASE_URL}/v1/iot-bridge', {
     method: 'POST',
     headers: {
         'x-api-key': '${apiKey}',
@@ -225,18 +225,16 @@ Body:
     };
 
     return (
-
-
         <Container sx={{
-                    mt: 5   ,             // Added top margin
-                    mb: 4,             // Added bottom margin
-                    maxWidth: '100%',   // Full width
-                    width: '90vw',      // Set width to 90% of the viewport width
-                    display: 'flex',
-                    justifyContent: 'center'
-            }}
+            mt: 5   ,             // Added top margin
+            mb: 4,             // Added bottom margin
+            maxWidth: '100%',   // Full width
+            width: '90vw',      // Set width to 90% of the viewport width
+            display: 'flex',
+            justifyContent: 'center'
+        }}
         >
-               <Paper
+            <Paper
                 sx={{
                     padding: { xs: 4, sm: 5 },
                     borderRadius: 2,
@@ -247,119 +245,118 @@ Body:
                     height: '100%', // Optional: Make Paper take full height of Box
                 }}
             >
-                    <Typography
+                <Typography
                     variant="h4"
                     gutterBottom
                     sx={{ fontWeight: 'bold', color: '#1976d2' }}
                 >
                     <DeviceHub sx={{ marginRight: 1 }} /> API Usage Overview
                 </Typography>
-                    <Divider sx={{ marginBottom: 2 }} />
+                <Divider sx={{ marginBottom: 2 }} />
 
-                    <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
-                        <Tab label="cURL" />
-                        <Tab label="Postman" />
-                        <Tab label="JavaScript" />
-                    </Tabs>
+                <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
+                    <Tab label="cURL" />
+                    <Tab label="Postman" />
+                    <Tab label="JavaScript" />
+                </Tabs>
 
-                   <Box mt={2} sx={{ position: 'relative', height: '200px' }}>
-                       <IconButton
-                           sx={{ position: 'absolute', right: 0, top: 0 }}
-                           onClick={handleCopyCommand}
-                       >
-                           <CopyAll />
-                       </IconButton>
-                       <pre style={{ backgroundColor: '#f8f8f8', padding: 10, borderRadius: 5, height: '100%', overflowY: 'scroll' }}>
+                <Box mt={2} sx={{ position: 'relative', height: '200px' }}>
+                    <IconButton
+                        sx={{ position: 'absolute', right: 0, top: 0 }}
+                        onClick={handleCopyCommand}
+                    >
+                        <CopyAll />
+                    </IconButton>
+                    <pre style={{ backgroundColor: '#f8f8f8', padding: 10, borderRadius: 5, height: '100%', overflowY: 'scroll' }}>
                          {commandExample}
                        </pre>
-                   </Box>
+                </Box>
 
-                    <Grid container spacing={2} sx={{ marginTop: 3 }}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" gutterBottom>
-                                Your API Key
-                            </Typography>
-                            <TextField
-                                value={showApiKey ? apiKey : '●●●●●●●●●●●●●●●●●●●●'} // Mask API key
-                                variant="outlined"
-                                fullWidth
-                                InputProps={{
-                                    readOnly: true,
-                                }}
-                                type={showApiKey ? 'text' : 'password'} // Change type based on showApiKey state
-                            />
-                            <Button
-                                onClick={handleShowApiKey} // Call to toggle the API key visibility
-                                variant="outlined"
-                                sx={{ mt: 1 }}
-                            >
-                                {showApiKey ? 'Hide API Key' : 'Show API Key'}
-                            </Button>
-                            <Button
-                                onClick={handleCopyApiKey}
-                                variant="contained"
-                                sx={{ mt: 1, ml: 1 }}
-                            >
-                                Copy API Key
-                            </Button>
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleValidateApiKey}
-                                sx={{ mr: 2 }}
-                                disabled={loading}
-                            >
-                                Validate API Key
-                                {loading && <CircularProgress size={24} sx={{ marginLeft: 1 }} />}
-                            </Button>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={handleOpenConfirm}
-                                disabled={loading}
-                            >
-                                Refresh API Key
-                            </Button>
-                        </Grid>
+                <Grid container spacing={2} sx={{ marginTop: 3 }}>
+                    <Grid item xs={12}>
+                        <Typography variant="h6" gutterBottom>
+                            Your API Key
+                        </Typography>
+                        <TextField
+                            value={showApiKey ? apiKey : '●●●●●●●●●●●●●●●●●●●●'} // Mask API key
+                            variant="outlined"
+                            fullWidth
+                            InputProps={{
+                                readOnly: true,
+                            }}
+                            type={showApiKey ? 'text' : 'password'} // Change type based on showApiKey state
+                        />
+                        <Button
+                            onClick={handleShowApiKey} // Call to toggle the API key visibility
+                            variant="outlined"
+                            sx={{ mt: 1 }}
+                        >
+                            {showApiKey ? 'Hide API Key' : 'Show API Key'}
+                        </Button>
+                        <Button
+                            onClick={handleCopyApiKey}
+                            variant="contained"
+                            sx={{ mt: 1, ml: 1 }}
+                        >
+                            Copy API Key
+                        </Button>
                     </Grid>
 
-                    {/* Snackbar for messages */}
-                    <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
-                        <Alert onClose={() => setMessage('')} severity="success">
-                            {message}
-                        </Alert>
-                    </Snackbar>
+                    <Grid item xs={12}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleValidateApiKey}
+                            sx={{ mr: 2 }}
+                            disabled={loading}
+                        >
+                            Validate API Key
+                            {loading && <CircularProgress size={24} sx={{ marginLeft: 1 }} />}
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleOpenConfirm}
+                            disabled={loading}
+                        >
+                            Refresh API Key
+                        </Button>
+                    </Grid>
+                </Grid>
 
-                    {/* Snackbar for errors */}
-                    <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
-                        <Alert onClose={() => setError('')} severity="error">
-                            {error}
-                        </Alert>
-                    </Snackbar>
+                {/* Snackbar for messages */}
+                <Snackbar open={!!message} autoHideDuration={6000} onClose={() => setMessage('')}>
+                    <Alert onClose={() => setMessage('')} severity="success">
+                        {message}
+                    </Alert>
+                </Snackbar>
 
-                    {/* Confirm Dialog for refreshing API Key */}
-                    <Dialog open={openConfirm} onClose={handleCloseConfirm}>
-                        <DialogTitle>Refresh API Key</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                Are you sure you want to refresh your API key? This action cannot be undone.
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseConfirm} color="primary">
-                                Cancel
-                            </Button>
-                            <Button onClick={handleRefreshApiKey} color="primary" autoFocus>
-                                Refresh
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-                </Paper>
-            </Container>
+                {/* Snackbar for errors */}
+                <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
+                    <Alert onClose={() => setError('')} severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
 
+                {/* Confirm Dialog for refreshing API Key */}
+                <Dialog open={openConfirm} onClose={handleCloseConfirm}>
+                    <DialogTitle>Refresh API Key</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure you want to refresh your API key? This action cannot be undone.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseConfirm} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleRefreshApiKey} color="primary" autoFocus>
+                            Refresh
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Paper>
+        </Container>
     );
 };
 

@@ -81,7 +81,7 @@ function UserProfile() {
     const token = sessionStorage.getItem("accessToken");
 
     try {
-      const response = await fetch("https://localhost:8888/v1/iot-user/profile", {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/profile`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ function UserProfile() {
     const token = sessionStorage.getItem("accessToken");
 
     try {
-      const response = await fetch("https://localhost:8888/v1/iot-user/password", {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-user/password`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,

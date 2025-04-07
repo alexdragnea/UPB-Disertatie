@@ -91,8 +91,10 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         String findUserMeasurementsQuery = String.format("from(bucket: \"iot-measurement-bucket\") " +
                 "|> range(start: 0) " +
                 "|> filter(fn: (r) => r.userId == \"%s\") " +
+                "|> group(columns: [\"_measurement\"]) " +
                 "|> distinct(column: \"_measurement\") " +
-                "|> keep(columns: [\"_measurement\"])", userId);
+                "|> keep(columns: [\"_measurement\"]) " +
+                "|> limit(n: 1)", userId); // Limit the results to 1 per measurement
 
         QueryReactiveApi queryApi = influxDBClient.getQueryReactiveApi();
 
@@ -109,7 +111,6 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                         return Mono.just(buildUserMeasurementDto(userId, measurementsSet));
                     }
                 });
-
     }
 
     @Override

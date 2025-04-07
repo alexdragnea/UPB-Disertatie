@@ -13,7 +13,7 @@ const FetchSensors = ({ setSensors }) => {
                     token = await refreshToken(); // Try refreshing the token if it's not present
                 }
 
-                const response = await axios.get(`https://localhost:8888/v1/iot-core/measurements`, {
+                const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-core/measurements`, {
                     params: { userId: user.userId },
                     headers: {
                         Authorization: `Bearer ${token}`,

@@ -23,8 +23,11 @@ scrape_configs:
 
   - job_name: 'iot-gateway-service'
     metrics_path: '/actuator/prometheus'
+    scheme: https
     static_configs:
       - targets: ['iot-gateway-service:8888']
+    tls_config:
+      insecure_skip_verify: true
 
   - job_name: 'iot-user-service'
     metrics_path: '/actuator/prometheus'

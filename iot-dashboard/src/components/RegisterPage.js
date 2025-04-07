@@ -3,7 +3,7 @@ import { TextField, Button, Paper, Grid, Snackbar, Alert, Typography, Box } from
 import { Link } from 'react-router-dom';
 import '../assets/css/RegisterPage.css'; // Import custom CSS
 
-const API_URL = 'https://localhost:8888/v1/iot-user';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/v1/iot-user`;
 
 export default function RegisterPage() {
     const [email, setEmail] = useState('');

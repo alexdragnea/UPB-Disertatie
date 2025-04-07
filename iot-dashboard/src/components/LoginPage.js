@@ -5,7 +5,7 @@ import AuthContext from '../AuthContext';
 import logo from '../assets/img/icons/iot-logo.png';
 import '../assets/css/LoginPage.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://localhost:8888/v1/iot-user';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/v1/iot-user`;
 
 export default function LoginPage() {
     const { login } = useContext(AuthContext);

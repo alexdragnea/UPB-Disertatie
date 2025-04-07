@@ -38,13 +38,13 @@ public class KafkaMessageConsumer {
     )
     public void listen(@Payload MeasurementMessage message, Acknowledgment acknowledgment) {
         String id = String.valueOf(message.getId());
-        long startTime = System.nanoTime();
 
+        // Use id to check if the message has been processed already
         deduplicationService.isMessageDuplicate(id)
                 .flatMap(isDuplicate -> {
                     if (isDuplicate) {
                         log.info("Message with id {} is a duplicate, skipping.", id);
-                        kafkaConsumerMetric.incrementDuplicateMessages(); // Increment duplicate messages counter
+                        kafkaConsumerMetric.incrementDuplicateMessages();
                         return Mono.fromRunnable(acknowledgment::acknowledge);
                     }
 
@@ -56,6 +56,7 @@ public class KafkaMessageConsumer {
                             }));
                 })
                 .flatMap(msg -> {
+                    // Broadcast the message over WebSocket asynchronously
                     WSMessage wsMessage = new WSMessage(msg.getMeasurement().toString(), msg.getValue(), Instant.now().toString());
                     return Mono.fromRunnable(() -> {
                         try {
@@ -65,25 +66,7 @@ public class KafkaMessageConsumer {
                         }
                     }).thenReturn(acknowledgment);
                 })
-                .doOnSuccess(ack -> {
-                    kafkaConsumerMetric.incrementMessagesConsumedSuccess();
-                    ack.acknowledge();
-                })
-                .doOnError(error -> kafkaConsumerMetric.incrementMessagesConsumedFailure()) // Track failure
-                .doFinally(signalType -> {
-                    long endTime = System.nanoTime();
-                    long processingTimeMs = (endTime - startTime) / 1_000_000;
-
-                    // Track Metrics
-                    kafkaConsumerMetric.recordMessageProcessingTime(processingTimeMs);
-
-                    // Record offset commit time
-                    long offsetCommitStartTime = System.nanoTime();
-                    acknowledgment.acknowledge();
-                    long offsetCommitEndTime = System.nanoTime();
-                    long offsetCommitTimeMs = (offsetCommitEndTime - offsetCommitStartTime) / 1_000_000;
-                    kafkaConsumerMetric.recordOffsetCommitTime(offsetCommitTimeMs);
-                })
+                .doOnSuccess(Acknowledgment::acknowledge)
                 .subscribe();
     }
 }

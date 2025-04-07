@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useContext } from 'react';
 import AuthContext from './AuthContext';
 
-const API_URL = 'https://localhost:8888/v1/iot-user';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL}/v1/iot-user`;
 
 const api = axios.create({
     baseURL: API_URL,

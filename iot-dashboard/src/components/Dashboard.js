@@ -23,7 +23,7 @@ const Dashboard = () => {
 
     const fetchSensors = async (token) => {
         try {
-            const response = await axios.get(`https://localhost:8888/v1/iot-core/measurements?userId=${userId}`, {
+            const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-core/measurements?userId=${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             return response.data.measurements || [];
@@ -52,7 +52,7 @@ const Dashboard = () => {
     const setupWebSocket = () => {
         if (wsRef.current) wsRef.current.close();
 
-        wsRef.current = new WebSocket('wss://localhost:8888/ws');
+        wsRef.current = new WebSocket(`${process.env.REACT_APP_API_WS_BASE_URL}`);
 
         wsRef.current.onopen = () => setWsConnected(true);
         wsRef.current.onclose = () => setWsConnected(false);

@@ -16,6 +16,7 @@
     "bootstrap": "^5.3.3",
     "chart.js": "^4.4.4",
     "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-plugin-zoom": "^2.2.0",
     "date-fns": "^4.1.0",
     "perfect-scrollbar": "^1.5.5",
     "react": "^18.3.1",
@@ -28,6 +29,7 @@
     "react-scripts": "5.0.1",
     "reactstrap": "^9.2.2",
     "recharts": "^2.12.7",
+    "styled-components": "^6.1.16",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

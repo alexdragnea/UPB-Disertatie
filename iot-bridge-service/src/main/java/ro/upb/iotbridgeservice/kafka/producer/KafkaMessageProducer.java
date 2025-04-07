@@ -2,9 +2,11 @@ package ro.upb.iotbridgeservice.kafka.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
@@ -22,41 +24,31 @@ public class KafkaMessageProducer {
     private final KafkaTemplate<String, MeasurementMessage> kafkaTemplate;
     private final KafkaProducerMetric kafkaProducerMetric;
 
-    public void sendIotMeasurement(String topic, MeasurementRequest sensor) {
+    public Mono<Void> sendIotMeasurement(String topic, MeasurementRequest sensor) {
         validateMeasurement(sensor);
 
         MeasurementMessage message = buildMessage(sensor);
 
-        long originalSize = message.toString().length(); // Uncompressed size
-        kafkaProducerMetric.recordMessageSize(originalSize);
-
-        // Start tracking send time
-        long startTime = System.nanoTime();
         kafkaProducerMetric.incrementInFlightMessages();
 
         CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
 
-        future.whenComplete((result, ex) -> {
-            long endTime = System.nanoTime();
-            long sendTimeMs = (endTime - startTime) / 1_000_000; // Convert nanoseconds to milliseconds
+        return Mono.fromFuture(future)
+                .doOnSuccess(result -> {
+                    kafkaProducerMetric.decrementInFlightMessages();
+                    log.info("Successfully sent message to topic: {} with offset: {}", topic, result.getRecordMetadata().offset());
 
-            // Record latency
-            kafkaProducerMetric.recordSendLatency(sendTimeMs);
-            kafkaProducerMetric.decrementInFlightMessages();
-
-            if (ex == null) {
-                kafkaProducerMetric.incrementSuccess();
-                log.info("Successfully sent message to topic: {} with offset: {}", topic, result.getRecordMetadata().offset());
-
-                // Compression Ratio Calculation
-                long compressedSize = result.getRecordMetadata().serializedValueSize();
-                kafkaProducerMetric.recordCompressionRatio(originalSize, compressedSize);
-            } else {
-                kafkaProducerMetric.incrementFailure();
-                log.error("Failed to send message to topic: {} due to: {}", topic, ex.getMessage());
-                throw new KafkaProcessingEx(ex.getMessage());
-            }
-        });
+                    // Compression Ratio Calculation
+                    long originalSize = message.toString().length(); // Uncompressed size
+                    long compressedSize = result.getRecordMetadata().serializedValueSize();
+                    kafkaProducerMetric.recordCompressionRatio(originalSize, compressedSize);
+                })
+                .doOnError(ex -> {
+                    kafkaProducerMetric.decrementInFlightMessages();
+                    log.error("Failed to send message to topic: {} due to: {}", topic, ex.getMessage());
+                    throw new KafkaProcessingEx(ex.getMessage());
+                })
+                .then();
     }
 
     private MeasurementMessage buildMessage(MeasurementRequest sensor) {
@@ -75,7 +67,7 @@ public class KafkaMessageProducer {
         }
 
         String measurement = measurementRequest.getMeasurement();
-        if (measurement == null || measurement.trim().isEmpty()) {
+        if (StringUtils.isBlank(measurement)) {
             throw new KafkaValidationEx("Measurement must not be blank");
         }
         if (measurement.length() > 50) {
