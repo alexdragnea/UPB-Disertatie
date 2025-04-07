@@ -1,4 +1,3 @@
-// Top-level imports — always at top!
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -12,13 +11,15 @@ import {
     LineController,
     BarController,
     PieController,
+    RadarController,
     CategoryScale,
     LinearScale,
     Title,
     Tooltip,
     Legend,
     Filler,
-    TimeScale
+    TimeScale,
+    RadialLinearScale
 } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import {
@@ -27,7 +28,6 @@ import {
     Typography,
     IconButton,
     Grid,
-    Popover,
     TextField,
     MenuItem,
     Table,
@@ -39,7 +39,10 @@ import {
     TablePagination,
     Snackbar,
     Alert,
-    InputAdornment
+    InputAdornment,
+    Popover,
+    Button,
+    Tooltip as MuiTooltip
 } from '@mui/material';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TableChartIcon from '@mui/icons-material/TableChart';
@@ -47,9 +50,10 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PieChartIcon from '@mui/icons-material/PieChart';
+import RadarIcon from '@mui/icons-material/Radar';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import { Line, Bar, Pie } from 'react-chartjs-2';
+import { Line, Bar, Pie, Radar } from 'react-chartjs-2';
 import AuthContext from '../AuthContext';
 
 ChartJS.register(
@@ -60,6 +64,7 @@ ChartJS.register(
     LineController,
     BarController,
     PieController,
+    RadarController,
     CategoryScale,
     LinearScale,
     TimeScale,
@@ -67,7 +72,8 @@ ChartJS.register(
     Tooltip,
     Legend,
     Filler,
-    zoomPlugin
+    zoomPlugin,
+    RadialLinearScale
 );
 
 export default function SensorDetail() {
@@ -79,6 +85,8 @@ export default function SensorDetail() {
     const [filteredTableData, setFilteredTableData] = useState([]);
     const [filterAnchor, setFilterAnchor] = useState(null);
     const [filterOption, setFilterOption] = useState('last7days');
+    const [customStartDate, setCustomStartDate] = useState(null);
+    const [customEndDate, setCustomEndDate] = useState(null);
     const [chartType, setChartType] = useState('line');
     const [currentView, setCurrentView] = useState('chart');
     const [page, setPage] = useState(0);
@@ -92,7 +100,7 @@ export default function SensorDetail() {
 
     useEffect(() => {
         fetchData();
-    }, [sensorId, filterOption]);
+    }, [sensorId, filterOption, customStartDate, customEndDate]);
 
     useEffect(() => {
         handleSearchAndSort();
@@ -105,7 +113,7 @@ export default function SensorDetail() {
             if (!token) token = await refreshToken();
 
             const startTime = getStartTime(filterOption);
-            const endTime = new Date().toISOString();
+            const endTime = getEndTime(filterOption);
 
             const response = await axios.post(
                 `${process.env.REACT_APP_API_BASE_URL}/v1/iot-core/measurements-by-filter`,
@@ -162,9 +170,15 @@ export default function SensorDetail() {
                 return new Date(now.setDate(now.getDate() - 30)).toISOString();
             case 'last90days':
                 return new Date(now.setDate(now.getDate() - 90)).toISOString();
+            case 'custom':
+                return customStartDate ? new Date(customStartDate).toISOString() : '';
             default:
                 return '';
         }
+    };
+
+    const getEndTime = option => {
+        return option === 'custom' && customEndDate ? new Date(customEndDate).toISOString() : new Date().toISOString();
     };
 
     const handleSearchAndSort = () => {
@@ -193,6 +207,17 @@ export default function SensorDetail() {
         }));
     };
 
+    const createHistogramData = (data, binSize) => {
+        const bins = {};
+        data.forEach(value => {
+            const bin = Math.floor(value / binSize) * binSize;
+            bins[bin] = (bins[bin] || 0) + 1;
+        });
+        const labels = Object.keys(bins).map(bin => `${bin}-${+bin + binSize}`);
+        const values = Object.values(bins);
+        return { labels, values };
+    };
+
     if (loading) {
         return (
             <div style={{ textAlign: 'center' }}>
@@ -204,13 +229,15 @@ export default function SensorDetail() {
     const chartOptions = {
         responsive: true,
         plugins: {
-            legend: { display: true },
+            legend: { display: true, position: 'left' },
             zoom: {
-                pan: { enabled: true, mode: 'x' },
-                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
+                pan: { enabled: true, mode: 'xy' },
+                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
             }
         }
     };
+
+    const histogramData = createHistogramData(graphData.datasets[0].data, 10);
 
     return (
         <Paper style={{ padding: 20 }}>
@@ -248,28 +275,87 @@ export default function SensorDetail() {
                             <MenuItem value="last7days">Last 7 Days</MenuItem>
                             <MenuItem value="last30days">Last 30 Days</MenuItem>
                             <MenuItem value="last90days">Last 90 Days</MenuItem>
+                            <MenuItem value="custom">Custom</MenuItem>
                         </TextField>
+                        {filterOption === 'custom' && (
+                            <>
+                                <TextField
+                                    label="Start Date"
+                                    type="date"
+                                    value={customStartDate || ''}
+                                    onChange={(e) => setCustomStartDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                                <TextField
+                                    label="End Date"
+                                    type="date"
+                                    value={customEndDate || ''}
+                                    onChange={(e) => setCustomEndDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    fullWidth
+                                    margin="normal"
+                                />
+                            </>
+                        )}
                     </div>
                 </Popover>
             </Grid>
 
             <Grid container justifyContent="center" spacing={2} style={{ marginTop: 10 }}>
-                <IconButton color={currentView === 'table' ? 'primary' : 'default'} onClick={() => setCurrentView('table')}><TableChartIcon /></IconButton>
-                <IconButton color={currentView === 'chart' ? 'primary' : 'default'} onClick={() => setCurrentView('chart')}><ShowChartIcon /></IconButton>
+                <MuiTooltip title="Table">
+                    <IconButton color={currentView === 'table' ? 'primary' : 'default'} onClick={() => setCurrentView('table')}><TableChartIcon /></IconButton>
+                </MuiTooltip>
+                <MuiTooltip title="Chart">
+                    <IconButton color={currentView === 'chart' ? 'primary' : 'default'} onClick={() => setCurrentView('chart')}><ShowChartIcon /></IconButton>
+                </MuiTooltip>
                 {currentView === 'chart' && (
                     <>
-                        <IconButton color={chartType === 'line' ? 'primary' : 'default'} onClick={() => setChartType('line')}><TimelineIcon /></IconButton>
-                        <IconButton color={chartType === 'bar' ? 'primary' : 'default'} onClick={() => setChartType('bar')}><BarChartIcon /></IconButton>
-                        <IconButton color={chartType === 'pie' ? 'primary' : 'default'} onClick={() => setChartType('pie')}><PieChartIcon /></IconButton>
+                        <MuiTooltip title="Line">
+                            <IconButton color={chartType === 'line' ? 'primary' : 'default'} onClick={() => setChartType('line')}><TimelineIcon /></IconButton>
+                        </MuiTooltip>
+                        <MuiTooltip title="Bar">
+                            <IconButton color={chartType === 'bar' ? 'primary' : 'default'} onClick={() => setChartType('bar')}><BarChartIcon /></IconButton>
+                        </MuiTooltip>
+                        <MuiTooltip title="Pie">
+                            <IconButton color={chartType === 'pie' ? 'primary' : 'default'} onClick={() => setChartType('pie')}><PieChartIcon /></IconButton>
+                        </MuiTooltip>
+                        <MuiTooltip title="Radar">
+                            <IconButton color={chartType === 'radar' ? 'primary' : 'default'} onClick={() => setChartType('radar')}><RadarIcon /></IconButton>
+                        </MuiTooltip>
+                        <MuiTooltip title="Histogram">
+                            <IconButton color={chartType === 'histogram' ? 'primary' : 'default'} onClick={() => setChartType('histogram')}><BarChartIcon /></IconButton>
+                        </MuiTooltip>
                     </>
                 )}
             </Grid>
 
             {currentView === 'chart' && graphData && (
-                <div style={{ height: 500 }}>
-                    {chartType === 'line' && <Line data={graphData} options={chartOptions} />}
-                    {chartType === 'bar' && <Bar data={graphData} options={chartOptions} />}
-                    {chartType === 'pie' && <Pie data={graphData} />}
+                <div style={{ height: 500, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ width: '80%' }}>
+                        {chartType === 'line' && <Line data={graphData} options={chartOptions} />}
+                        {chartType === 'bar' && <Bar data={graphData} options={chartOptions} />}
+                        {chartType === 'pie' && <Pie data={graphData} options={chartOptions} />}
+                        {chartType === 'radar' && <Radar data={graphData} options={chartOptions} />}
+                        {chartType === 'histogram' && (
+                            <Bar
+                                data={{
+                                    labels: histogramData.labels,
+                                    datasets: [
+                                        {
+                                            label: 'Frequency',
+                                            data: histogramData.values,
+                                            backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                                            borderColor: 'blue',
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                }}
+                                options={chartOptions}
+                            />
+                        )}
+                    </div>
                 </div>
             )}
 

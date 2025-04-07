@@ -22,7 +22,6 @@ public class DeduplicationService {
     }
 
     public Mono<Void> markMessageAsProcessed(String messageId) {
-        // Set the key-value pair (messageId -> "processed")
         return reactiveRedisTemplate.opsForValue()
                 .set(messageId, "processed", Duration.ofSeconds(deduplicationExpiry))
                 .then();
