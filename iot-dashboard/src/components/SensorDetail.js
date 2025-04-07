@@ -41,15 +41,18 @@ import {
     Alert,
     InputAdornment,
     Popover,
-    Button,
-    Tooltip as MuiTooltip
+    Tooltip as MuiTooltip,
+    Box
 } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import TableChartIcon from '@mui/icons-material/TableChart';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import PieChartIcon from '@mui/icons-material/PieChart';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import RadarIcon from '@mui/icons-material/Radar';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import SearchIcon from '@mui/icons-material/Search';
@@ -218,6 +221,58 @@ export default function SensorDetail() {
         return { labels, values };
     };
 
+    const getChartOptions = (type) => {
+        const baseOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                zoom: {
+                    pan: { enabled: true, mode: 'xy' },
+                    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
+                }
+            }
+        };
+
+        const legendOptions = {
+            pie: {
+                position: 'top',
+                align: 'center',
+                labels: {
+                    boxWidth: 20,
+                    padding: 10,
+                    font: { size: 12 }
+                }
+            },
+            radar: {
+                position: 'top',
+                align: 'center',
+                labels: {
+                    boxWidth: 20,
+                    padding: 10,
+                    font: { size: 12 }
+                }
+            },
+            default: {
+                position: 'left',
+                align: 'start'
+            }
+        };
+
+        return {
+            ...baseOptions,
+            plugins: {
+                ...baseOptions.plugins,
+                legend: {
+                    display: true,
+                    ...(legendOptions[type] || legendOptions.default)
+                }
+            },
+            layout: {
+                padding: 20
+            }
+        };
+    };
+
     if (loading) {
         return (
             <div style={{ textAlign: 'center' }}>
@@ -226,20 +281,11 @@ export default function SensorDetail() {
         );
     }
 
-    const chartOptions = {
-        responsive: true,
-        plugins: {
-            legend: { display: true, position: 'left' },
-            zoom: {
-                pan: { enabled: true, mode: 'xy' },
-                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
-            }
-        }
-    };
-
     const histogramData = createHistogramData(graphData.datasets[0].data, 10);
 
     return (
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+
         <Paper style={{ padding: 20 }}>
             <Grid container direction="column" alignItems="center" spacing={1}>
                 <Grid item><Typography variant="h6">{sensorId}</Typography></Grid>
@@ -264,7 +310,7 @@ export default function SensorDetail() {
                     anchorEl={filterAnchor}
                     onClose={() => setFilterAnchor(null)}
                 >
-                    <div style={{ padding: 10, minWidth: 200 }}>
+                    <Box sx={{ padding: 2, minWidth: 250 }}>
                         <TextField
                             label="Filter"
                             select
@@ -279,27 +325,23 @@ export default function SensorDetail() {
                         </TextField>
                         {filterOption === 'custom' && (
                             <>
-                                <TextField
+                                <DateTimePicker
                                     label="Start Date"
-                                    type="date"
-                                    value={customStartDate || ''}
-                                    onChange={(e) => setCustomStartDate(e.target.value)}
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    margin="normal"
+                                    value={customStartDate}
+                                    onChange={(newValue) => setCustomStartDate(newValue)}
+                                    onError={(error) => console.error('Invalid start date:', error)}
+                                    renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
                                 />
-                                <TextField
+                                <DateTimePicker
                                     label="End Date"
-                                    type="date"
-                                    value={customEndDate || ''}
-                                    onChange={(e) => setCustomEndDate(e.target.value)}
-                                    InputLabelProps={{ shrink: true }}
-                                    fullWidth
-                                    margin="normal"
+                                    value={customEndDate}
+                                    onChange={(newValue) => setCustomEndDate(newValue)}
+                                    onError={(error) => console.error('Invalid end date:', error)}
+                                    renderInput={(params) => <TextField {...params} fullWidth margin="normal" />}
                                 />
                             </>
                         )}
-                    </div>
+                    </Box>
                 </Popover>
             </Grid>
 
@@ -332,12 +374,12 @@ export default function SensorDetail() {
             </Grid>
 
             {currentView === 'chart' && graphData && (
-                <div style={{ height: 500, display: 'flex', justifyContent: 'center' }}>
-                    <div style={{ width: '80%' }}>
-                        {chartType === 'line' && <Line data={graphData} options={chartOptions} />}
-                        {chartType === 'bar' && <Bar data={graphData} options={chartOptions} />}
-                        {chartType === 'pie' && <Pie data={graphData} options={chartOptions} />}
-                        {chartType === 'radar' && <Radar data={graphData} options={chartOptions} />}
+                <div style={{ height: 500, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ width: chartType === 'pie' || chartType === 'radar' ? '50%' : '80%', height: '100%' }}>
+                        {chartType === 'line' && <Line data={graphData} options={getChartOptions('line')} />}
+                        {chartType === 'bar' && <Bar data={graphData} options={getChartOptions('bar')} />}
+                        {chartType === 'pie' && <Pie data={graphData} options={getChartOptions('pie')} />}
+                        {chartType === 'radar' && <Radar data={graphData} options={getChartOptions('radar')} />}
                         {chartType === 'histogram' && (
                             <Bar
                                 data={{
@@ -352,7 +394,7 @@ export default function SensorDetail() {
                                         }
                                     ]
                                 }}
-                                options={chartOptions}
+                                options={getChartOptions('bar')}
                             />
                         )}
                     </div>
@@ -413,5 +455,7 @@ export default function SensorDetail() {
                 <Alert severity="error">{error}</Alert>
             </Snackbar>
         </Paper>
+        </LocalizationProvider>
+
     );
 }
