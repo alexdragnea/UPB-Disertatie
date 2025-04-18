@@ -110,24 +110,21 @@ jobs:
       PROJECT_ID: disertatie-456818
       GKE_CLUSTER: disertatie-cluster
       GKE_ZONE: us-central1
-      SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}  # Ensure this is stored as a secret
+      SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      # Set up Google Cloud SDK and authenticate using the service account key
       - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
         with:
-          service_account_key: ${{ secrets.GK_SA_KEY }}  # Authenticating using the service account
-          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GK_SA_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
 
-      # Get GKE credentials using the correct approach
       - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
         with:
           cluster_name: ${{ env.GKE_CLUSTER }}
           location: ${{ env.GKE_ZONE }}
-          project_id: ${{ env.PROJECT_ID }}
           credentials: ${{ secrets.GK_SA_KEY }}
 
 
