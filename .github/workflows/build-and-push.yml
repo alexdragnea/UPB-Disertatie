@@ -137,25 +137,25 @@ jobs:
       # Deploy Infrastructure & Services
       - name: Deploy Infra & Services
         run: |
-          # # Add Helm repo and update
-          # helm repo add bitnami https://charts.bitnami.com/bitnami
-          # helm repo update
+          # Add Helm repo and update
+          kubectl get namespace observability || kubectl create namespace observability
 
-          # kubectl get namespace observability || kubectl create namespace observability
+          helm repo add bitnami https://charts.bitnami.com/bitnami --namespace observability
+          helm repo update --namespace observability
 
-          # # Install Prometheus
-          # helm install prometheus bitnami/kube-prometheus --namespace observability \
-          #   --set prometheus.replicaCount=2 \
-          #   --set admin.user=admin \
-          #   --set admin.password=admin
+          # Install Prometheus
+          helm install prometheus bitnami/kube-prometheus --namespace observability \
+            --set prometheus.replicaCount=2 \
+            --set admin.user=admin \
+            --set admin.password=admin
 
-          # sleep 30
+          sleep 30
 
-          # # Install Grafana
-          # helm install grafana bitnami/grafana \
-          #   --namespace observability \
-          #   --set admin.user=admin \
-          #   --set admin.password=admin
+          # Install Grafana
+          helm install grafana bitnami/grafana \
+            --namespace observability \
+            --set admin.user=admin \
+            --set admin.password=admin
 
           kubectl get namespace disertatie || kubectl create namespace disertatie
 
