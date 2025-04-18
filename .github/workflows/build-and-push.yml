@@ -104,97 +104,97 @@ jobs:
   #         docker push alexdragnea/disertatie-${{ matrix.service }}:latest
 
   deploy_to_gke:
-  name: Deploy Infra & Services to GKE
-  runs-on: ubuntu-latest
-  env:
-    PROJECT_ID: disertatie-456818
-    GKE_CLUSTER: disertatie-cluster
-    GKE_ZONE: us-central1
-    SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}  # Ensure the service account key is in GitHub secrets
+    name: Deploy Infra & Services to GKE
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: disertatie-456818
+      GKE_CLUSTER: disertatie-cluster
+      GKE_ZONE: us-central1
+      SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}  # Ensure the service account key is in GitHub secrets
 
-  steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    # Set up Google Cloud SDK and authenticate using the service account key
-    - uses: google-github-actions/setup-gcloud@v1
-      with:
-        service_account_key: ${{ secrets.GK_SA_KEY }}
-        project_id: ${{ env.PROJECT_ID }}
+      # Set up Google Cloud SDK and authenticate using the service account key
+      - uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GK_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
 
-    # Get GKE credentials using the correct approach
-    - uses: google-github-actions/get-gke-credentials@v1
-      with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.GKE_ZONE }}
-        project_id: ${{ env.PROJECT_ID }}
+      # Get GKE credentials using the correct approach
+      - uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.GKE_ZONE }}
+          project_id: ${{ env.PROJECT_ID }}
 
-    # Install Helm (if not already installed) for Kubernetes deployments
-    - name: Install Helm
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      # Install Helm (if not already installed) for Kubernetes deployments
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Deploy Infrastructure & Services
-    - name: Deploy Infra & Services
-      run: |
-        # Add Helm repo and update
-        helm repo add bitnami https://charts.bitnami.com/bitnami
-        helm repo update
+      # Deploy Infrastructure & Services
+      - name: Deploy Infra & Services
+        run: |
+          # Add Helm repo and update
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
 
-        kubectl create namespace observability || true
+          kubectl create namespace observability || true
 
-        # Install Prometheus
-        helm install prometheus bitnami/kube-prometheus --namespace observability \
-          --set prometheus.replicaCount=2 \
-          --set admin.user=admin \
-          --set admin.password=admin
+          # Install Prometheus
+          helm install prometheus bitnami/kube-prometheus --namespace observability \
+            --set prometheus.replicaCount=2 \
+            --set admin.user=admin \
+            --set admin.password=admin
 
-        sleep 30
+          sleep 30
 
-        # Install Grafana
-        helm install grafana bitnami/grafana \
-          --namespace observability \
-          --set admin.user=admin \
-          --set admin.password=admin
+          # Install Grafana
+          helm install grafana bitnami/grafana \
+            --namespace observability \
+            --set admin.user=admin \
+            --set admin.password=admin
 
-        # Apply Kafka
-        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml
-        sleep 30
+          # Apply Kafka
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml
+          sleep 30
 
-        # Apply Redis
-        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml
-        sleep 30
+          # Apply Redis
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml
+          sleep 30
 
-        # Apply PVC
-        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml
-        sleep 5
-
-        # Apply DBs
-        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml
-        kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml
-        sleep 30
-
-        # Apply Services
-        for svc in iot-dashboard-service-svc.yaml iot-core-service-svc.yaml iot-user-service-svc.yaml \
-                   iot-discovery-service-svc.yaml iot-bridge-service-svc.yaml iot-gateway-service-svc.yaml service-monitor.yaml; do
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc
-          sleep 2
-        done
-
-        # Apply Deployments
-        for dep in iot-dashboard-service.yaml iot-discovery-service.yaml iot-user-service.yaml \
-                   iot-gateway-service.yaml iot-core-service.yaml iot-bridge-service.yaml; do
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep
-          sleep 60
-        done
-
-        # Apply HPAs
-        for hpa in iot-core-service-hpa.yaml influxdb-hpa.yaml iot-discovery-service-hpa.yaml \
-                   iot-bridge-service-hpa.yaml iot-gateway-service-hpa.yaml; do
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa
+          # Apply PVC
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml
           sleep 5
-        done
 
-        # Print final state
-        kubectl get pods -A
-        kubectl get svc -A
+          # Apply DBs
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml
+          sleep 30
+
+          # Apply Services
+          for svc in iot-dashboard-service-svc.yaml iot-core-service-svc.yaml iot-user-service-svc.yaml \
+                    iot-discovery-service-svc.yaml iot-bridge-service-svc.yaml iot-gateway-service-svc.yaml service-monitor.yaml; do
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc
+            sleep 2
+          done
+
+          # Apply Deployments
+          for dep in iot-dashboard-service.yaml iot-discovery-service.yaml iot-user-service.yaml \
+                    iot-gateway-service.yaml iot-core-service.yaml iot-bridge-service.yaml; do
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep
+            sleep 60
+          done
+
+          # Apply HPAs
+          for hpa in iot-core-service-hpa.yaml influxdb-hpa.yaml iot-discovery-service-hpa.yaml \
+                    iot-bridge-service-hpa.yaml iot-gateway-service-hpa.yaml; do
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa
+            sleep 5
+          done
+
+          # Print final state
+          kubectl get pods -A
+          kubectl get svc -A
