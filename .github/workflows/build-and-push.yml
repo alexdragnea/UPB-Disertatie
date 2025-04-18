@@ -157,45 +157,47 @@ jobs:
             --set admin.user=admin \
             --set admin.password=admin
 
+              # Create a new custom namespace for your resources
+          kubectl create namespace disertatie || true
+
           # Apply Kafka
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml -n disertatie
           sleep 30
 
           # Apply Redis
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml -n disertatie
           sleep 30
 
           # Apply PVC
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml -n disertatie
           sleep 5
 
           # Apply DBs
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml -n disertatie
+          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml -n disertatie
           sleep 30
 
           # Apply Services
           for svc in iot-dashboard-service-svc.yaml iot-core-service-svc.yaml iot-user-service-svc.yaml \
                     iot-discovery-service-svc.yaml iot-bridge-service-svc.yaml iot-gateway-service-svc.yaml service-monitor.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc -n disertatie
             sleep 2
           done
 
           # Apply Deployments
           for dep in iot-dashboard-service.yaml iot-discovery-service.yaml iot-user-service.yaml \
                     iot-gateway-service.yaml iot-core-service.yaml iot-bridge-service.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep
-            sleep 60
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep -n disertatie
           done
 
           # Apply HPAs
           for hpa in iot-core-service-hpa.yaml influxdb-hpa.yaml iot-discovery-service-hpa.yaml \
                     iot-bridge-service-hpa.yaml iot-gateway-service-hpa.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa
+            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa -n disertatie
             sleep 5
           done
 
           # Print final state
-          kubectl get pods -A
-          kubectl get svc -A
+          kubectl get pods -A -n disertatie
+          kubectl get svc -A -n disertatie
 
