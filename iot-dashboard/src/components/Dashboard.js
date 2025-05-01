@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useMemo } from 'react';
 import axios from 'axios';
 import AuthContext from '../AuthContext';
 import {
@@ -21,6 +21,7 @@ const Dashboard = () => {
     const userId = user?.userId;
     const wsRef = useRef(null);
 
+    // Improved Fetch Function with Better Error Handling
     const fetchSensors = async (token) => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/v1/iot-core/measurements?userId=${userId}`, {
@@ -28,11 +29,12 @@ const Dashboard = () => {
             });
             return response.data.measurements || [];
         } catch (error) {
-            console.error('Error fetching measurements:', error);
-            throw error;
+            console.error('Error fetching measurements:', error?.response?.data || error.message);
+            throw new Error(error?.response?.data?.message || "Failed to fetch data");
         }
     };
 
+    // Optimized Initial Data Fetch
     const fetchInitialData = async () => {
         setLoading(true);
         setError(null);
@@ -42,40 +44,52 @@ const Dashboard = () => {
             const fetchedSensors = await fetchSensors(token);
             setSensors(fetchedSensors.map(sensor => ({ name: sensor, value: 'N/A', timestamp: null })));
             setLastUpdated(new Date().toLocaleTimeString());
-        } catch {
-            setError('Failed to fetch sensors.');
+        } catch (err) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const setupWebSocket = () => {
-        if (wsRef.current) wsRef.current.close();
-
-        wsRef.current = new WebSocket(`${process.env.REACT_APP_API_WS_BASE_URL}`);
-
-        wsRef.current.onopen = () => setWsConnected(true);
-        wsRef.current.onclose = () => setWsConnected(false);
-        wsRef.current.onerror = () => setWsConnected(false);
-
-        wsRef.current.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            setSensors(prevSensors => prevSensors.map(sensor =>
-                sensor.name === data.measurement
-                    ? { ...sensor, value: data.value, timestamp: data.timestamp }
-                    : sensor
-            ));
-        };
-    };
-
+    // Improved WebSocket Connection Handling
     useEffect(() => {
         if (!authLoading && userId) {
             fetchInitialData();
-            setupWebSocket();
+
+            if (!wsRef.current) {
+                wsRef.current = new WebSocket(`${process.env.REACT_APP_API_WS_BASE_URL}`);
+
+                wsRef.current.onopen = () => setWsConnected(true);
+                wsRef.current.onclose = () => setWsConnected(false);
+                wsRef.current.onerror = () => setWsConnected(false);
+
+                wsRef.current.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    setSensors(prevSensors =>
+                        prevSensors.map(sensor =>
+                            sensor.name === data.measurement ? { ...sensor, value: data.value, timestamp: data.timestamp } : sensor
+                        )
+                    );
+                };
+            }
         }
 
-        return () => wsRef.current && wsRef.current.close();
+        return () => {
+            if (wsRef.current) {
+                wsRef.current.close();
+                wsRef.current = null;
+            }
+        };
     }, [userId, authLoading]);
+
+    // Optimized Sensor Mapping with Memoization
+    const displayedSensors = useMemo(() => 
+        sensors.map(sensor => ({
+            name: sensor.name,
+            value: sensor.value || 'N/A',
+            timestamp: sensor.timestamp || null,
+        })),
+    [sensors]);
 
     return (
         <Box sx={{fontFamily: 'Arial, sans-serif' }}>
@@ -112,8 +126,8 @@ const Dashboard = () => {
             ) : (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, overflowX: 'auto' }}>
-                            <Table stickyHeader>
+                        <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 2, overflowX: 'auto', maxWidth: '100vw' }}>
+                            <Table stickyHeader size="small">
                                 <TableHead sx={{ backgroundColor: '#1976d2' }}>
                                     <TableRow>
                                         <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Measurement</TableCell>
@@ -122,7 +136,7 @@ const Dashboard = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {sensors.map(sensor => (
+                                    {displayedSensors.map(sensor => (
                                         <Fade in={true} key={sensor.name}>
                                             <TableRow sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' }, '&:hover': { backgroundColor: '#e3f2fd', boxShadow: 2 } }}>
                                                 <TableCell>
@@ -132,7 +146,9 @@ const Dashboard = () => {
                                                         </a>
                                                     </Tooltip>
                                                 </TableCell>
-                                                <TableCell>{sensor.value !== undefined ? sensor.value : 'N/A'}</TableCell>
+                                                <TableCell>
+                                                    {sensor.value === 'N/A' ? <CircularProgress size={14} /> : sensor.value}
+                                                </TableCell>
                                                 <TableCell>{sensor.timestamp ? new Date(sensor.timestamp).toLocaleString() : 'N/A'}</TableCell>
                                             </TableRow>
                                         </Fade>

@@ -86,7 +86,6 @@ public class IotCoreWebSocketHandler {
                 .then();
     }
 
-    public void broadcast(String message) {
-        sessionSinks.values().forEach(sink -> sink.tryEmitNext(message));
-    }
-}
+    public Mono<Void> broadcastReactive(String message) {
+        return Mono.fromRunnable(() -> sessionSinks.values().forEach(sink -> sink.tryEmitNext(message)));
+    }}

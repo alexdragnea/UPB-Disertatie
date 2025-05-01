@@ -1,6 +1,6 @@
 package ro.upb.iotcoreservice.kafka.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.output.JsonStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -26,7 +26,6 @@ import java.time.Instant;
 public class KafkaMessageConsumer {
 
     private final IotMeasurementService iotMeasurementService;
-    private final ObjectMapper objectMapper;
     private final IotCoreWebSocketHandler webSocketHandler;
     private final DeduplicationService deduplicationService;
     private final KafkaConsumerMetric kafkaConsumerMetric;
@@ -39,34 +38,32 @@ public class KafkaMessageConsumer {
     public void listen(@Payload MeasurementMessage message, Acknowledgment acknowledgment) {
         String id = String.valueOf(message.getId());
 
-        // Use id to check if the message has been processed already
         deduplicationService.isMessageDuplicate(id)
                 .flatMap(isDuplicate -> {
                     if (isDuplicate) {
                         log.info("Message with id {} is a duplicate, skipping.", id);
                         kafkaConsumerMetric.incrementDuplicateMessages();
-                        return Mono.fromRunnable(acknowledgment::acknowledge);
+                        return Mono.empty();
                     }
 
                     return deduplicationService.markMessageAsProcessed(id)
-                            .then(Mono.fromCallable(() -> {
-                                log.info("Received IotMeasurement {} at {}.", message, Instant.now());
-                                iotMeasurementService.persistIotMeasurement(message);
-                                return message;
-                            }));
+                            .then(iotMeasurementService.persistIotMeasurementReactive(message))
+                            .doOnSuccess(success -> log.info("Persisted measurement: {}", message));
                 })
-                .flatMap(msg -> {
-                    // Broadcast the message over WebSocket asynchronously
-                    WSMessage wsMessage = new WSMessage(msg.getMeasurement().toString(), msg.getValue(), Instant.now().toString());
-                    return Mono.fromRunnable(() -> {
-                        try {
-                            webSocketHandler.broadcast(objectMapper.writeValueAsString(wsMessage));
-                        } catch (Exception e) {
-                            log.error("Failed to broadcast message: {}", e.getMessage());
-                        }
-                    }).thenReturn(acknowledgment);
-                })
-                .doOnSuccess(Acknowledgment::acknowledge)
+                .then(Mono.defer(() -> {
+                    WSMessage wsMessage = new WSMessage(
+                            message.getMeasurement().toString(),
+                            message.getValue(),
+                            Instant.now().toString()
+                    );
+                    return Mono.fromCallable(() -> JsonStream.serialize(wsMessage))
+                            .flatMap(webSocketHandler::broadcastReactive)
+                            .onErrorResume(e -> {
+                                log.error("Failed to broadcast message: {}", e.getMessage());
+                                return Mono.empty();
+                            });
+                }))
+                .doOnTerminate(acknowledgment::acknowledge)
                 .subscribe();
     }
 }

@@ -87,8 +87,8 @@ export default function SensorDetail() {
     const [filterOption, setFilterOption] = useState('last7days');
     const [customStartDate, setCustomStartDate] = useState(null);
     const [customEndDate, setCustomEndDate] = useState(null);
-    const [chartType, setChartType] = useState('line');
-    const [currentView, setCurrentView] = useState('chart');
+    const [chartType, setChartType] = useState(() => localStorage.getItem('chartType') || 'line');
+    const [currentView, setCurrentView] = useState(() => localStorage.getItem('currentView') || 'chart');    
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -101,6 +101,14 @@ export default function SensorDetail() {
     useEffect(() => {
         fetchData();
     }, [sensorId, filterOption, customStartDate, customEndDate]);
+
+    useEffect(() => {
+        localStorage.setItem('chartType', chartType);
+    }, [chartType]);
+    
+    useEffect(() => {
+        localStorage.setItem('currentView', currentView);
+    }, [currentView]);
 
     useEffect(() => {
         handleSearchAndSort();

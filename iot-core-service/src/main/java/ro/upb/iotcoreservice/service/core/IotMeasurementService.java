@@ -11,6 +11,8 @@ import ro.upb.iotcoreservice.model.IotMeasurement;
 public interface IotMeasurementService {
     void persistIotMeasurement(MeasurementMessage measurementRequestAvro);
 
+    Mono<Void> persistIotMeasurementReactive(MeasurementMessage message);
+
     Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurementFilter);
 
     Mono<UserMeasurementDto> findUserMeasurements(String userId);

@@ -66,6 +66,19 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
                 .subscribe();
     }
 
+    public Mono<Void> persistIotMeasurementReactive(MeasurementMessage message) {
+        WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
+        IotMeasurement iotMeasurement = buildIotMeasurement(message);
+
+        return Mono.from(writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement))
+                .doOnSuccess(success -> log.info("Successfully persisted measurement: {}.", iotMeasurement))
+                .doOnError(error -> {
+                    log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage());
+                    throw new InfluxDbFailedOperationEx("Failed to persist measurement", error);
+                })
+                .then(); // Converts Mono<WriteReactiveApi.Success> to Mono<Void>
+    }
+
     @Override
     @CustomCacheable(cacheName = "findAllByUserIdAndMeasurementCache")
     public Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurement) {
