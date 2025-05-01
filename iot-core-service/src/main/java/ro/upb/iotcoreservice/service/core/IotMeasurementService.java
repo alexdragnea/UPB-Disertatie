@@ -9,9 +9,7 @@ import ro.upb.iotcoreservice.dto.IotMeasurementDto;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
 public interface IotMeasurementService {
-    void persistIotMeasurement(MeasurementMessage measurementRequestAvro);
-
-    Mono<Void> persistIotMeasurementReactive(MeasurementMessage message);
+    Mono<Void> persistIotMeasurement(MeasurementMessage message);
 
     Flux<IotMeasurement> findAllByUserIdAndMeasurement(MeasurementFilter measurementFilter);
 

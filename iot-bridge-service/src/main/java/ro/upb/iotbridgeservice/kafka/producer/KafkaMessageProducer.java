@@ -3,10 +3,10 @@ package ro.upb.iotbridgeservice.kafka.producer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.kafka.sender.KafkaSender;
+import reactor.kafka.sender.SenderRecord;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
@@ -14,14 +14,13 @@ import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
 import ro.upb.iotbridgeservice.metric.KafkaProducerMetric;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaMessageProducer {
 
-    private final KafkaTemplate<String, MeasurementMessage> kafkaTemplate;
+    private final KafkaSender<String, MeasurementMessage> kafkaSender;
     private final KafkaProducerMetric kafkaProducerMetric;
 
     public Mono<Void> sendIotMeasurement(String topic, MeasurementRequest sensor) {
@@ -31,16 +30,16 @@ public class KafkaMessageProducer {
 
         kafkaProducerMetric.incrementInFlightMessages();
 
-        CompletableFuture<SendResult<String, MeasurementMessage>> future = kafkaTemplate.send(topic, message);
+        SenderRecord<String, MeasurementMessage, String> record = SenderRecord.create(topic, null, null, UUID.randomUUID().toString(), message, UUID.randomUUID().toString());
 
-        return Mono.fromFuture(future)
-                .doOnSuccess(result -> {
+        return kafkaSender.send(Mono.just(record))
+                .doOnNext(result -> {
                     kafkaProducerMetric.decrementInFlightMessages();
-                    log.info("Successfully sent message to topic: {} with offset: {}", topic, result.getRecordMetadata().offset());
+                    log.info("Successfully sent message to topic: {} with offset: {}", topic, result.recordMetadata().offset());
 
                     // Compression Ratio Calculation
                     long originalSize = message.toString().length(); // Uncompressed size
-                    long compressedSize = result.getRecordMetadata().serializedValueSize();
+                    long compressedSize = result.recordMetadata().serializedValueSize();
                     kafkaProducerMetric.recordCompressionRatio(originalSize, compressedSize);
                 })
                 .doOnError(ex -> {

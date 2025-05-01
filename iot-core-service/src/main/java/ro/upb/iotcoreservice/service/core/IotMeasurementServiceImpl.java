@@ -16,7 +16,6 @@ import ro.upb.iotcoreservice.aop.CustomCacheable;
 import ro.upb.iotcoreservice.domain.MeasurementFilter;
 import ro.upb.iotcoreservice.domain.UserMeasurementDto;
 import ro.upb.iotcoreservice.dto.IotMeasurementDto;
-import ro.upb.iotcoreservice.exception.InfluxDbFailedOperationEx;
 import ro.upb.iotcoreservice.exception.MeasurementNotFoundEx;
 import ro.upb.iotcoreservice.model.IotMeasurement;
 
@@ -48,7 +47,7 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
     }
 
     @Override
-    public void persistIotMeasurement(MeasurementMessage message) {
+    public Mono<Void> persistIotMeasurement(MeasurementMessage message) {
         WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
 
         IotMeasurement iotMeasurement = buildIotMeasurement(message);
@@ -57,26 +56,10 @@ public class IotMeasurementServiceImpl implements IotMeasurementService {
         log.info("Persisting IoTMeasurementPoint.");
         Publisher<WriteReactiveApi.Success> publisher = writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement);
 
-        Mono.from(publisher)
+        return Mono.from(publisher)
                 .doOnSuccess(success -> log.info("Successfully persisted measurement: {}.", iotMeasurement))
-                .doOnError(error -> {
-                    log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage());
-                    throw new InfluxDbFailedOperationEx("Failed to persist measurement", error);
-                })
-                .subscribe();
-    }
-
-    public Mono<Void> persistIotMeasurementReactive(MeasurementMessage message) {
-        WriteReactiveApi writeApi = influxDBClient.getWriteReactiveApi();
-        IotMeasurement iotMeasurement = buildIotMeasurement(message);
-
-        return Mono.from(writeApi.writeMeasurement(WritePrecision.NS, iotMeasurement))
-                .doOnSuccess(success -> log.info("Successfully persisted measurement: {}.", iotMeasurement))
-                .doOnError(error -> {
-                    log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage());
-                    throw new InfluxDbFailedOperationEx("Failed to persist measurement", error);
-                })
-                .then(); // Converts Mono<WriteReactiveApi.Success> to Mono<Void>
+                .doOnError(error -> log.error("Failed to persist measurement: {}. Error: {}", iotMeasurement, error.getMessage()))
+                .then();
     }
 
     @Override

@@ -1,35 +1,34 @@
 package ro.upb.iotcoreservice.config.kafka;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.MicrometerConsumerListener;
-import org.springframework.kafka.listener.ContainerProperties;
+import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.MicrometerConsumerListener;
+import reactor.kafka.receiver.ReceiverOptions;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.constant.KafkaConstants;
 import ro.upb.iotcoreservice.kafka.deserializer.MeasurementMessageDeserializer;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import io.micrometer.core.instrument.MeterRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Configuration
+@RequiredArgsConstructor
 public class KafkaConsumerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Autowired
-    private MeterRegistry meterRegistry;
+    private final MeterRegistry meterRegistry;
 
     @Bean
-    public ConsumerFactory<String, MeasurementMessage> consumerFactory() {
+    public ReceiverOptions<String, MeasurementMessage> receiverOptions() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         configProps.put(ConsumerConfig.GROUP_ID_CONFIG, KafkaConstants.IOT_GROUP_ID);
@@ -47,20 +46,19 @@ public class KafkaConsumerConfig {
         configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 25);  // Wait up to 50ms to fetch data
         configProps.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);  // Disable auto-commit
 
-        DefaultKafkaConsumerFactory<String, MeasurementMessage> consumerFactory = new DefaultKafkaConsumerFactory<>(configProps, new StringDeserializer(), new MeasurementMessageDeserializer());
-        consumerFactory.addListener(new MicrometerConsumerListener<>(meterRegistry));
-        return consumerFactory;
+        ReceiverOptions<String, MeasurementMessage> options = ReceiverOptions.create(configProps);
+        return options.consumerListener(new MicrometerConsumerListener(meterRegistry))
+                .subscription(Collections.singletonList(KafkaConstants.IOT_EVENT_TOPIC))
+                .addAssignListener(partitions -> {
+                    // Add custom logic for partition assignment if needed
+                })
+                .addRevokeListener(partitions -> {
+                    // Add custom logic for partition revocation if needed
+                });
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MeasurementMessage> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, MeasurementMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
-
-        // Performance tweaks
-        factory.setConcurrency(10);
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
-
-        return factory;
+    public KafkaReceiver<String, MeasurementMessage> kafkaReceiver(ReceiverOptions<String, MeasurementMessage> receiverOptions) {
+        return KafkaReceiver.create(receiverOptions);
     }
 }
