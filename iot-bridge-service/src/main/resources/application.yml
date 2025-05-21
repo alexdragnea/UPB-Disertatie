@@ -3,8 +3,8 @@ server:
   error:
     include-message: always
   netty:
-    connection-timeout: 5000
-    response-timeout: 5000
+    connection-timeout: 6000
+    response-timeout: 6000
     max-connections: 1000
 
 spring:
@@ -24,7 +24,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 30
   instance:
     prefer-ip-address: true
 

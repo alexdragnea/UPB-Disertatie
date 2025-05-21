@@ -3,10 +3,9 @@ server:
   error:
     include-message: always
   netty:
-    connection-timeout: 5000
-    response-timeout: 5000
+    connection-timeout: 6000
+    response-timeout: 6000
     max-connections: 1000
-
 
 
 influxdb:
@@ -27,10 +26,17 @@ spring:
       host: redis-service
       port: 6379
   kafka:
+    logging:
+      level:
+        org.apache.kafka.clients.consumer.internals.ConsumerCoordinator: WARN
+        org.springframework.kafka.listener.KafkaMessageListenerContainer: WARN
+        org.apache.kafka.clients.FetchSessionHandler: ERROR
     bootstrap-servers: kafka-service:9092
-    producer:
+    consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: ro.upb.iotcoreservice.kafka.deserializer.MeasurementMessageDeserializer
+      session-timeout-ms: 30000
+      heartbeat-interval-ms: 10000
 
 eureka:
   client:
@@ -38,7 +44,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 30
   instance:
     prefer-ip-address: true
 

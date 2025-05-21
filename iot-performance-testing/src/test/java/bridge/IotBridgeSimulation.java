@@ -10,7 +10,7 @@ import java.time.Duration;
 
 public class IotBridgeSimulation extends Simulation {
     String baseUrl = System.getProperty("baseUrl", "https://localhost:8888");
-    String apiKey = System.getProperty("apiKey", "$2a$10$Az9nWwsz1ZOkccddPNWb6OsoNhFEKERjtj9YeLCx1oiE5de.6LQSG");
+    String apiKey = System.getProperty("apiKey", "$2a$10$VsyXCksKg2irjOYhsEcCk.SFLWkIMML.7IAKI7Gmgo40/nGG2/lcW");
 
     // Parse users and duration from system properties
     int users = Integer.parseInt(System.getProperty("users", "100")); // Increased number of users
@@ -27,8 +27,8 @@ public class IotBridgeSimulation extends Simulation {
                 // Generate a random value for each request
                 String jsonBody = """
                             {
-                                 "measurement": "perfTest02042025",
-                                 "userId": "67eecea958dc61697372a376",
+                                 "measurement": "nonReactive",
+                                 "userId": "6813db8c46b2a755a39994de",
                                  "value": 30,
                                  "unit": "%"
                              }

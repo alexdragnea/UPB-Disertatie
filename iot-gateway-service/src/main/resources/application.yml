@@ -13,15 +13,15 @@ spring:
   cloud:
     gateway:
       httpclient:
-        connect-timeout: 12000  # ⏳ 6s connection timeout (slightly higher than Service A)
-        response-timeout: 18000  # ⏳ 12s total response timeout
+        connect-timeout: 15000  # ⏳ 6s connection timeout (slightly higher than Service A)
+        response-timeout: 23000  # ⏳ 12s total response timeout
         pool:
           max-connections: 2000  # 🚀 Allow 2000 concurrent connections
           eviction-interval: 30000ms  # 🧹 Clean up stale connections every 30s
           acquire-timeout: 5000  # ⏳ Max wait time for a free connection: 5s
           type: FIXED
         ssl:
-          handshake-timeout: 8000ms  # 🤝 8s for SSL handshake (slightly higher than Service A)
+          handshake-timeout: 10000ms  # 🤝 8s for SSL handshake (slightly higher than Service A)
           close-notify-flush-timeout: 200ms
           close-notify-read-timeout: 0ms
       routes:
@@ -92,7 +92,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 30
   instance:
     prefer-ip-address: true
 
