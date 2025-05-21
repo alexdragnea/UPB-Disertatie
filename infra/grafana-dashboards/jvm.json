@@ -18,7 +18,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ae1rm919qsa2od"
+            "uid": "cemkt72c4t7nke"
           },
           "enable": true,
           "expr": "resets(process_uptime_seconds{application=\"$application\", instance=\"$instance\"}[1m]) > 0",

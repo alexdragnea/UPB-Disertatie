@@ -5,199 +5,199 @@ on:
     branches: [deploy]
   workflow_dispatch:
 jobs:
-  # publish:
-  #   name: Publish Iot-Commons to GitHub Package
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     issues: write
-  #     contents: read
-  #     packages: write
-  #   steps:
-  #     - uses: actions/checkout@v2
+   publish:
+     name: Publish Iot-Commons to GitHub Package
+     runs-on: ubuntu-latest
+     permissions:
+       issues: write
+       contents: read
+       packages: write
+     steps:
+       - uses: actions/checkout@v2
 
-  #     - name: Set up JDK
-  #       uses: actions/setup-java@v1
-  #       with:
-  #         java-version: '21'
+       - name: Set up JDK
+         uses: actions/setup-java@v1
+         with:
+           java-version: '21'
 
-  #     - name: Deploy to GitHub
-  #       run: mvn --batch-mode -DuseGitHubPackages=true deploy --file iot-commons/pom.xml
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
+       - name: Deploy to GitHub
+         run: mvn --batch-mode -DuseGitHubPackages=true deploy --file iot-commons/pom.xml
+         env:
+           GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
 
-  # dashboard_build_and_push:
-  #   name: Build & Push IoT Dashboard
-  #   needs: publish
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
+   dashboard_build_and_push:
+     name: Build & Push IoT Dashboard
+     needs: publish
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout Repository
+         uses: actions/checkout@v3
 
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '18'
+       - name: Set up Node.js
+         uses: actions/setup-node@v3
+         with:
+           node-version: '18'
 
-  #     - name: Install Dependencies
-  #       run: npm install
-  #       working-directory: iot-dashboard
+       - name: Install Dependencies
+         run: npm install
+         working-directory: iot-dashboard
 
-  #     - name: Build IoT Dashboard
-  #       run: CI=false npm run build
-  #       working-directory: iot-dashboard
+       - name: Build IoT Dashboard
+         run: CI=false npm run build
+         working-directory: iot-dashboard
 
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+       - name: Login to DockerHub
+         uses: docker/login-action@v2
+         with:
+           username: ${{ secrets.DOCKERHUB_USERNAME }}
+           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-  #     - name: Build & Push Docker Image
-  #       run: |
-  #         cd iot-dashboard
-  #         docker build -t alexdragnea/disertatie-iot-dashboard:latest .
-  #         docker push alexdragnea/disertatie-iot-dashboard:latest
+       - name: Build & Push Docker Image
+         run: |
+           cd iot-dashboard
+           docker build -t alexdragnea/disertatie-iot-dashboard:latest .
+           docker push alexdragnea/disertatie-iot-dashboard:latest
 
-  # build_and_push:
-  #   name: Build & Push to DockerHub
-  #   needs: publish
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]
+   build_and_push:
+     name: Build & Push to DockerHub
+     needs: publish
+     runs-on: ubuntu-latest
+     strategy:
+       matrix:
+         service: [iot-core-service, iot-discovery-service, iot-bridge-service, iot-gateway-service, iot-user-service]
 
-  #   steps:
-  #     - name: Checkout Repository
-  #       uses: actions/checkout@v3
+     steps:
+       - name: Checkout Repository
+         uses: actions/checkout@v3
 
-  #     - name: Set up JDK
-  #       uses: actions/setup-java@v1
-  #       with:
-  #         java-version: '21'
+       - name: Set up JDK
+         uses: actions/setup-java@v1
+         with:
+           java-version: '21'
 
-  #     - name: Cache Maven packages
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: ~/.m2
-  #         key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
-  #         restore-keys: ${{ runner.os }}-m2
+       - name: Cache Maven packages
+         uses: actions/cache@v4
+         with:
+           path: ~/.m2
+           key: ${{ runner.os }}-m2-${{ hashFiles('${{ matrix.service }}/pom.xml') }}
+           restore-keys: ${{ runner.os }}-m2
 
-  #     - name: Set up Maven settings
-  #       uses: s4u/maven-settings-action@v2.5.0
-  #       with:
-  #         servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
-
-
-  #     - name: Build with Maven
-  #       run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
-
-  #     - name: Login to DockerHub
-  #       uses: docker/login-action@v2
-  #       with:
-  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
-  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-  #     - name: Docker Build and Push to DockerHub
-  #       run: |
-  #         cd ${{ matrix.service }}
-  #         docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
-  #         docker push alexdragnea/disertatie-${{ matrix.service }}:latest
-
-  deploy_to_gke:
-    name: Deploy Infra & Services to GKE
-    runs-on: ubuntu-latest
-    env:
-      PROJECT_ID: disertatie-456818
-      GKE_CLUSTER: disertatie-cluster
-      GKE_ZONE: us-central1
-      SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
-        with:
-          service_account_key: ${{ secrets.GK_SA_KEY }}
-          project_id: ${{ secrets.GKE_PROJECT }}
-
-      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
-        with:
-          cluster_name: ${{ env.GKE_CLUSTER }}
-          location: ${{ env.GKE_ZONE }}
-          credentials: ${{ secrets.GK_SA_KEY }}
+       - name: Set up Maven settings
+         uses: s4u/maven-settings-action@v2.5.0
+         with:
+           servers: '[{"id": "github","configuration": {"httpHeaders": {"property": {"name": "Authorization","value": "Bearer ${{ secrets.DEPLOY_GITHUB_TOKEN }}"}}}}]'
 
 
+       - name: Build with Maven
+         run: mvn -B package -DskipTests --file ${{ matrix.service }}/pom.xml
 
-      # Install Helm (if not already installed) for Kubernetes deployments
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+       - name: Login to DockerHub
+         uses: docker/login-action@v2
+         with:
+           username: ${{ secrets.DOCKERHUB_USERNAME }}
+           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Deploy Infrastructure & Services
-      - name: Deploy Infra & Services
-        run: |
-          # Add Helm repo and update
-          kubectl get namespace observability || kubectl create namespace observability
-
-          helm repo add bitnami https://charts.bitnami.com/bitnami --namespace observability
-          helm repo update --namespace observability
-
-          # Install Prometheus
-          helm install prometheus bitnami/kube-prometheus --namespace observability \
-            --set prometheus.replicaCount=2 \
-            --set admin.user=admin \
-            --set admin.password=admin
-
-          sleep 30
-
-          # Install Grafana
-          helm install grafana bitnami/grafana \
-            --namespace observability \
-            --set admin.user=admin \
-            --set admin.password=admin
-
-          kubectl get namespace disertatie || kubectl create namespace disertatie
-
-
-          # Apply Kafka
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml -n disertatie
-          sleep 30
-
-          # Apply Redis
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml -n disertatie
-          sleep 30
-
-          # Apply PVC
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml -n disertatie
-          sleep 5
-
-          # Apply DBs
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml -n disertatie
-          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml -n disertatie
-          sleep 30
-
-          # Apply Services
-          for svc in iot-dashboard-service-svc.yaml iot-core-service-svc.yaml iot-user-service-svc.yaml \
-                    iot-discovery-service-svc.yaml iot-bridge-service-svc.yaml iot-gateway-service-svc.yaml service-monitor.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc -n disertatie
-            sleep 2
-          done
-
-          # Apply Deployments
-          for dep in iot-dashboard-service.yaml iot-discovery-service.yaml iot-user-service.yaml \
-                    iot-gateway-service.yaml iot-core-service.yaml iot-bridge-service.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep -n disertatie
-          done
-
-          # Apply HPAs
-          for hpa in iot-core-service-hpa.yaml influxdb-hpa.yaml iot-discovery-service-hpa.yaml \
-                    iot-bridge-service-hpa.yaml iot-gateway-service-hpa.yaml; do
-            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa -n disertatie
-            sleep 5
-          done
-
-          # Print final state
-          kubectl get pods -A -n disertatie
-          kubectl get svc -A -n disertatie
-
+       - name: Docker Build and Push to DockerHub
+         run: |
+           cd ${{ matrix.service }}
+           docker build -t alexdragnea/disertatie-${{ matrix.service }}:latest .
+           docker push alexdragnea/disertatie-${{ matrix.service }}:latest
+#
+#  deploy_to_gke:
+#    name: Deploy Infra & Services to GKE
+#    runs-on: ubuntu-latest
+#    env:
+#      PROJECT_ID: disertatie-456818
+#      GKE_CLUSTER: disertatie-cluster
+#      GKE_ZONE: us-central1
+#      SERVICE_ACCOUNT_KEY: ${{ secrets.GK_SA_KEY }}
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+#        with:
+#          service_account_key: ${{ secrets.GK_SA_KEY }}
+#          project_id: ${{ secrets.GKE_PROJECT }}
+#
+#      - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+#        with:
+#          cluster_name: ${{ env.GKE_CLUSTER }}
+#          location: ${{ env.GKE_ZONE }}
+#          credentials: ${{ secrets.GK_SA_KEY }}
+#
+#
+#
+#      # Install Helm (if not already installed) for Kubernetes deployments
+#      - name: Install Helm
+#        run: |
+#          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+#
+#      # Deploy Infrastructure & Services
+#      - name: Deploy Infra & Services
+#        run: |
+#          # Add Helm repo and update
+#          kubectl get namespace observability || kubectl create namespace observability
+#
+#          helm repo add bitnami https://charts.bitnami.com/bitnami --namespace observability
+#          helm repo update --namespace observability
+#
+#          # Install Prometheus
+#          helm install prometheus bitnami/kube-prometheus --namespace observability \
+#            --set prometheus.replicaCount=2 \
+#            --set admin.user=admin \
+#            --set admin.password=admin
+#
+#          sleep 30
+#
+#          # Install Grafana
+#          helm install grafana bitnami/grafana \
+#            --namespace observability \
+#            --set admin.user=admin \
+#            --set admin.password=admin
+#
+#          kubectl get namespace disertatie || kubectl create namespace disertatie
+#
+#
+#          # Apply Kafka
+#          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/kafka/kafka.yaml -n disertatie
+#          sleep 30
+#
+#          # Apply Redis
+#          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/redis/redis.yaml -n disertatie
+#          sleep 30
+#
+#          # Apply PVC
+#          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/pv-db.yaml -n disertatie
+#          sleep 5
+#
+#          # Apply DBs
+#          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/influxdb.yaml -n disertatie
+#          kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/db/mongo.yaml -n disertatie
+#          sleep 30
+#
+#          # Apply Services
+#          for svc in iot-dashboard-service-svc.yaml iot-core-service-svc.yaml iot-user-service-svc.yaml \
+#                    iot-discovery-service-svc.yaml iot-bridge-service-svc.yaml iot-gateway-service-svc.yaml service-monitor.yaml; do
+#            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/services/$svc -n disertatie
+#            sleep 2
+#          done
+#
+#          # Apply Deployments
+#          for dep in iot-dashboard-service.yaml iot-discovery-service.yaml iot-user-service.yaml \
+#                    iot-gateway-service.yaml iot-core-service.yaml iot-bridge-service.yaml; do
+#            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/deployments/$dep -n disertatie
+#          done
+#
+#          # Apply HPAs
+#          for hpa in iot-core-service-hpa.yaml influxdb-hpa.yaml iot-discovery-service-hpa.yaml \
+#                    iot-bridge-service-hpa.yaml iot-gateway-service-hpa.yaml; do
+#            kubectl apply -f https://raw.githubusercontent.com/alexdragnea/UPB-Disertatie/master/infra/hpa/$hpa -n disertatie
+#            sleep 5
+#          done
+#
+#          # Print final state
+#          kubectl get pods -A -n disertatie
+#          kubectl get svc -A -n disertatie
+#

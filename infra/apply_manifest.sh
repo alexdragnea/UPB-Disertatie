@@ -4,10 +4,20 @@
  helm repo add bitnami https://charts.bitnami.com/bitnami
  helm repo update
  kubectl create namespace observability
- helm install prometheus bitnami/kube-prometheus --namespace observability \
-   --set prometheus.replicaCount=2 \
-   --set admin.user=admin \
-   --set admin.password=admin
+helm install prometheus bitnami/kube-prometheus -n observability \
+  --create-namespace \
+  --set grafana.enabled=true \
+  --set alertmanager.enabled=false \
+  --set kube-prometheus.blackboxExporter.enabled=false \
+  --set kube-state-metrics.enabled=false \
+  --set nodeExporter.enabled=false \
+  --set prometheus.replicaCount=1 \
+  --set admin.user=admin \
+  --set admin.password=admin
+
+
+
+
 
  sleep 30
 
