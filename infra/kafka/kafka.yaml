@@ -60,20 +60,6 @@ spec:
           requests:
             storage: 500Mi
 ---
-# Kafka Headless Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: kafka-service
-spec:
-  selector:
-    app: kafka
-  ports:
-    - protocol: TCP
-      port: 9092
-      targetPort: 9092
-
----
 # Kafka StatefulSet
 apiVersion: apps/v1
 kind: StatefulSet
@@ -130,3 +116,32 @@ spec:
         resources:
           requests:
             storage: 500Mi
+---
+# Kafka Headless Service (for StatefulSet DNS)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+spec:
+  clusterIP: None
+  selector:
+    app: kafka
+  ports:
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+---
+# Kafka ClusterIP Service (for client access)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka
+  ports:
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+
