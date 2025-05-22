@@ -1,6 +1,5 @@
 package ro.upb.iotcoreservice.kafka.consumer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jsoniter.output.JsonStream;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -37,15 +36,19 @@ public class KafkaMessageConsumer {
 
     public void consumeMessages() {
         kafkaReceiver.receive()
-                .flatMap(record -> processMessage(record)
-                        .doOnSuccess(unused -> record.receiverOffset().acknowledge())
-                        .onErrorResume(error -> {
-                            log.error("Error processing message: {}", error.getMessage());
-                            return Mono.empty();
-                        }))
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(record ->
+                        processMessage(record)
+                                .doOnSuccess(unused -> record.receiverOffset().acknowledge())
+                                .onErrorResume(error -> {
+                                    log.error("Error processing message: {}", error.getMessage());
+                                    return Mono.empty();
+                                })
+                )
+                .sequential()
                 .subscribe();
     }
-
     private Mono<Void> processMessage(ReceiverRecord<String, MeasurementMessage> record) {
         MeasurementMessage message = record.value();
         String id = String.valueOf(message.getId());
