@@ -5,6 +5,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.kafka.receiver.KafkaReceiver;
@@ -17,6 +18,9 @@ import ro.upb.iotcoreservice.service.core.IotMeasurementService;
 import ro.upb.iotcoreservice.websocket.IotCoreWebSocketHandler;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -29,25 +33,37 @@ public class KafkaMessageConsumer {
     private final DeduplicationService deduplicationService;
     private final KafkaConsumerMetric kafkaConsumerMetric;
 
+    // Buffered list for batched WebSocket transmission
+    private final List<WSMessage> wsBuffer = Collections.synchronizedList(new ArrayList<>());
+
     @PostConstruct
     public void startConsuming() {
-        log.info("Starting Kafka consumer");
         consumeMessages();
+        log.info("Kafka Consumer Initialized");
+
+        initWebSocketFlush();
+        log.info("Websocket Flush Initialized");
+
     }
 
     public void consumeMessages() {
         kafkaReceiver.receive()
-                .flatMap(record -> processMessage(record)
-                        .doOnSuccess(unused -> record.receiverOffset().acknowledge())
-                        .onErrorResume(error -> {
-                            log.error("Error processing message: {}", error.getMessage());
-                            return Mono.empty();
-                        }))
+                .parallel()
+                .runOn(Schedulers.parallel())
+                .flatMap(record ->
+                        processMessage(record)
+                                .doOnSuccess(unused -> record.receiverOffset().acknowledge())
+                                .onErrorResume(error -> {
+                                    log.error("Error processing message: {}", error.getMessage());
+                                    return Mono.empty();
+                                })
+                )
+                .sequential()
                 .subscribe();
     }
+
     private Mono<Void> processMessage(ReceiverRecord<String, MeasurementMessage> record) {
-        MeasurementMessage message = record.value();
-        String id = String.valueOf(message.getId());
+        String id = String.valueOf(record.value().getId());
 
         return deduplicationService.isMessageDuplicate(id)
                 .flatMap(isDuplicate -> {
@@ -57,21 +73,44 @@ public class KafkaMessageConsumer {
                         return Mono.empty();
                     }
 
-                    return deduplicationService.markMessageAsProcessed(id)
-                            .then(iotMeasurementService.persistIotMeasurement(message))
-                            .then(broadcastMessage(message));
+                    // Defer parsing + processing until confirmed not duplicate
+                    return Mono.defer(() -> {
+                        MeasurementMessage message = record.value();
+
+                        return deduplicationService.markMessageAsProcessed(id)
+                                .then(iotMeasurementService.persistIotMeasurement(message))
+                                .then(bufferWebSocketMessage(message));
+                    });
                 });
     }
 
-    private Mono<Void> broadcastMessage(MeasurementMessage message) {
+    private Mono<Void> bufferWebSocketMessage(MeasurementMessage message) {
         WSMessage wsMessage = new WSMessage(
                 message.getMeasurement().toString(),
                 message.getValue(),
                 Instant.now().toString()
         );
 
-        return Mono.fromCallable(() -> JsonStream.serialize(wsMessage)) // Use Jsoniter for serialization
-                .subscribeOn(Schedulers.boundedElastic()) // Offload blocking serialization
-                .flatMap(webSocketHandler::broadcast);
+        wsBuffer.add(wsMessage);
+        return Mono.empty();
+    }
+
+    private void initWebSocketFlush() {
+        Flux.interval(java.time.Duration.ofMillis(100))
+                .flatMap(tick -> flushWebSocketBuffer())
+                .subscribe();
+    }
+
+    private Mono<Void> flushWebSocketBuffer() {
+        List<WSMessage> batch;
+        synchronized (wsBuffer) {
+            if (wsBuffer.isEmpty()) return Mono.empty();
+            batch = new ArrayList<>(wsBuffer);
+            wsBuffer.clear();
+        }
+
+        return Mono.fromCallable(() -> JsonStream.serialize(batch))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(webSocketHandler::broadcast); // Assumes broadcast(String)
     }
 }

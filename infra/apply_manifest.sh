@@ -120,3 +120,31 @@ done
 # kubectl port-forward --namespace observability svc/prometheus-kube-prometheus-prometheus 9090:9090
 # kubectl port-forward --namespace observability svc/grafana 3000:3000
 # http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090
+
+kubectl port-forward svc/kafdrop 9000:9000
+helm install kafka bitnami/kafka \
+  --set fullnameOverride=kafka-service \
+  --set kraft.enabled=true \
+  --set replicaCount=2 \
+  --set listeners.client.protocol=PLAINTEXT \
+  --set service.type=ClusterIP \
+  --set service.port=9092 \
+  --set service.headless.enabled=true \
+  --set controller.listener.port=29093 \
+  --set allowPlaintextListener=true \
+  --set kraft.clusterId="6PMpHYL9QkeyXRj9Nrp4KA" \
+  --set externalAccess.enabled=false
+
+helm upgrade kafka bitnami/kafka \
+  --set fullnameOverride=kafka-service \
+  --set kraft.enabled=true \
+  --set replicaCount=2 \
+  --set listeners.client.protocol=PLAINTEXT \
+  --set listeners.client.advertisedHostName=kafka-service \
+  --set service.type=ClusterIP \
+  --set service.port=9092 \
+  --set service.headless.enabled=true \
+  --set controller.listener.port=29093 \
+  --set allowPlaintextListener=true \
+  --set kraft.clusterId="6PMpHYL9QkeyXRj9Nrp4KA" \
+  --set externalAccess.enabled=false

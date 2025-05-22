@@ -92,7 +92,7 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI:http://iot-discovery-service:8761/eureka}
-    registry-fetch-interval-seconds: 5
+    registry-fetch-interval-seconds: 15
   instance:
     prefer-ip-address: true
 
