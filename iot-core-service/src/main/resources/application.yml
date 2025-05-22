@@ -28,7 +28,7 @@ spring:
       port: 6379
   kafka:
     bootstrap-servers: kafka-service:9092
-    producer:
+    consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: ro.upb.iotcoreservice.kafka.deserializer.MeasurementMessageDeserializer
 
