@@ -27,7 +27,7 @@
         "collapsed": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -41,7 +41,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -52,7 +52,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -137,7 +137,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (rate (container_network_receive_bytes_total{kubernetes_io_hostname=~\"^$Node$\"}[1m]))",
             "interval": "10s",
@@ -150,7 +150,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "- sum (rate (container_network_transmit_bytes_total{kubernetes_io_hostname=~\"^$Node$\"}[1m]))",
             "interval": "10s",
@@ -168,7 +168,7 @@
         "collapsed": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -182,7 +182,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -193,7 +193,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -261,7 +261,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_memory_working_set_bytes{id=\"/\",kubernetes_io_hostname=~\"^$Node$\"}) / sum (machine_memory_bytes{kubernetes_io_hostname=~\"^$Node$\"}) * 100",
             "interval": "10s",
@@ -276,7 +276,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -345,7 +345,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) / sum (machine_cpu_cores{kubernetes_io_hostname=~\"^$Node$\"}) * 100",
             "interval": "10s",
@@ -360,7 +360,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -429,7 +429,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/[sv]d[a-z][1-9]$\",id=\"/\",kubernetes_io_hostname=~\"^$Node$\"}) / sum (container_fs_limit_bytes{device=~\"^/dev/[sv]d[a-z][1-9]$\",id=\"/\",kubernetes_io_hostname=~\"^$Node$\"}) * 100",
             "interval": "10s",
@@ -446,7 +446,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -509,7 +509,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_memory_working_set_bytes{id=\"/\",kubernetes_io_hostname=~\"^$Node$\"})",
             "interval": "10s",
@@ -524,7 +524,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -587,7 +587,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (machine_memory_bytes{kubernetes_io_hostname=~\"^$Node$\"})",
             "interval": "10s",
@@ -602,7 +602,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -665,7 +665,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",kubernetes_io_hostname=~\"^$Node$\"}[1m]))",
             "interval": "10s",
@@ -680,7 +680,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -743,7 +743,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (machine_cpu_cores{kubernetes_io_hostname=~\"^$Node$\"})",
             "interval": "10s",
@@ -758,7 +758,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -821,7 +821,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/[sv]d[a-z][1-9]$\",id=\"/\",kubernetes_io_hostname=~\"^$Node$\"})",
             "interval": "10s",
@@ -836,7 +836,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -899,7 +899,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_fs_limit_bytes{device=~\"^/dev/[sv]d[a-z][1-9]$\",id=\"/\",kubernetes_io_hostname=~\"^$Node$\"})",
             "interval": "10s",
@@ -915,7 +915,7 @@
         "collapsed": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -929,7 +929,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -940,7 +940,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "fieldConfig": {
           "defaults": {
@@ -1024,7 +1024,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (pod_name)",
             "interval": "10s",
@@ -1042,7 +1042,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1057,7 +1057,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 3,
             "editable": true,
@@ -1101,7 +1101,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_cpu_usage_seconds_total{systemd_service_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (systemd_service_name)",
                 "hide": false,
@@ -1144,7 +1144,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1156,7 +1156,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1171,7 +1171,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 3,
             "editable": true,
@@ -1217,7 +1217,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (container_name, pod_name)",
                 "hide": false,
@@ -1231,7 +1231,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name!~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, name, image)",
                 "hide": false,
@@ -1245,7 +1245,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_cpu_usage_seconds_total{rkt_container_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, rkt_container_name)",
                 "interval": "10s",
@@ -1287,7 +1287,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1299,7 +1299,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1314,7 +1314,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 3,
             "editable": true,
@@ -1357,7 +1357,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (id)",
                 "hide": false,
@@ -1400,7 +1400,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1412,7 +1412,7 @@
         "collapsed": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1426,7 +1426,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1440,7 +1440,7 @@
         "bars": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "decimals": 2,
         "editable": true,
@@ -1485,7 +1485,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}) by (pod_name)",
             "interval": "10s",
@@ -1524,7 +1524,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1539,7 +1539,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 2,
             "editable": true,
@@ -1583,7 +1583,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (container_memory_working_set_bytes{systemd_service_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}) by (systemd_service_name)",
                 "interval": "10s",
@@ -1624,7 +1624,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1636,7 +1636,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1651,7 +1651,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 2,
             "editable": true,
@@ -1695,7 +1695,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",kubernetes_io_hostname=~\"^$Node$\"}) by (container_name, pod_name)",
                 "interval": "10s",
@@ -1708,7 +1708,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (container_memory_working_set_bytes{image!=\"\",name!~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}) by (kubernetes_io_hostname, name, image)",
                 "interval": "10s",
@@ -1721,7 +1721,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (container_memory_working_set_bytes{rkt_container_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}) by (kubernetes_io_hostname, rkt_container_name)",
                 "interval": "10s",
@@ -1762,7 +1762,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1774,7 +1774,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1789,7 +1789,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 2,
             "editable": true,
@@ -1833,7 +1833,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (container_memory_working_set_bytes{id!=\"/\",kubernetes_io_hostname=~\"^$Node$\"}) by (id)",
                 "interval": "10s",
@@ -1874,7 +1874,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1886,7 +1886,7 @@
         "collapsed": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -1900,7 +1900,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -1914,7 +1914,7 @@
         "bars": false,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "decimals": 2,
         "editable": true,
@@ -1959,7 +1959,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (pod_name)",
             "interval": "10s",
@@ -1972,7 +1972,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (pod_name)",
             "interval": "10s",
@@ -2011,7 +2011,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -2026,7 +2026,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 2,
             "editable": true,
@@ -2070,7 +2070,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (container_name, pod_name)",
                 "hide": false,
@@ -2084,7 +2084,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (container_name, pod_name)",
                 "hide": false,
@@ -2098,7 +2098,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name!~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, name, image)",
                 "hide": false,
@@ -2112,7 +2112,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name!~\"^k8s_.*\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, name, image)",
                 "hide": false,
@@ -2126,7 +2126,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, rkt_container_name)",
                 "hide": false,
@@ -2140,7 +2140,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "- sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (kubernetes_io_hostname, rkt_container_name)",
                 "hide": false,
@@ -2182,7 +2182,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -2194,7 +2194,7 @@
         "collapsed": true,
         "datasource": {
           "type": "prometheus",
-          "uid": "ae1rm919qsa2od"
+          "uid": "eemo0dxpv14hse"
         },
         "gridPos": {
           "h": 1,
@@ -2209,7 +2209,7 @@
             "bars": false,
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "decimals": 2,
             "editable": true,
@@ -2253,7 +2253,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "sum (rate (container_network_receive_bytes_total{id!=\"/\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (id)",
                 "interval": "10s",
@@ -2266,7 +2266,7 @@
               {
                 "datasource": {
                   "type": "prometheus",
-                  "uid": "ae1rm919qsa2od"
+                  "uid": "eemo0dxpv14hse"
                 },
                 "expr": "- sum (rate (container_network_transmit_bytes_total{id!=\"/\",kubernetes_io_hostname=~\"^$Node$\"}[1m])) by (id)",
                 "interval": "10s",
@@ -2307,7 +2307,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "ae1rm919qsa2od"
+              "uid": "eemo0dxpv14hse"
             },
             "refId": "A"
           }
@@ -2332,7 +2332,7 @@
           },
           "datasource": {
             "type": "prometheus",
-            "uid": "ae1rm919qsa2od"
+            "uid": "eemo0dxpv14hse"
           },
           "definition": "",
           "hide": 0,

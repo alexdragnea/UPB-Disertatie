@@ -16,7 +16,7 @@
       {
         "datasource": {
           "type": "prometheus",
-          "uid": "beklppknnxce8d"
+          "uid": "eemo0dxpv14hse"
         },
         "enable": true,
         "expr": "resets(process_uptime_seconds{application=\"$application\", instance=\"$instance\"}[1m]) > 0",
@@ -57,7 +57,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -153,7 +153,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -215,7 +215,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -286,7 +286,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -365,7 +365,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -428,7 +428,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -491,7 +491,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -554,7 +554,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -613,7 +613,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_producer_record_size_max",
@@ -630,7 +630,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -705,7 +705,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_producer_batch_size_max",
@@ -722,7 +722,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -792,7 +792,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -897,7 +897,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -974,7 +974,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "avg(kafka_consumer_coordinator_commit_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"})",
           "interval": "",
@@ -988,7 +988,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1064,7 +1064,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "sum(kafka_consumer_fetch_manager_records_lag{instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"})",
           "interval": "",
@@ -1078,7 +1078,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1154,7 +1154,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "sum(kafka_consumer_coordinator_commit_rate{instance=~\"$instance\", client_id=~\"$client_id\"})",
@@ -1170,7 +1170,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1246,7 +1246,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "sum(kafka_consumer_coordinator_join_rate{instance=~\"$instance\", client_id=~\"$client_id\"})",
@@ -1262,7 +1262,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1357,7 +1357,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1449,7 +1449,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1526,7 +1526,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1589,7 +1589,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1676,7 +1676,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_consumer_fetch_manager_records_lag{ instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
@@ -1690,7 +1690,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_records_lag_avg{ instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
           "format": "time_series",
@@ -1703,7 +1703,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_records_lag_max{ instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
           "format": "time_series",
@@ -1720,7 +1720,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "fieldConfig": {
         "defaults": {
@@ -1807,7 +1807,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_consumer_fetch_manager_fetch_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
@@ -1821,7 +1821,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_fetch_latency_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
           "format": "time_series",
@@ -1837,7 +1837,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "description": "Measures the rate at which a Kafka consumer is making fetch requests to the Kafka brokers.",
       "fieldConfig": {
@@ -1926,7 +1926,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_consumer_fetch_manager_fetch_rate{instance=~\"$instance\", client_id=~\"$client_id\"} ",
@@ -1944,7 +1944,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "description": "Monitor the rate at which Kafka consumers are consuming bytes from the Kafka brokers",
       "fieldConfig": {
@@ -2032,7 +2032,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "rate(kafka_consumer_fetch_manager_bytes_consumed_rate{ instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}[5m])",
@@ -2047,7 +2047,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_fetch_size_avg{instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
           "format": "time_series",
@@ -2060,7 +2060,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_fetch_size_max{application=~\"$application\", instance=\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
           "format": "time_series",
@@ -2077,7 +2077,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "description": "Measures the average fetch throttle time for Kafka consumers. The throttle time refers to the time the consumer spends waiting due to throttling enforced by Kafka brokers.",
       "fieldConfig": {
@@ -2165,7 +2165,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_consumer_fetch_manager_fetch_throttle_time_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
@@ -2179,7 +2179,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "expr": "kafka_consumer_fetch_manager_fetch_throttle_time_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
           "format": "time_series",
@@ -2195,7 +2195,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "beklppknnxce8d"
+        "uid": "eemo0dxpv14hse"
       },
       "description": "Measures the average number of records that a Kafka consumer fetches per request from Kafka brokers",
       "fieldConfig": {
@@ -2283,7 +2283,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "editorMode": "code",
           "expr": "kafka_consumer_fetch_manager_records_per_request_avg{ instance=~\"$instance\", client_id=~\"$client_id\", topic=~\"$topic\"}",
@@ -2311,7 +2311,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2399,7 +2399,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_assigned_partitions{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2415,7 +2415,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2502,7 +2502,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_commit_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2516,7 +2516,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_commit_latency_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2532,7 +2532,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2619,7 +2619,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_commit_rate{instance=~\"$instance\", client_id=~\"$client_id\"} ",
               "format": "time_series",
@@ -2631,7 +2631,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_join_rate{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2643,7 +2643,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_heartbeat_rate{instance=~\"$instance\", client_id=~\"$client_id\"} ",
               "format": "time_series",
@@ -2655,7 +2655,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_sync_rate{instance=~\"$instance\", client_id=~\"$client_id\"} ",
               "format": "time_series",
@@ -2671,7 +2671,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2758,7 +2758,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_join_time_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2770,7 +2770,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_join_time_max{instance=~\"$instance\", client_id=~\"$client_id\"}\n",
               "format": "time_series",
@@ -2786,7 +2786,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2873,7 +2873,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_last_heartbeat_seconds_ago{ instance=~\"$instance\", client_id=~\"$client_id\"} ",
               "format": "time_series",
@@ -2889,7 +2889,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -2976,7 +2976,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_sync_time_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -2988,7 +2988,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_sync_time_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3004,7 +3004,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3091,7 +3091,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_rebalance_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3103,7 +3103,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_rebalance_latency_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3119,7 +3119,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3207,7 +3207,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_rebalance_total{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3219,7 +3219,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_failed_rebalance_total{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3235,7 +3235,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3323,7 +3323,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_rebalance_rate_per_hour{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3335,7 +3335,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_failed_rebalance_rate_per_hour{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3351,7 +3351,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3439,7 +3439,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_last_rebalance_seconds_ago{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3455,7 +3455,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3543,7 +3543,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_partition_assigned_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3555,7 +3555,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_coordinator_partition_revoked_latency_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3585,7 +3585,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3666,7 +3666,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_io_wait_ratio{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3682,7 +3682,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3763,7 +3763,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_io_ratio{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3779,7 +3779,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3860,7 +3860,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_io_time_ns_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3876,7 +3876,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -3957,7 +3957,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_io_wait_time_ns_avg{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -3973,7 +3973,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "description": "Number of times the I/O layer checked for new I/O to perform per second.\n",
           "fieldConfig": {
@@ -4055,7 +4055,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_select_rate{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4085,7 +4085,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4166,7 +4166,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_incoming_byte_rate{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4179,7 +4179,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_outgoing_byte_rate{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4195,7 +4195,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4276,7 +4276,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_request_size_avg{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4289,7 +4289,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_request_size_max{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4305,7 +4305,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4386,7 +4386,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_node_request_rate{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4399,7 +4399,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_node_response_rate{instance=~\"$instance\", client_id=~\"$client_id\"}",
               "format": "time_series",
@@ -4429,7 +4429,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4516,7 +4516,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_time_between_poll_avg{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "interval": "",
@@ -4526,7 +4526,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_time_between_poll_max{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "interval": "",
@@ -4540,7 +4540,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4627,7 +4627,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_last_poll_seconds_ago{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "interval": "",
@@ -4641,7 +4641,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "beklppknnxce8d"
+            "uid": "eemo0dxpv14hse"
           },
           "fieldConfig": {
             "defaults": {
@@ -4728,7 +4728,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "beklppknnxce8d"
+                "uid": "eemo0dxpv14hse"
               },
               "expr": "kafka_consumer_poll_idle_ratio_avg{ instance=~\"$instance\", client_id=~\"$client_id\"}",
               "interval": "",
@@ -4759,7 +4759,7 @@
             "iot_event"
           ]
         },
-        "datasource": "beklppknnxce8d",
+        "datasource": "eemo0dxpv14hse",
         "definition": "label_values(kafka_consumer_fetch_manager_records_lead, topic)",
         "includeAll": false,
         "label": "topic",
@@ -4779,7 +4779,7 @@
             "$__all"
           ]
         },
-        "datasource": "beklppknnxce8d",
+        "datasource": "eemo0dxpv14hse",
         "definition": "label_values(kafka_consumer_fetch_manager_records_lead{topic=\"$topic\"},client_id)",
         "includeAll": true,
         "label": "client_id",
@@ -4799,7 +4799,7 @@
             "$__all"
           ]
         },
-        "datasource": "beklppknnxce8d",
+        "datasource": "eemo0dxpv14hse",
         "definition": "label_values(kafka_consumer_connection_close_rate{client_id=~\"$client_id\"}, instance)",
         "includeAll": true,
         "label": "instance",
