@@ -31,22 +31,18 @@ public class KafkaMessageConsumer {
 
     @PostConstruct
     public void startConsuming() {
+        log.info("Starting Kafka consumer");
         consumeMessages();
     }
 
     public void consumeMessages() {
         kafkaReceiver.receive()
-                .parallel()
-                .runOn(Schedulers.parallel())
-                .flatMap(record ->
-                        processMessage(record)
-                                .doOnSuccess(unused -> record.receiverOffset().acknowledge())
-                                .onErrorResume(error -> {
-                                    log.error("Error processing message: {}", error.getMessage());
-                                    return Mono.empty();
-                                })
-                )
-                .sequential()
+                .flatMap(record -> processMessage(record)
+                        .doOnSuccess(unused -> record.receiverOffset().acknowledge())
+                        .onErrorResume(error -> {
+                            log.error("Error processing message: {}", error.getMessage());
+                            return Mono.empty();
+                        }))
                 .subscribe();
     }
     private Mono<Void> processMessage(ReceiverRecord<String, MeasurementMessage> record) {
