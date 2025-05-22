@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
+import reactor.util.retry.Retry;
 import ro.upb.common.avro.MeasurementMessage;
 import ro.upb.common.dto.MeasurementRequest;
 import ro.upb.iotbridgeservice.exception.KafkaProcessingEx;
 import ro.upb.iotbridgeservice.exception.KafkaValidationEx;
 import ro.upb.iotbridgeservice.metric.KafkaProducerMetric;
 
+import java.time.Duration;
 import java.util.UUID;
 
 @Service
@@ -44,9 +46,15 @@ public class KafkaMessageProducer {
                 })
                 .doOnError(ex -> {
                     kafkaProducerMetric.decrementInFlightMessages();
-                    log.error("Failed to send message to topic: {} due to: {}", topic, ex.getMessage());
-                    throw new KafkaProcessingEx(ex.getMessage());
+                    log.error("Kafka send failed for topic {}: {}", topic, ex.getMessage());
                 })
+                .retryWhen(Retry.backoff(3, Duration.ofMillis(500))
+                        .maxBackoff(Duration.ofSeconds(5))
+                        .jitter(0.3)
+                        .doBeforeRetry(signal ->
+                                log.warn("Retrying Kafka send attempt #{} due to {}", signal.totalRetries() + 1, signal.failure().getMessage()))
+                )
+                .onErrorMap(ex -> new KafkaProcessingEx("Kafka send failed after retries: " + ex.getMessage()))
                 .then();
     }
 
