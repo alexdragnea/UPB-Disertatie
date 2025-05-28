@@ -20,18 +20,18 @@ spec:
         image: alexdragnea/disertatie-iot-discovery-service:latest
         resources:
           limits:
-            memory: 768Mi
-            cpu: 768m
-          requests:
-            cpu: 512m
             memory: 512Mi
+            cpu: 512m
+          requests:
+            cpu: 256m
+            memory: 256Mi
         ports:
         - containerPort: 8761
         readinessProbe:
           httpGet:
             path: /actuator/health
             port: 8761
-          initialDelaySeconds: 60             # Increase delay to give the container more time to be ready
+          initialDelaySeconds: 10             # Increase delay to give the container more time to be ready
           periodSeconds: 10
           timeoutSeconds: 5
           successThreshold: 1

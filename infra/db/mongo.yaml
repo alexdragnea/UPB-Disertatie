@@ -44,7 +44,8 @@ spec:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: standard  # This references the new StorageClass
+  storageClassName: local-path
+
 ---
 apiVersion: v1
 kind: Service
