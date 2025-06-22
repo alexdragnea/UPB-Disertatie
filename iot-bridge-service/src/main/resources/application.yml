@@ -32,7 +32,7 @@ cache:
   caffeine:
     initialCapacity: 100
     maximumSize: 500
-    expireAfterWriteMinutes: 60
+    expireAfterWriteMinutes: 1
     weakKeys: true
     recordStats: true
 

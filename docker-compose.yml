@@ -252,6 +252,7 @@ services:
       - iot-network
     depends_on:
       - redis-service
+      
 
 volumes:
   influxdb-data:
@@ -260,3 +261,4 @@ volumes:
 networks:
   iot-network:
     driver: bridge
+

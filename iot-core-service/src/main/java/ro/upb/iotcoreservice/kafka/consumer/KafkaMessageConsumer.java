@@ -109,8 +109,18 @@ public class KafkaMessageConsumer {
             wsBuffer.clear();
         }
 
-        return Mono.fromCallable(() -> JsonStream.serialize(batch))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMap(webSocketHandler::broadcast); // Assumes broadcast(String)
+        return Flux.fromIterable(batch)
+                .publishOn(Schedulers.boundedElastic())
+                .flatMap(message -> {
+                    try {
+                        String json = JsonStream.serialize(message);
+                        return webSocketHandler.broadcast(json);
+                    } catch (Exception e) {
+                        log.error("Failed to serialize message for WebSocket", e);
+                        return Mono.empty();
+                    }
+                })
+                .then();
     }
+
 }
